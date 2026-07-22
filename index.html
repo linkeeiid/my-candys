@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Candy's — Bonbons & snacks viraux du monde entier</title>
+<meta name="description" content="L'épicerie des snacks viraux vus sur TikTok : bonbons US, sodas, Takis, Prime, Monster, Mystery Box… Livraison en France. Franchise née à Lyon. -26% avec le code Candysummer26.">
+<meta name="theme-color" content="#FF2E9A">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+body.mc-home{background:#FB2E9A}
+.mc-mdecor{display:none}
+.mc-hero{position:relative;overflow:hidden;width:100%;aspect-ratio:2185/709;max-height:82vh}
+.mc-hero-track{display:flex;height:100%;transition:transform .6s cubic-bezier(.4,0,.2,1)}
+.mc-hero-track > a{flex:none;width:100%;height:100%;position:relative;display:block;background:linear-gradient(180deg,#7FD4EE,#2FB8D6)}
+.mc-hero-track img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+.mc-dots{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;gap:9px}
+.mc-wave{position:relative;z-index:4;line-height:0;pointer-events:none}
+.mc-wave svg{display:block;width:100%;height:108px}
+.mc-lightband{background:#E9F5FB;position:relative}
+.mc-decor{position:absolute;z-index:0;pointer-events:none;animation:floaty 9s ease-in-out infinite;filter:drop-shadow(0 30px 22px rgba(0,0,0,.26))}
+.mc-catwrap{max-width:1220px;margin:0 auto;padding:22px 22px 0;position:relative;z-index:1}
+.mc-cat4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.mc-cat4 > a{display:block;border-radius:22px;overflow:hidden;aspect-ratio:5/7;transition:transform .28s,box-shadow .28s}
+.mc-cat4 > a img{width:100%;height:100%;object-fit:cover}
+.mc-cat4 > a:nth-child(1){box-shadow:0 14px 22px -6px rgba(31,199,214,.55)}
+.mc-cat4 > a:nth-child(1):hover{transform:translateY(-8px) scale(1.02);box-shadow:0 20px 46px 6px rgba(31,199,214,.95),0 0 68px 16px rgba(31,199,214,.85)}
+.mc-cat4 > a:nth-child(2){box-shadow:0 14px 22px -6px rgba(245,158,11,.55)}
+.mc-cat4 > a:nth-child(2):hover{transform:translateY(-8px) scale(1.02);box-shadow:0 20px 46px 6px rgba(245,158,11,.95),0 0 68px 16px rgba(245,158,11,.85)}
+.mc-cat4 > a:nth-child(3){box-shadow:0 14px 22px -6px rgba(226,58,46,.55)}
+.mc-cat4 > a:nth-child(3):hover{transform:translateY(-8px) scale(1.02);box-shadow:0 20px 46px 6px rgba(226,58,46,.95),0 0 68px 16px rgba(226,58,46,.85)}
+.mc-cat4 > a:nth-child(4){box-shadow:0 14px 22px -6px rgba(255,46,154,.55)}
+.mc-cat4 > a:nth-child(4):hover{transform:translateY(-8px) scale(1.02);box-shadow:0 20px 46px 6px rgba(255,46,154,.95),0 0 68px 16px rgba(255,46,154,.85)}
+.mc-trust{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-top:22px}
+.mc-trust-item{flex:1;min-width:240px;display:flex;align-items:center;gap:14px;justify-content:center;background:#fff;border-radius:16px;padding:14px}
+.mc-trust-item span{font-size:28px}
+.mc-trust-item b{font-weight:600;font-size:15px;display:block}
+.mc-trust-item small{font-size:12px;color:#8A6076}
+.mc-sec{max-width:1220px;margin:0 auto;padding:40px 22px 6px;position:relative;z-index:1}
+.mc-k{font-weight:700;font-size:30px;color:#E01784;transform:rotate(-2deg)}
+.mc-h2{font-weight:700;font-size:32px;letter-spacing:-.5px;color:#2A0A1C;margin:0}
+.mc-sechead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+.mc-seeall{font-weight:600;font-size:14.5px;color:#E01784;border:2px solid #FFC4E2;background:#fff;padding:9px 18px;border-radius:999px}
+.mc-seeall:hover{background:#FFEBF5}
+.mc-prow{display:flex;gap:16px;overflow-x:auto;padding:8px 2px 20px;scroll-snap-type:x mandatory}
+.mc-prow .mc-prod{width:calc((100% - 64px)/5);scroll-snap-align:start}
+#row-brand .mc-prod{width:210px}
+.mc-marquee{overflow:hidden;padding:4px 0 6px;position:relative;z-index:1}
+.mc-marquee-track{display:flex;white-space:nowrap;width:max-content;animation:marquee 36s linear infinite}
+.mc-marquee-track:hover{animation-play-state:paused}
+.mc-marquee-track > div{display:flex;gap:26px;padding-right:26px;align-items:center}
+.mc-mqlogo{flex:none;width:240px;height:150px;display:flex;align-items:center;justify-content:center}
+.mc-mqlogo img{max-width:100%;max-height:100%;object-fit:contain}
+.mc-tt-sec{max-width:1220px;margin:0 auto;padding:44px 22px 20px}
+.mc-tt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.mc-tt{position:relative;aspect-ratio:9/16;border-radius:20px;overflow:hidden;box-shadow:0 12px 28px rgba(0,0,0,.2);transition:transform .2s;display:block}
+.mc-tt:hover{transform:translateY(-5px)}
+.mc-tt-grad{position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.55));pointer-events:none}
+.mc-tt-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;pointer-events:none}
+.mc-tt-play i{width:0;height:0;border-left:17px solid #E01784;border-top:10px solid transparent;border-bottom:10px solid transparent;margin-left:4px;display:block}
+.mc-tt-cap{position:absolute;left:12px;right:12px;bottom:12px;color:#fff}
+.mc-tt-cap b{font-weight:700;font-size:13px;line-height:1.2;display:block}
+.mc-tt-cap small{font-size:11.5px;opacity:.9;margin-top:3px;display:block}
+.mc-myst{background:#fff;border-radius:30px;padding:38px;display:flex;gap:34px;align-items:center;flex-wrap:wrap;box-shadow:0 22px 48px rgba(122,14,74,.22)}
+.mc-myst-gift{flex:none;width:230px;max-width:100%}
+.mc-myst-giftbox{background:linear-gradient(135deg,#FF2E9A,#8B3FD1);border-radius:24px;height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#fff;animation:bob 6s ease-in-out infinite;box-shadow:0 18px 38px rgba(139,63,209,.3)}
+.mc-myst-giftbox span:first-child{font-size:80px}
+.mc-myst-giftbox small{font-family:ui-monospace,Menlo,monospace;font-size:11px;opacity:.85}
+.mc-myst-body{flex:1;min-width:280px}
+.mc-myst-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+.mc-mbox{background:#FFF7EE;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:0 8px 18px rgba(122,14,74,.1)}
+.mc-mbox-img{position:relative;height:104px}
+.mc-mbox-body{padding:11px 12px 12px;display:flex;flex-direction:column;flex:1}
+.mc-mbox-body b{font-weight:700;font-size:14px;line-height:1.15}
+.mc-mbox-add{margin-top:10px;width:100%;background:#2A0A1C;color:#fff;font-weight:600;font-size:12.5px;padding:9px;border-radius:11px}
+.mc-mbox-add:hover{background:#E01784}
+.mc-white-h{color:#fff}
+.mc-rev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
+.mc-rev{background:#fff;border-radius:20px;padding:22px;box-shadow:0 10px 24px rgba(122,14,74,.14)}
+.mc-rev p{font-size:14.5px;line-height:1.55;color:#3A2230;margin:12px 0 14px}
+.mc-rev-who{display:flex;align-items:center;gap:10px}
+.mc-rev-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff}
+.mc-press-track{display:flex;white-space:nowrap;width:max-content;animation:marquee 34s linear infinite}
+.mc-press-track:hover{animation-play-state:paused}
+.mc-press-track > div{display:flex;gap:16px;padding-right:16px}
+.mc-press{flex:none;width:300px;white-space:normal;background:#fff;border-radius:18px;padding:22px;box-shadow:0 10px 24px rgba(122,14,74,.14)}
+.mc-press b{font-weight:700;font-size:19px;color:#2A0A1C;margin-bottom:10px;display:block}
+.mc-press p{font-size:13px;line-height:1.5;color:#7A5468;margin:0}
+.mc-news{background:#2A0A1C;border-radius:30px;padding:44px;text-align:center;color:#fff;position:relative;overflow:hidden}
+.mc-news form{margin:22px auto 0;display:flex;gap:10px;max-width:460px;flex-wrap:wrap;justify-content:center}
+.mc-news input{flex:1;min-width:220px;border:none;border-radius:14px;padding:15px 18px;font-size:15px;font-family:inherit;outline:none}
+.mc-news button{background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;font-weight:600;font-size:16px;padding:15px 28px;border-radius:14px}
+.mc-news button:hover{filter:brightness(1.05)}
+.mc-news-ok{margin:22px auto 0;background:#22D3E4;color:#053b40;font-weight:700;padding:14px 24px;border-radius:14px;display:inline-block}
+@media (max-width:768px){
+  .mc-decor{display:none}
+  .mc-mdecor{display:block;position:absolute;z-index:0;pointer-events:none;animation:floaty 8s ease-in-out infinite;filter:drop-shadow(0 18px 14px rgba(0,0,0,.24))}
+  .mc-hero{aspect-ratio:1.27/1;max-height:none}
+  .mc-wave svg{height:52px}
+  .mc-cat4{gap:8px}
+  .mc-tt-grid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;padding-bottom:6px}
+  .mc-tt{flex:none;width:46%;scroll-snap-align:center}
+  .mc-rev-grid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px}
+  .mc-rev{flex:none;width:82%;scroll-snap-align:center}
+  .mc-prow .mc-prod{width:156px}
+  #row-brand .mc-prod{width:156px}
+  .mc-h2{font-size:24px}.mc-k{font-size:17px}
+  .mc-myst{flex-direction:column;padding:18px;gap:16px}
+  .mc-myst-gift{width:100%}
+  .mc-news{padding:28px 20px}
+  .mc-news form{flex-direction:column}
+  .mc-news input{min-width:0;width:100%}
+  .mc-news button{width:100%}
+}
+</style>
+</head>
+<body class="mc-home" data-nav="home">
+
+<!-- Hero carrousel -->
+<div class="mc-hero" id="mc-hero">
+  <div class="mc-hero-track" id="mc-hero-track">
+    <a href="mystery-box.html"><picture><source media="(max-width:768px)" srcset="assets/banners/box-anti-gaspi-mobile.png"><img src="assets/banners/box-anti-gaspi.png" alt="My Candy's — Box Anti-Gaspi" fetchpriority="high"></picture></a>
+    <a href="boutique.html?c=promos"><picture><source media="(max-width:768px)" srcset="assets/banners/promo-site-mobile.png"><img src="assets/banners/promo-site.png" alt="-26% sur tout le site — Code Candysummer26" loading="lazy"></picture></a>
+    <a href="boutique.html?c=nouveautes"><picture><source media="(max-width:768px)" srcset="assets/banners/kinder-minecraft-mobile.png"><img src="assets/banners/kinder-minecraft.png" alt="Kinder Joy Minecraft — 28 surprises à collectionner" loading="lazy"></picture></a>
+  </div>
+  <div class="mc-dots" id="mc-hero-dots"></div>
+</div>
+
+<div class="mc-wave" style="margin-top:-98px"><svg viewBox="0 0 1440 170" preserveAspectRatio="none" style="height:120px"><path d="M0,60 C130,96 250,104 370,78 C500,50 600,22 720,40 C850,60 950,98 1080,92 C1210,86 1330,44 1440,64 L1440,170 L0,170 Z" fill="#E9F5FB"></path></svg></div>
+
+<!-- Bande claire -->
+<div class="mc-lightband">
+  <img src="assets/hero/monster-punch.png" alt="" aria-hidden="true" loading="lazy" decoding="async" class="mc-decor" style="width:560px;right:-150px;top:20px;--r:8deg">
+  <img src="assets/hero/nerds.png" alt="" aria-hidden="true" loading="lazy" decoding="async" class="mc-decor" style="width:580px;left:-180px;top:120px;--r:-10deg">
+  <img src="assets/hero/pickle.png" alt="" aria-hidden="true" loading="lazy" decoding="async" class="mc-decor" style="width:470px;right:-150px;top:560px;--r:12deg">
+  <img src="assets/hero/reeses.png" alt="" aria-hidden="true" loading="lazy" decoding="async" class="mc-decor" style="width:500px;left:-150px;top:1120px;--r:-9deg">
+  <img src="assets/hero/samyang.png" alt="" aria-hidden="true" loading="lazy" decoding="async" class="mc-decor" style="width:580px;right:-170px;top:1300px;--r:12deg">
+  <img src="assets/hero/kinder-creamy.png" alt="" aria-hidden="true" loading="lazy" decoding="async" class="mc-decor" style="width:500px;left:-150px;top:1720px;z-index:5;--r:-12deg">
+
+  <div class="mc-catwrap">
+    <div class="mc-cat4">
+      <a href="boutique.html?c=nouveautes"><img src="assets/categories/new.png" alt="Nouveautés" loading="lazy"></a>
+      <a href="boutique.html?c=promos"><img src="assets/categories/promos.png" alt="Promos" loading="lazy"></a>
+      <a href="mystery-box.html"><img src="assets/categories/box.png" alt="Mystery Box" loading="lazy"></a>
+      <a href="boutique.html?c=pick-n-mix"><img src="assets/categories/picknmix.png" alt="Pick'n'Mix" loading="lazy"></a>
+    </div>
+    <div class="mc-trust">
+      <div class="mc-trust-item"><span>🔒</span><div><b>Paiement 100% sécurisé</b><small>CB, Visa, Apple Pay, PayPal</small></div></div>
+      <div class="mc-trust-item"><span>💬</span><div><b>SAV réactif</b><small>On est là pour t'aider !</small></div></div>
+      <div class="mc-trust-item"><span>📦</span><div><b>Emballage soigné</b><small>Chaque colis préparé avec soin</small></div></div>
+    </div>
+  </div>
+
+  <section class="mc-sec">
+    <div style="text-align:center"><div class="mc-k">tes marques cultes</div><h2 class="mc-h2">Les marques populaires</h2></div>
+    <div style="height:18px"></div>
+    <div id="row-brand" class="mc-row mc-prow"></div>
+  </section>
+
+  <div class="mc-marquee"><div class="mc-marquee-track" id="mc-marquee"></div></div>
+
+  <section id="bestsellers" class="mc-sec">
+    <div class="mc-sechead">
+      <div><div class="mc-k" style="margin-left:22px">nos petits chouchous</div><h2 class="mc-h2">🩷 Nos bestsellers</h2></div>
+      <a href="boutique.html?c=bestsellers" class="mc-seeall">Afficher tout →</a>
+    </div>
+    <div id="row-best" class="mc-row mc-prow"></div>
+    <div style="height:2px;background:#F1DAE7;border-radius:2px;margin-top:6px"></div>
+  </section>
+
+  <section id="nouveautes" class="mc-sec" style="padding-bottom:78px;z-index:6">
+    <div class="mc-sechead">
+      <div><div class="mc-k" style="color:#0FA9B8">fraîchement débarqués</div><h2 class="mc-h2">⭐ Nos nouveautés</h2></div>
+      <a href="boutique.html?c=nouveautes" class="mc-seeall">Afficher tout →</a>
+    </div>
+    <div id="row-new" class="mc-row mc-prow"></div>
+  </section>
+</div>
+
+<div class="mc-wave" style="margin-top:-88px"><svg viewBox="0 0 1440 170" preserveAspectRatio="none"><path d="M0,60 C130,96 250,104 370,78 C500,50 600,22 720,40 C850,60 950,98 1080,92 C1210,86 1330,44 1440,64 L1440,170 L0,170 Z" fill="#FB2E9A"></path></svg></div>
+
+<!-- TikTok -->
+<section id="tiktok" class="mc-tt-sec">
+  <div style="text-align:center;margin-bottom:26px">
+    <h2 class="mc-h2 mc-white-h" style="font-weight:800;font-size:34px;display:inline-flex;align-items:center;gap:12px">Vu sur <a href="https://www.tiktok.com/@my.candys.lyon" target="_blank" rel="noopener" title="Suivre @my.candys.lyon" style="display:inline-flex"><img src="assets/tiktok-logo.png" alt="TikTok" style="height:44px;width:auto"></a></h2>
+  </div>
+  <div class="mc-tt-grid" id="mc-tiktok"></div>
+</section>
+
+<!-- Mystery Box -->
+<section id="mystery" style="max-width:1220px;margin:0 auto;padding:34px 22px 10px">
+  <div class="mc-myst">
+    <div class="mc-myst-gift"><div class="mc-myst-giftbox"><span>🎁</span><small>photo · Mystery Box</small></div></div>
+    <div class="mc-myst-body">
+      <h2 class="mc-h2" style="font-size:36px">Nos Mystery Box 🎉</h2>
+      <p style="font-size:16px;color:#7A5468;margin:10px 0 0;max-width:460px">Le mélange ultime de nos univers : bonbons, sodas et snacks viraux du monde entier, pour bien plus que leur valeur. Le cadeau parfait à unboxer sur TikTok.</p>
+      <div class="mc-myst-grid" id="mc-boxes"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Avis -->
+<section style="max-width:1220px;margin:0 auto;padding:34px 22px 10px">
+  <div style="text-align:center">
+    <div class="mc-k" style="color:#FFE08A">+8 400 gourmands ravis</div>
+    <div class="mc-k mc-white-h" style="color:#fff">Vos avis parlent pour nous</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-top:10px"><span style="font-weight:700;font-size:40px;color:#fff">4,8</span><div style="text-align:left"><div style="color:#FFD23F;font-size:20px;letter-spacing:2px">★★★★★</div><div style="font-size:13px;color:#fff;opacity:.9">sur 8 400+ avis vérifiés</div></div></div>
+  </div>
+  <div class="mc-rev-grid mc-row">
+    <div class="mc-rev"><div style="display:flex;align-items:center;gap:6px"><span style="color:#FFB800;letter-spacing:1px">★★★★★</span><span style="background:#EAFBF3;color:#1B8A57;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px">✓ Vérifié</span></div><p>"Commande reçue en 24h, tout était nickel emballé. Les Takis Blue Heat sont incroyables 🔥"</p><div class="mc-rev-who"><div class="mc-rev-av" style="background:#FF2E9A">L</div><div style="font-size:13px;font-weight:600">Léa M.</div></div></div>
+    <div class="mc-rev"><div style="display:flex;align-items:center;gap:6px"><span style="color:#FFB800;letter-spacing:1px">★★★★★</span><span style="background:#EAFBF3;color:#1B8A57;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px">✓ Vérifié</span></div><p>"La Mystery Box vaut carrément le coup, mon fils a adoré filmer l'unboxing pour TikTok !"</p><div class="mc-rev-who"><div class="mc-rev-av" style="background:#22D3E4">K</div><div style="font-size:13px;font-weight:600">Karim B.</div></div></div>
+    <div class="mc-rev"><div style="display:flex;align-items:center;gap:6px"><span style="color:#FFB800;letter-spacing:1px">★★★★★</span><span style="background:#EAFBF3;color:#1B8A57;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px">✓ Vérifié</span></div><p>"Enfin un site FR qui a les vrais produits qu'on voit passer en story. Je recommande à fond."</p><div class="mc-rev-who"><div class="mc-rev-av" style="background:#8B3FD1">M</div><div style="font-size:13px;font-weight:600">Manon T.</div></div></div>
+  </div>
+</section>
+
+<!-- Presse -->
+<section style="max-width:1220px;margin:0 auto;padding:34px 22px 10px">
+  <div style="font-weight:700;font-size:26px;color:#fff;text-align:center;margin-bottom:20px">Ils parlent de nous 📰</div>
+  <div style="overflow:hidden;position:relative"><div class="mc-press-track" id="mc-press"></div></div>
+</section>
+
+<!-- Newsletter -->
+<section style="max-width:1220px;margin:0 auto;padding:30px 22px 30px">
+  <div class="mc-news">
+    <div style="position:absolute;width:200px;height:200px;border-radius:50%;background:rgba(255,46,154,.28);top:-70px;left:8%;filter:blur(12px)"></div>
+    <div style="position:absolute;width:160px;height:160px;border-radius:50%;background:rgba(34,211,228,.24);bottom:-60px;right:10%;filter:blur(12px)"></div>
+    <div style="position:relative">
+      <div class="mc-k" style="color:#FFE08A">reste dans la boucle</div>
+      <h2 class="mc-h2" style="margin:2px 0 0;color:#fff">La newsletter My Candy's 💌</h2>
+      <p style="font-size:15.5px;color:#E7C4D8;margin:10px auto 0;max-width:460px">Méga promos, nouveautés et drops en exclu avant tout le monde. -10% sur ta 1ère commande. 🎉</p>
+      <form id="mc-news-form"><input required type="email" placeholder="ton@email.com" aria-label="Ton email"><button type="submit">S'abonner</button></form>
+      <div id="mc-news-ok" class="mc-news-ok" style="display:none">🎉 Merci ! Ton code -10% arrive par mail.</div>
+    </div>
+  </div>
+</section>
+
+<div class="mc-wave" style="margin-top:-88px"><svg viewBox="0 0 1440 170" preserveAspectRatio="none"><path d="M0,60 C130,96 250,104 370,78 C500,50 600,22 720,40 C850,60 950,98 1080,92 C1210,86 1330,44 1440,64 L1440,170 L0,170 Z" fill="#1c0512"></path></svg></div>
+
+<script src="cart-store.js"></script>
+<script src="products.js"></script>
+<script src="chrome.js"></script>
+<script src="app.js"></script>
+<script>
+(function () {
+  function fill(id, html) { var el = document.getElementById(id); if (el) el.innerHTML = html; }
+  var P = MC.PRODUCTS;
+  fill('row-brand', P.filter(function (p) { return p.brand; }).map(MC.card).join(''));
+  fill('row-best', P.filter(function (p) { return p.best; }).map(MC.card).join(''));
+  fill('row-new', P.filter(function (p) { return p.nouveau; }).map(MC.card).join(''));
+  fill('mc-boxes', MC.BOXES.map(function (p) {
+    var b = MC.badge(p);
+    return '<div class="mc-mbox"><div class="mc-mbox-img" style="background:' + p.tint + '"><div class="mc-stripes"></div>' +
+      '<div class="mc-price" style="top:10px;left:10px;font-size:13px;padding:5px 11px">' + MC.money(p.price) + '</div>' +
+      (b ? '<span class="mc-badge" style="bottom:8px;background:' + b.bg + ';color:' + b.color + '">' + b.text + '</span>' : '') +
+      '</div><div class="mc-mbox-body"><b>' + MC.esc(p.name) + '</b>' +
+      (p.old ? '<div class="mc-old" style="margin-top:2px">' + MC.money(p.old) + '</div>' : '') +
+      '<button class="mc-mbox-add" data-add="' + p.id + '">Ajouter</button></div></div>';
+  }).join(''));
+  var one = MC.LOGOS.map(function (l) { return '<div class="mc-mqlogo"><img src="' + l.src + '" alt="' + MC.esc(l.name) + '" loading="lazy"></div>'; }).join('');
+  fill('mc-marquee', '<div>' + one + '</div><div aria-hidden="true">' + one + '</div>');
+  var TT = [
+    { cap: 'On teste TOUS les Takis 🌶️', views: '1,2M', tint: 'linear-gradient(160deg,#FF5FAE,#B0146A)' },
+    { cap: 'Unboxing Mystery Box 🎁', views: '890K', tint: 'linear-gradient(160deg,#22D3E4,#0E7C88)' },
+    { cap: 'Prime restock ⚡', views: '2,4M', tint: 'linear-gradient(160deg,#7B8CFF,#3B2F8F)' },
+    { cap: 'Le mur de bonbons US 🍬', views: '760K', tint: 'linear-gradient(160deg,#FFC94D,#C97E00)' }
+  ];
+  fill('mc-tiktok', TT.map(function (t) {
+    return '<a class="mc-tt" href="https://www.tiktok.com/@my.candys.lyon" target="_blank" rel="noopener" style="background:' + t.tint + '"><div class="mc-tt-grad"></div><div class="mc-tt-play"><i></i></div><div class="mc-tt-cap"><b>' + MC.esc(t.cap) + '</b><small>▶ ' + t.views + ' vues</small></div></a>';
+  }).join(''));
+  var PR = [
+    { name: 'Le Progrès', q: 'La franchise lyonnaise qui transforme les snacks viraux en véritable phénomène de quartier.' },
+    { name: 'BFM Lyon', q: 'My Candy’s surfe sur la vague TikTok avec des files d’attente devant sa boutique.' },
+    { name: 'Tribune de Lyon', q: 'Une success story gourmande née à Lyon et en pleine expansion en franchise.' },
+    { name: 'Food & Sens', q: 'Le repaire des éditions limitées introuvables ailleurs en France.' }
+  ];
+  var pone = PR.map(function (p) { return '<div class="mc-press"><b>' + MC.esc(p.name) + '</b><p>' + MC.esc(p.q) + '</p></div>'; }).join('');
+  fill('mc-press', '<div>' + pone + '</div><div aria-hidden="true">' + pone + '</div>');
+  var f = document.getElementById('mc-news-form');
+  if (f) f.addEventListener('submit', function (e) { e.preventDefault(); f.style.display = 'none'; var ok = document.getElementById('mc-news-ok'); if (ok) ok.style.display = 'inline-block'; });
+})();
+</script>
+</body>
+</html>

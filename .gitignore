@@ -1,0 +1,13 @@
+# Backups / non nécessaires en ligne
+assets/logo-hd.png
+
+# Fichiers de test temporaires
+_test*.html
+_seed*.html
+_SPEC*.md
+_qa*.html
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini

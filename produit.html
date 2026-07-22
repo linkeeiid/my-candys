@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fiche produit — My Candy's</title>
+<meta name="description" content="La fiche produit My Candy's : photo, note, prix, description gourmande et ajout au panier. Snacks viraux, sodas TikTok et éditions limitées importés du monde entier.">
+<meta name="theme-color" content="#FF2E9A">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+/* ---------- Fil d'Ariane ---------- */
+.pd-crumbwrap{max-width:1220px;margin:0 auto;padding:22px 34px 0}
+
+/* ---------- Bloc produit (2 colonnes) ---------- */
+.pd{max-width:1220px;margin:0 auto;padding:20px 34px 10px;display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:start}
+.pd-media{position:sticky;top:150px}
+.pd-hero{position:relative;border-radius:26px;overflow:hidden;aspect-ratio:1/1;box-shadow:0 18px 40px rgba(122,14,74,.14)}
+.pd-hero-badge{position:absolute;top:16px;left:16px;background:#2A0A1C;color:#fff;font-weight:800;font-size:12px;padding:6px 12px;border-radius:999px;pointer-events:none;z-index:2}
+.pd-hero-label{position:absolute;bottom:14px;right:14px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;color:#2A0A1C;background:rgba(255,255,255,.66);padding:4px 10px;border-radius:999px;pointer-events:none;z-index:2;max-width:80%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pd-thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px}
+.pd-thumb{position:relative;border-radius:16px;overflow:hidden;aspect-ratio:1/1;box-shadow:0 6px 16px rgba(122,14,74,.1)}
+.pd-thumb.on{outline:2px solid #E01784;outline-offset:-2px}
+
+.pd-eyebrow{font-size:12.5px;color:#B06089;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.pd-title{font-weight:800;font-size:40px;margin:6px 0 0;letter-spacing:-1px;line-height:1.03}
+.pd-rating{display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap}
+.pd-stars{color:#FFB800;font-size:18px;letter-spacing:1px}
+.pd-note{font-weight:800;font-size:15px}
+.pd-revlink{font-size:14px;color:#8A6076}
+.pd-revlink:hover{color:#E01784}
+.pd-stock{background:#EAFBF3;color:#1B8A57;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px}
+.pd-price{display:flex;align-items:baseline;gap:12px;margin-top:20px;flex-wrap:wrap}
+.pd-now{font-weight:800;font-size:38px;color:#E01784;letter-spacing:-1px}
+.pd-old{font-size:17px;color:#B7A0AC;text-decoration:line-through}
+.pd-badge{font-weight:800;font-size:13px;padding:5px 11px;border-radius:999px}
+.pd-unit{font-size:12.5px;color:#8A6076;margin-top:4px}
+.pd-desc{font-size:15.5px;line-height:1.6;color:#4A2A3A;margin:20px 0 0}
+.pd-tags{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.pd-tag{background:#FFF1F8;border:1px solid #F6DBEB;border-radius:12px;padding:10px 14px;font-size:13px;font-weight:600;color:#4A2A3A}
+
+.pd-buy{display:flex;align-items:center;gap:14px;margin-top:26px;flex-wrap:wrap}
+.pd-step{display:flex;align-items:center;gap:2px;background:#fff;border:1.5px solid #F3C6DE;border-radius:14px;overflow:hidden}
+.pd-step button{width:46px;height:52px;color:#E01784;font-size:22px;font-weight:700;transition:background .12s}
+.pd-step button:hover{background:#FFF1F8}
+.pd-step span{min-width:36px;text-align:center;font-weight:800;font-size:17px}
+.pd-add{flex:1;min-width:220px;background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;font-weight:800;font-size:17px;padding:16px 26px;border-radius:16px;box-shadow:0 12px 26px rgba(255,46,154,.32);display:flex;align-items:center;justify-content:center;gap:10px;transition:transform .15s,filter .15s}
+.pd-add:hover{transform:translateY(-2px);filter:brightness(1.03)}
+.pd-add:active{transform:translateY(0)}
+.pd-wish{flex:none;width:52px;height:52px;border-radius:14px;border:1.5px solid #F3C6DE;background:#fff;font-size:22px;color:#B7A0AC;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.pd-wish:hover{background:#FFEBF5}
+.pd-wish.is-on{color:#E01784;border-color:#F3A9D0;background:#FFF1F8}
+
+.pd-reassure{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px}
+.pd-reass{display:flex;align-items:center;gap:10px;background:#F8FBFC;border:1px solid #E6EFF2;border-radius:14px;padding:12px}
+.pd-reass > span{font-size:22px;line-height:1}
+.pd-reass > div{font-size:12.5px;font-weight:600;line-height:1.3}
+
+.pd-acc{margin-top:24px;border-top:1px solid #F1DAE7}
+.pd-acc-item{border-bottom:1px solid #F1DAE7}
+.pd-acc-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 2px;font-weight:700;font-size:15px;color:#2A0A1C;text-align:left}
+.pd-acc-head > span{color:#E01784;font-size:20px}
+.pd-acc-body{font-size:14px;line-height:1.6;color:#6A4A58;padding:0 2px 16px}
+
+/* ---------- Avis ---------- */
+.pd-reviews{max-width:1220px;margin:0 auto;padding:40px 34px 10px}
+.pd-reviews h2{font-weight:800;font-size:28px;margin:0 0 6px;letter-spacing:-.5px}
+.pd-rev-top{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.pd-rev-big{font-weight:800;font-size:34px;color:#E01784}
+.pd-rev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.pd-rev{background:#FFF7EE;border-radius:18px;padding:22px}
+.pd-rev-head{display:flex;align-items:center;gap:6px}
+.pd-rev-verified{background:#EAFBF3;color:#1B8A57;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px}
+.pd-rev p{font-size:14.5px;line-height:1.55;color:#3A2230;margin:12px 0 14px}
+.pd-rev-who{display:flex;align-items:center;gap:10px}
+.pd-rev-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff}
+.pd-rev-name{font-size:13px;font-weight:700}
+
+/* ---------- Tu aimeras aussi ---------- */
+.pd-related{max-width:1220px;margin:0 auto;padding:34px 34px 50px}
+.pd-related-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px}
+.pd-related-head h2{font-weight:800;font-size:28px;margin:0;letter-spacing:-.5px}
+.pd-related-more{font-weight:700;font-size:14.5px;color:#E01784;border:2px solid #FFC4E2;padding:9px 18px;border-radius:999px;flex:none}
+.pd-related-more:hover{background:#FFEBF5}
+.mc-prow{display:flex;gap:16px;overflow-x:auto;padding:8px 2px 20px;scroll-snap-type:x mandatory}
+.mc-prow .mc-prod{width:calc((100% - 64px)/5);scroll-snap-align:start}
+
+@media (max-width:980px){.mc-prow .mc-prod{width:calc((100% - 48px)/4)}}
+@media (max-width:860px){
+  .pd-crumbwrap{padding:16px 16px 0}
+  .pd{grid-template-columns:1fr;padding:16px 16px 6px;gap:22px}
+  .pd-media{position:static;top:auto}
+  .pd-title{font-size:28px}
+  .pd-now{font-size:32px}
+  .pd-add{min-width:0;font-size:16px;padding:15px 18px}
+  .pd-reassure{grid-template-columns:1fr}
+  .pd-reviews,.pd-related{padding-left:16px;padding-right:16px}
+  .pd-rev-grid{grid-template-columns:1fr}
+  .pd-reviews h2,.pd-related-head h2{font-size:22px}
+  .mc-prow .mc-prod{width:200px}
+}
+</style>
+</head>
+<body data-nav="">
+
+<div class="pd-crumbwrap">
+  <div class="mc-crumb" id="pd-crumb"></div>
+</div>
+
+<section class="pd">
+  <!-- Colonne média -->
+  <div class="pd-media">
+    <div class="pd-hero" id="pd-hero">
+      <div class="mc-stripes"></div>
+      <div class="pd-hero-badge" id="pd-hero-badge"></div>
+      <div class="pd-hero-label" id="pd-hero-label"></div>
+    </div>
+    <div class="pd-thumbs" id="pd-thumbs"></div>
+  </div>
+
+  <!-- Colonne infos -->
+  <div class="pd-info">
+    <div class="pd-eyebrow" id="pd-eyebrow"></div>
+    <h1 class="pd-title" id="pd-title"></h1>
+
+    <div class="pd-rating">
+      <span class="pd-stars">★★★★★</span>
+      <span class="pd-note" id="pd-note">4,9</span>
+      <a href="#avis" class="pd-revlink" id="pd-revlink">0 avis</a>
+      <span class="pd-stock">● En stock</span>
+    </div>
+
+    <div class="pd-price" id="pd-price"></div>
+    <div class="pd-unit" id="pd-unit"></div>
+
+    <p class="pd-desc" id="pd-desc"></p>
+
+    <div class="pd-tags" id="pd-tags"></div>
+
+    <div class="pd-buy">
+      <div class="pd-step">
+        <button id="pd-dec" aria-label="Diminuer la quantité">−</button>
+        <span id="pd-qty">1</span>
+        <button id="pd-inc" aria-label="Augmenter la quantité">+</button>
+      </div>
+      <button class="pd-add" id="pd-add">🛒 Ajouter au panier</button>
+      <button class="pd-wish" id="pd-wish" title="Ajouter aux favoris" aria-label="Ajouter aux favoris">🤍</button>
+    </div>
+
+    <div class="pd-reassure">
+      <div class="pd-reass"><span>⚡</span><div>Expédié<br>en 24h</div></div>
+      <div class="pd-reass"><span>🔒</span><div>Paiement<br>sécurisé</div></div>
+      <div class="pd-reass"><span>🏬</span><div>Click &amp;<br>Collect Lyon</div></div>
+    </div>
+
+    <div class="pd-acc" id="pd-acc"></div>
+  </div>
+</section>
+
+<section id="avis" class="pd-reviews">
+  <h2>Avis clients</h2>
+  <div class="pd-rev-top">
+    <span class="pd-rev-big" id="pd-rev-big">4,9</span>
+    <div>
+      <div class="pd-stars">★★★★★</div>
+      <div style="font-size:13px;color:#8A6076" id="pd-rev-count">sur 0 avis vérifiés</div>
+    </div>
+  </div>
+  <div class="pd-rev-grid" id="pd-rev-grid"></div>
+</section>
+
+<section class="pd-related">
+  <div class="pd-related-head">
+    <h2>Tu aimeras aussi 🩷</h2>
+    <a href="boutique.html" class="pd-related-more">Voir la boutique →</a>
+  </div>
+  <div class="mc-row mc-prow" id="pd-related"></div>
+</section>
+
+<script src="cart-store.js"></script>
+<script src="products.js"></script>
+<script src="chrome.js"></script>
+<script src="app.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+
+  /* --- Produit courant : ?id=… sinon fallback bestseller --- */
+  var wanted = new URLSearchParams(location.search).get('id');
+  var p = (wanted && MC.byId(wanted)) ||
+          MC.PRODUCTS.filter(function (x) { return x.best; })[0] ||
+          MC.PRODUCTS[0];
+
+  var CAT = p.cat || 'Mystery Box';
+  var qty = 1;
+
+  /* --- Contenus « on-brand » générés selon la catégorie --- */
+  var DESC = {
+    'Sodas':     "La boisson culte que tout TikTok s'arrache : pétillante, fruitée et diablement rafraîchissante. L'édition qu'on ne trouve pas en supermarché du coin. Sers-la bien fraîche et profite. 🥤",
+    'Snacks':    "Le snack le plus viral du moment : croquant addictif, assaisonnement qui claque et format à partager (ou pas...). Importé pour de vrai, exactement comme dans les vidéos. 🔥",
+    'Bonbons':   "Les bonbons qui affolent les feeds : couleurs de folie, goût explosif et texture parfaite. Impossible de s'arrêter à un seul. Le plaisir sucré version US, livré chez toi. 🍬",
+    'Chocolats': "Le chocolat qu'on t'a fait découvrir en story : fondant, gourmand et ultra régressif. Une édition internationale à tomber, à déguster sans modération (ou presque). 🍫",
+    'Épicé':     "Le kit épicé qui enflamme TikTok : sucré, acidulé et brûlant à la fois. L'expérience à tester entre potes pour le fun — et un peu la sueur. 🌶️",
+    'Desserts':  "Le dessert viral venu d'ailleurs : texture unique, goût délicat et format parfait pour la photo. Un petit voyage gourmand à chaque bouchée. 🍨"
+  };
+  var COMPO = {
+    'Sodas':     "Eau gazéifiée, sucres et/ou édulcorants, arômes, colorants, acidifiant (E330). À servir bien frais. Valeurs nutritionnelles détaillées sur l'emballage d'origine.",
+    'Snacks':    "Base céréales / maïs / pomme de terre, huiles végétales, assaisonnement (épices, sel, exhausteurs de goût). Peut contenir : gluten, soja, lait. Voir emballage d'origine.",
+    'Bonbons':   "Sirop de glucose, sucre, gélatine, acidifiants, arômes et colorants alimentaires. Peut contenir des traces de fruits à coque et de lait. Voir emballage d'origine.",
+    'Chocolats': "Sucre, pâte de cacao, beurre de cacao, lait en poudre, émulsifiant (lécithine de soja). Contient : lait, soja. Peut contenir des fruits à coque. Voir emballage.",
+    'Épicé':     "Assortiment sucré-épicé : bonbons, sauce chamoy et poudre chili-citron vert. Contient sulfites et colorants. Peut contenir des traces d'allergènes. Voir emballage.",
+    'Desserts':  "Préparation gourmande (riz / lait / fruits selon la recette), sucre, arômes naturels. Peut contenir : lait, gluten, soja. Voir l'emballage d'origine."
+  };
+  var TAGS = {
+    'Sodas':     ['🥤 Édition importée', '🧊 Mieux bien frais', '✈️ Direct des USA'],
+    'Snacks':    ['🌶️ Ça envoie', '📦 Format US', '✈️ Import'],
+    'Bonbons':   ['🍬 Sucré viral', '🌈 Couleurs de ouf', '✈️ Import US'],
+    'Chocolats': ['🍫 Fondant', '🎁 Parfait à offrir', '✈️ Édition monde'],
+    'Épicé':     ['🌶️ Piquant élevé', '🧪 Kit complet', '🔥 Défi TikTok'],
+    'Desserts':  ['🍨 Ultra gourmand', '📸 Instagrammable', "✈️ Venu d'ailleurs"]
+  };
+  var descText = DESC[CAT] || "Une pépite chinée aux quatre coins du monde, rien que pour toi. Vue sur TikTok, dispo chez My Candy's — à croquer sans attendre. ✨";
+  var compoText = COMPO[CAT] || "Voir la composition complète et les allergènes sur l'emballage d'origine du produit.";
+  var tags = TAGS[CAT] || ['🔥 Viral', '✈️ Import', '🎁 À partager'];
+  var rating = p.best ? '4,9' : (p.nouveau ? '4,7' : '4,8');
+
+  /* --- Titre & fil d'Ariane --- */
+  document.title = p.name + " — My Candy's";
+  $('pd-crumb').innerHTML =
+    '<a href="index.html">Accueil</a> › <a href="boutique.html">Boutique</a> › ' +
+    '<a href="boutique.html">' + MC.esc(CAT) + '</a> › ' +
+    '<span style="color:#2A0A1C;font-weight:600">' + MC.esc(p.name) + '</span>';
+
+  /* --- Média : image principale + vignettes --- */
+  var hero = $('pd-hero');
+  hero.style.background = p.tint;
+  $('pd-hero-badge').textContent = p.best ? '🔥 VIRAL TIKTOK' : (p.nouveau ? '⭐ NOUVEAU' : '🩷 Coup de cœur');
+  $('pd-hero-label').textContent = 'photo · ' + p.name;
+
+  var alt = [MC.T.pink, MC.T.cyan, MC.T.yellow, MC.T.green, MC.T.purple, MC.T.orange, MC.T.blue]
+    .filter(function (t) { return t !== p.tint; });
+  var thumbTints = [p.tint, alt[0], alt[1], alt[2]];
+  $('pd-thumbs').innerHTML = thumbTints.map(function (t, i) {
+    return '<div class="pd-thumb' + (i === 0 ? ' on' : '') + '" style="background:' + t + '">' +
+             '<div class="mc-stripes"></div></div>';
+  }).join('');
+
+  /* --- Infos --- */
+  $('pd-eyebrow').textContent = (p.brand ? p.brand + ' · ' : '') + CAT;
+  $('pd-title').textContent = p.name;
+  $('pd-note').textContent = rating;
+  $('pd-revlink').textContent = p.reviews + ' avis';
+
+  var badge = MC.badge(p);
+  $('pd-price').innerHTML =
+    '<span class="pd-now">' + MC.money(p.price) + '</span>' +
+    (p.old ? '<span class="pd-old">' + MC.money(p.old) + '</span>' : '') +
+    (badge ? '<span class="pd-badge" style="background:' + badge.bg + ';color:' + badge.color + '">' + badge.text + '</span>' : '');
+  $('pd-unit').textContent = p.old
+    ? ('💸 Tu économises ' + MC.money(p.old - p.price) + ' · TVA incluse')
+    : 'TVA incluse · Livraison offerte dès 39 €';
+
+  $('pd-desc').textContent = descText;
+  $('pd-tags').innerHTML = tags.map(function (t) { return '<div class="pd-tag">' + MC.esc(t) + '</div>'; }).join('');
+
+  /* --- Sélecteur de quantité + Ajout au panier (avec la quantité choisie) --- */
+  var addBtn = $('pd-add'), qtyEl = $('pd-qty');
+  function refreshAdd() {
+    qtyEl.textContent = qty;
+    addBtn.textContent = '🛒 Ajouter au panier — ' + MC.money(p.price * qty);
+  }
+  refreshAdd();
+  $('pd-inc').addEventListener('click', function () { qty++; refreshAdd(); });
+  $('pd-dec').addEventListener('click', function () { qty = Math.max(1, qty - 1); refreshAdd(); });
+  addBtn.addEventListener('click', function () {
+    MCCart.add({ id: p.id, name: p.name, price: p.price, tint: p.tint, old: p.old }, qty);
+    MCui.toast(p.name + ' ajouté au panier');
+  });
+
+  /* --- Cœur favori (branché sur MCWish via la délégation d'app.js) --- */
+  var wishBtn = $('pd-wish');
+  wishBtn.setAttribute('data-wish', p.id);
+  var wished = window.MCWish && MCWish.has(p.id);
+  wishBtn.classList.toggle('is-on', !!wished);
+  wishBtn.textContent = wished ? '❤️' : '🤍';
+
+  /* --- Accordéons --- */
+  var ACC = [
+    { k: 'desc',  title: 'Description',                body: descText },
+    { k: 'compo', title: 'Composition & allergènes',  body: compoText },
+    { k: 'livr',  title: 'Livraison & retours',       body: "Expédié en 24h, livraison offerte dès 39 € en point relais. Click & Collect en boutique à Lyon. Retour sous 14 jours sur les produits non ouverts." }
+  ];
+  var open = 'desc', accWrap = $('pd-acc');
+  function renderAcc() {
+    accWrap.innerHTML = ACC.map(function (a) {
+      var on = a.k === open;
+      return '<div class="pd-acc-item">' +
+               '<button class="pd-acc-head" data-acc="' + a.k + '">' + MC.esc(a.title) +
+                 '<span>' + (on ? '−' : '+') + '</span></button>' +
+               (on ? '<div class="pd-acc-body">' + MC.esc(a.body) + '</div>' : '') +
+             '</div>';
+    }).join('');
+  }
+  renderAcc();
+  accWrap.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-acc]'); if (!t) return;
+    var k = t.getAttribute('data-acc');
+    open = (open === k ? null : k);
+    renderAcc();
+  });
+
+  /* --- Avis --- */
+  $('pd-rev-big').textContent = rating;
+  $('pd-rev-count').textContent = 'sur ' + p.reviews + ' avis vérifiés';
+  var REVIEWS = [
+    { text: "« Introuvable en supermarché ici, et je l'ai reçu en 2 jours. Conforme aux vidéos TikTok 🔥 »", name: 'Yanis R.', initial: 'Y', tint: '#FF2E9A' },
+    { text: "« Exactement ce que je cherchais. Emballage nickel, produit frais, je recommande direct. »", name: 'Sarah L.', initial: 'S', tint: '#22D3E4' },
+    { text: "« My Candy's est devenu mon repaire à snacks du monde. Le " + p.name + ", validé par toute la coloc ! »", name: 'Théo B.', initial: 'T', tint: '#8B3FD1' }
+  ];
+  $('pd-rev-grid').innerHTML = REVIEWS.map(function (r) {
+    return '<div class="pd-rev">' +
+             '<div class="pd-rev-head"><span class="pd-stars" style="font-size:15px">★★★★★</span>' +
+               '<span class="pd-rev-verified">✓ Vérifié</span></div>' +
+             '<p>' + MC.esc(r.text) + '</p>' +
+             '<div class="pd-rev-who">' +
+               '<div class="pd-rev-av" style="background:' + r.tint + '">' + r.initial + '</div>' +
+               '<div class="pd-rev-name">' + MC.esc(r.name) + '</div>' +
+             '</div>' +
+           '</div>';
+  }).join('');
+
+  /* --- Tu aimeras aussi : même catégorie ou même marque (4-5) --- */
+  var rel = MC.PRODUCTS.filter(function (x) {
+    return x.id !== p.id && (x.cat === p.cat || (p.brand && x.brand === p.brand));
+  });
+  if (rel.length < 4) {
+    MC.PRODUCTS.forEach(function (x) {
+      if (rel.length < 5 && x.id !== p.id && x.best && rel.indexOf(x) < 0) rel.push(x);
+    });
+  }
+  rel = rel.slice(0, 5);
+  $('pd-related').innerHTML = rel.map(MC.card).join('');
+})();
+</script>
+</body>
+</html>

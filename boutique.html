@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boutique — My Candy's</title>
+<meta name="description" content="Tout le catalogue My Candy's : bonbons US, sodas viraux, chips épicées, chocolats et éditions limitées. Filtre par catégorie, marque, promos et nouveautés.">
+<meta name="theme-color" content="#FF2E9A">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+.shop-hero{background:#fff;position:relative;overflow:hidden}
+.shop-hero-in{max-width:1280px;margin:0 auto;padding:30px 34px 26px;position:relative;z-index:1}
+.shop-hero h1{font-size:44px;letter-spacing:-1px;margin:0}
+.shop-hero-decor{position:absolute;z-index:0;pointer-events:none;animation:floaty 8s ease-in-out infinite;filter:drop-shadow(0 22px 16px rgba(0,0,0,.22))}
+.shop-band{background:#E9F5FB;position:relative}
+.shop-wrap{max-width:1280px;margin:0 auto;padding:26px 34px 40px;display:grid;grid-template-columns:250px 1fr;gap:26px;align-items:start}
+.shop-aside{position:sticky;top:150px;background:#fff;border:1px solid #F1DAE7;border-radius:20px;padding:20px 20px 8px}
+.shop-aside h2{font-size:17px;margin-bottom:14px}
+.shop-fsec{border-top:1px solid #F1DAE7;padding:16px 0 14px}
+.shop-fsec > .t{font-weight:700;font-size:14px;margin-bottom:12px}
+.shop-cat{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border-radius:10px;font-size:13.5px;font-weight:600;text-align:left;color:#4A2A3A;width:100%;transition:background .12s}
+.shop-cat:hover{background:#FFF1F8}
+.shop-cat.on{background:#FFEBF5;color:#E01784}
+.shop-cat span:last-child{font-size:11px;color:#B06089}
+.shop-brands{display:flex;flex-wrap:wrap;gap:8px}
+.shop-brand{font-size:12.5px;font-weight:600;padding:7px 13px;border-radius:999px;border:1.5px solid #F3C6DE;background:#fff;color:#7A5468;transition:.12s}
+.shop-brand.on{background:#E01784;color:#fff;border-color:#E01784}
+.shop-check{display:flex;align-items:center;gap:9px;font-size:13.5px;color:#4A2A3A;padding:5px 0;cursor:pointer}
+.shop-check input{width:17px;height:17px;accent-color:#E01784}
+.shop-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.shop-toolbar select{border:1.5px solid #F3C6DE;background:#fff;border-radius:12px;padding:10px 14px;font-size:13.5px;font-weight:600;color:#2A0A1C;outline:none;font-family:inherit}
+.shop-chips{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.shop-chip{display:flex;align-items:center;gap:7px;background:#fff;border:1px solid #F3C6DE;color:#E01784;font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:999px}
+.shop-chip:hover{background:#FFEBF5}
+.shop-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.shop-empty{text-align:center;padding:70px 20px;color:#8A6076}
+.shop-empty .big{font-size:52px}
+.shop-empty .t{font-weight:700;font-size:18px;color:#2A0A1C;margin-top:10px}
+.shop-empty button{margin-top:16px;background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;font-weight:700;font-size:14px;padding:11px 22px;border-radius:12px}
+.shop-mobfilter{display:none}
+@media (max-width:980px){.shop-grid{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:860px){
+  .shop-hero h1{font-size:30px}
+  .shop-wrap{grid-template-columns:1fr;padding:20px 16px 34px;gap:16px}
+  .shop-aside{position:static;top:auto;display:none}
+  .shop-aside.open{display:block}
+  .shop-mobfilter{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #F3C6DE;color:#E01784;font-weight:700;font-size:14px;padding:10px 16px;border-radius:12px}
+  .shop-grid{grid-template-columns:repeat(2,1fr);gap:14px}
+  .shop-hero-decor{width:120px!important}
+}
+</style>
+</head>
+<body data-nav="">
+<script>(function(){var m={boissons:'boissons',sales:'sales',sucres:'sucres',asie:'asie',bestsellers:'bestsellers',nouveautes:'nouveautes',promos:'promos','mini-prix':'mini-prix',squishy:'squishy','anti-gaspi':'anti-gaspi'};var c=new URLSearchParams(location.search).get('c');if(c&&m[c])document.body.setAttribute('data-nav',m[c]);})();</script>
+
+<div class="shop-hero">
+  <div class="shop-hero-in">
+    <div class="mc-crumb" style="margin-bottom:8px"><a href="index.html">Accueil</a> › <span id="shop-crumb" style="color:#2A0A1C;font-weight:600">Boutique</span></div>
+    <h1 id="shop-title">Toute la boutique 🍬</h1>
+    <p id="shop-sub" style="font-size:16px;color:#7A5468;margin:8px 0 0;max-width:560px">Bonbons US, sodas viraux, chips épicées &amp; éditions limitées. Ce que tu vois sur TikTok, filtré comme tu veux.</p>
+  </div>
+  <img src="assets/hero/monster-punch.png" alt="" aria-hidden="true" loading="lazy" decoding="async" class="shop-hero-decor" style="width:190px;right:2%;top:-6px;--r:8deg">
+  <img src="assets/hero/nerds.png" alt="" aria-hidden="true" loading="lazy" decoding="async" class="shop-hero-decor" style="width:180px;right:15%;top:40px;--r:-9deg">
+</div>
+
+<div class="shop-band">
+  <div class="shop-wrap">
+    <aside class="shop-aside" id="shop-aside">
+      <h2>Filtres</h2>
+      <div class="shop-fsec"><div class="t">Catégorie</div><div id="shop-cats" style="display:flex;flex-direction:column;gap:4px"></div></div>
+      <div class="shop-fsec"><div class="t">Marque</div><div id="shop-brands" class="shop-brands"></div></div>
+      <div class="shop-fsec" style="border-bottom:none">
+        <div class="t">Filtres rapides</div>
+        <label class="shop-check"><input type="checkbox" id="shop-promo"> En promo uniquement</label>
+        <label class="shop-check"><input type="checkbox" id="shop-new"> Nouveautés</label>
+      </div>
+    </aside>
+
+    <div class="shop-main">
+      <div class="shop-toolbar">
+        <div style="display:flex;align-items:center;gap:12px">
+          <button class="shop-mobfilter" id="shop-mobfilter">⚙️ Filtres</button>
+          <div style="font-size:14px;color:#7A5468"><b id="shop-count" style="color:#2A0A1C;font-weight:800">0</b> produits</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:13px;color:#8A6076;font-weight:600">Trier :</span>
+          <select id="shop-sort">
+            <option value="pop">Popularité</option>
+            <option value="priceUp">Prix croissant</option>
+            <option value="priceDown">Prix décroissant</option>
+            <option value="new">Nouveautés</option>
+          </select>
+        </div>
+      </div>
+      <div class="shop-chips" id="shop-chips" style="display:none"></div>
+      <div class="shop-grid" id="shop-grid"></div>
+      <div class="shop-empty" id="shop-empty" style="display:none"><div class="big">🔎</div><div class="t">Aucun produit ne correspond</div><button id="shop-reset">Réinitialiser les filtres</button></div>
+    </div>
+  </div>
+</div>
+
+<script src="cart-store.js"></script>
+<script src="products.js"></script>
+<script src="chrome.js"></script>
+<script src="app.js"></script>
+<script>
+(function () {
+  var CATS = ['Bonbons', 'Snacks', 'Sodas', 'Chocolats', 'Épicé', 'Desserts'];
+  var BRANDS = ['Prime', 'Takis', 'Monster', 'Fanta', 'Kinder', 'Samyang'];
+  var params = new URLSearchParams(location.search);
+  var st = { cat: 'all', brand: 'all', promo: false, nouv: false, best: false, asie: false, sweet: false, sort: 'pop', q: '' };
+
+  var b = params.get('b'); if (b) st.brand = b;
+  var q = params.get('q'); if (q) st.q = q;
+  var c = params.get('c');
+  var TITLES = {
+    'boissons': ['Boissons 🥤', 'Sodas viraux, énergisantes et boissons du monde entier.'],
+    'sales': ['Snacks salés 🌶️', 'Chips, Takis, ramen et snacks épicés qui cartonnent.'],
+    'sucres': ['Sucré 🍬', 'Bonbons US, chocolats et desserts gourmands.'],
+    'asie': ['Spécial Asie 🍜', 'Le meilleur des snacks et boissons venus d\'Asie.'],
+    'bestsellers': ['Bestsellers 🩷', 'Les chouchous de la communauté My Candy\'s.'],
+    'nouveautes': ['Nouveautés ⭐', 'Fraîchement débarqués dans la boutique.'],
+    'promos': ['Promos ⚡', 'Toutes les réductions du moment.'],
+    'mini-prix': ['Mini Prix 🪙', 'Les petits prix qui font plaisir.'],
+    'squishy': ['Squishy 🌈', 'Bientôt disponible — reviens vite !'],
+    'anti-gaspi': ['Anti-Gaspi ♻️', 'Bientôt disponible — reviens vite !'],
+    'pick-n-mix': ['Pick\'n\'Mix 🍬', 'Compose ton mélange — bientôt disponible !']
+  };
+  switch (c) {
+    case 'boissons': st.cat = 'Sodas'; break;
+    case 'sales': st.cat = 'Snacks'; break;
+    case 'sucres': st.sweet = true; break;
+    case 'asie': st.asie = true; break;
+    case 'bestsellers': st.best = true; break;
+    case 'nouveautes': st.nouv = true; break;
+    case 'promos': case 'mini-prix': st.promo = true; break;
+  }
+  if (st.brand !== 'all' && !c) { var d = document.getElementById('shop-title'); if (d) d.textContent = st.brand; }
+  if (c && TITLES[c]) { document.getElementById('shop-title').textContent = TITLES[c][0]; document.getElementById('shop-sub').textContent = TITLES[c][1]; document.getElementById('shop-crumb').textContent = TITLES[c][0]; }
+  if (st.brand !== 'all') { document.getElementById('shop-crumb').textContent = st.brand; }
+
+  document.getElementById('shop-promo').checked = st.promo;
+  document.getElementById('shop-new').checked = st.nouv;
+  document.getElementById('shop-sort').value = st.sort;
+
+  function count(cat) { return MC.PRODUCTS.filter(function (p) { return p.cat === cat; }).length; }
+
+  function renderSidebar() {
+    document.getElementById('shop-cats').innerHTML = CATS.map(function (cat) {
+      return '<button class="shop-cat' + (st.cat === cat ? ' on' : '') + '" data-cat="' + cat + '"><span>' + cat + '</span><span>' + count(cat) + '</span></button>';
+    }).join('');
+    document.getElementById('shop-brands').innerHTML = BRANDS.map(function (br) {
+      return '<button class="shop-brand' + (st.brand === br ? ' on' : '') + '" data-brand="' + br + '">' + br + '</button>';
+    }).join('');
+  }
+
+  function filtered() {
+    var L = MC.PRODUCTS.slice();
+    if (st.cat !== 'all') L = L.filter(function (p) { return p.cat === st.cat; });
+    if (st.brand !== 'all') L = L.filter(function (p) { return p.brand === st.brand; });
+    if (st.promo) L = L.filter(function (p) { return p.old; });
+    if (st.nouv) L = L.filter(function (p) { return p.nouveau; });
+    if (st.best) L = L.filter(function (p) { return p.best; });
+    if (st.asie) L = L.filter(function (p) { return p.asie; });
+    if (st.sweet) L = L.filter(function (p) { return ['Bonbons', 'Chocolats', 'Desserts'].indexOf(p.cat) >= 0; });
+    if (st.q) { var qq = st.q.toLowerCase(); L = L.filter(function (p) { return (p.name + ' ' + (p.brand || '')).toLowerCase().indexOf(qq) >= 0; }); }
+    if (st.sort === 'priceUp') L.sort(function (a, b) { return a.price - b.price; });
+    else if (st.sort === 'priceDown') L.sort(function (a, b) { return b.price - a.price; });
+    else if (st.sort === 'new') L.sort(function (a, b) { return (b.nouveau ? 1 : 0) - (a.nouveau ? 1 : 0); });
+    return L;
+  }
+
+  function chips() {
+    var out = [];
+    if (st.cat !== 'all') out.push({ k: 'cat', label: st.cat });
+    if (st.brand !== 'all') out.push({ k: 'brand', label: st.brand });
+    if (st.promo) out.push({ k: 'promo', label: 'En promo' });
+    if (st.nouv) out.push({ k: 'nouv', label: 'Nouveautés' });
+    if (st.best) out.push({ k: 'best', label: 'Bestsellers' });
+    if (st.asie) out.push({ k: 'asie', label: 'Asie' });
+    if (st.sweet) out.push({ k: 'sweet', label: 'Sucré' });
+    if (st.q) out.push({ k: 'q', label: '“' + st.q + '”' });
+    return out;
+  }
+
+  function render() {
+    renderSidebar();
+    var L = filtered();
+    document.getElementById('shop-count').textContent = L.length;
+    document.getElementById('shop-grid').innerHTML = L.map(MC.card).join('');
+    document.getElementById('shop-empty').style.display = L.length ? 'none' : 'block';
+    var ch = chips();
+    var cw = document.getElementById('shop-chips');
+    if (ch.length) {
+      cw.style.display = 'flex';
+      cw.innerHTML = '<span style="font-size:13px;color:#8A6076;font-weight:600">Actifs :</span>' +
+        ch.map(function (x) { return '<button class="shop-chip" data-clear="' + x.k + '">' + MC.esc(x.label) + ' ✕</button>'; }).join('') +
+        '<button data-clear="all" style="font-size:12.5px;font-weight:600;color:#8A6076;text-decoration:underline">Tout effacer</button>';
+    } else { cw.style.display = 'none'; cw.innerHTML = ''; }
+  }
+
+  // Interactions
+  document.getElementById('shop-cats').addEventListener('click', function (e) { var t = e.target.closest('[data-cat]'); if (!t) return; var cat = t.getAttribute('data-cat'); st.cat = (st.cat === cat ? 'all' : cat); st.sweet = false; render(); });
+  document.getElementById('shop-brands').addEventListener('click', function (e) { var t = e.target.closest('[data-brand]'); if (!t) return; var br = t.getAttribute('data-brand'); st.brand = (st.brand === br ? 'all' : br); render(); });
+  document.getElementById('shop-promo').addEventListener('change', function (e) { st.promo = e.target.checked; render(); });
+  document.getElementById('shop-new').addEventListener('change', function (e) { st.nouv = e.target.checked; render(); });
+  document.getElementById('shop-sort').addEventListener('change', function (e) { st.sort = e.target.value; render(); });
+  document.getElementById('shop-chips').addEventListener('click', function (e) {
+    var t = e.target.closest('[data-clear]'); if (!t) return;
+    var k = t.getAttribute('data-clear');
+    if (k === 'all') { st.cat = 'all'; st.brand = 'all'; st.promo = st.nouv = st.best = st.asie = st.sweet = false; st.q = ''; }
+    else if (k === 'cat') st.cat = 'all';
+    else if (k === 'brand') st.brand = 'all';
+    else st[k] = (k === 'q' ? '' : false);
+    document.getElementById('shop-promo').checked = st.promo;
+    document.getElementById('shop-new').checked = st.nouv;
+    render();
+  });
+  document.getElementById('shop-reset').addEventListener('click', function () { st.cat = 'all'; st.brand = 'all'; st.promo = st.nouv = st.best = st.asie = st.sweet = false; st.q = ''; document.getElementById('shop-promo').checked = false; document.getElementById('shop-new').checked = false; render(); });
+  document.getElementById('shop-mobfilter').addEventListener('click', function () { document.getElementById('shop-aside').classList.toggle('open'); });
+
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Commande — My Candy's</title>
+<meta name="description" content="Finalise ta commande My Candy's : coordonnées, livraison en point relais ou à domicile, paiement sécurisé. Livraison offerte dès 39 € en point relais.">
+<meta name="theme-color" content="#FF2E9A">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+[hidden]{display:none!important}
+.co-page{max-width:1160px;margin:0 auto;padding:26px 22px 64px}
+.co-crumb{margin-bottom:10px}
+.co-title{font-size:34px;letter-spacing:-1px;margin:0}
+.co-sub{font-size:15px;color:#7A5468;margin:8px 0 0}
+.co-steps{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:16px 0 22px;font-size:13px;font-weight:700;color:#B7A0AC}
+.co-steps .on{color:#E01784}
+.co-steps .dot{color:#E0C4D4}
+
+/* ---------- Grille ---------- */
+.co-grid{display:grid;grid-template-columns:minmax(0,1fr) 366px;gap:24px;align-items:start;grid-template-areas:"form summary"}
+.co-form{grid-area:form;display:flex;flex-direction:column;gap:18px;min-width:0}
+.co-aside{grid-area:summary;position:sticky;top:150px;min-width:0}
+
+/* ---------- Cartes de section ---------- */
+.co-card{background:#fff;border:1px solid #F1DAE7;border-radius:20px;padding:22px 24px;box-shadow:0 8px 22px rgba(122,14,74,.06)}
+.co-sec-head{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.co-sec-num{flex:none;width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px rgba(255,46,154,.32)}
+.co-sec-title{font-weight:800;font-size:18px;letter-spacing:-.3px}
+
+/* ---------- Champs ---------- */
+.co-fields{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.co-field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.co-field.full{grid-column:1/-1}
+.co-field label{font-size:13px;font-weight:700;color:#7A5468}
+.co-field label .req{color:#E01784}
+.co-input{border:1.5px solid #F3C6DE;background:#fff;border-radius:12px;padding:12px 14px;font-size:14.5px;font-family:inherit;color:#2A0A1C;outline:none;transition:border-color .15s,box-shadow .15s;width:100%}
+.co-input:focus{border-color:#FF2E9A;box-shadow:0 0 0 3px rgba(255,46,154,.13)}
+.co-input::placeholder{color:#C9A9BB}
+.co-input:user-invalid{border-color:#E23A2E}
+select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23B06089' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+
+/* ---------- Modes de livraison ---------- */
+.co-modes{display:flex;flex-direction:column;gap:12px}
+.co-mode{display:flex;align-items:center;gap:14px;border:1.5px solid #F3C6DE;border-radius:14px;padding:14px 16px;cursor:pointer;transition:border-color .15s,background .15s,box-shadow .15s}
+.co-mode:hover{background:#FFF1F8}
+.co-mode input{flex:none;width:20px;height:20px;accent-color:#E01784}
+.co-mode.on{border-color:#FF2E9A;background:#FFF1F8;box-shadow:0 0 0 3px rgba(255,46,154,.1)}
+.co-mode-ico{font-size:26px;line-height:1}
+.co-mode-main{flex:1;min-width:0}
+.co-mode-t{font-weight:700;font-size:15px}
+.co-mode-d{font-size:12.5px;color:#8A6076;margin-top:2px}
+.co-mode-price{flex:none;font-weight:800;font-size:15px;color:#2A0A1C;white-space:nowrap}
+.co-mode-price.free{color:#1B8A57}
+
+/* ---------- Paiement ---------- */
+.co-paynote{display:flex;align-items:center;gap:10px;background:#FFF7EE;border:1px dashed #F1C7A8;border-radius:12px;padding:11px 14px;font-size:12.5px;color:#8A5A2A;margin-bottom:16px}
+.co-cards{display:flex;gap:6px;margin-left:auto}
+.co-cards span{background:#fff;border:1px solid #EEDDCB;color:#4A2A3A;font-weight:800;font-size:10px;padding:4px 7px;border-radius:6px}
+
+/* ---------- Récapitulatif ---------- */
+.co-sum{background:#FFF6FB;border:1px solid #F3D9E9;border-radius:20px;padding:20px 22px;box-shadow:0 10px 26px rgba(122,14,74,.1)}
+.co-sum-title{font-weight:800;font-size:19px}
+.co-sum-count{font-size:13px;color:#8A6076;margin:2px 0 16px}
+.co-lines{display:flex;flex-direction:column;gap:12px}
+.co-line{display:flex;gap:12px;align-items:center}
+.co-line-img{flex:none;width:52px;height:52px;border-radius:12px;position:relative;overflow:hidden}
+.co-line-qty{position:absolute;top:-7px;right:-7px;background:#2A0A1C;color:#fff;min-width:21px;height:21px;border-radius:999px;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 5px;border:2px solid #FFF6FB}
+.co-line-mid{flex:1;min-width:0}
+.co-line-name{font-weight:600;font-size:13.5px;line-height:1.2}
+.co-line-unit{font-size:12px;color:#8A6076;margin-top:2px}
+.co-line-tot{flex:none;font-weight:700;font-size:14px}
+.co-sum-div{height:1px;background:#F3D9E9;margin:16px 0}
+.co-sum-row{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;color:#4A2A3A;margin-bottom:11px}
+.co-sum-row b{font-weight:700;color:#2A0A1C}
+.co-sum-row .free{color:#1B8A57;font-weight:800}
+.co-sum-total{display:flex;justify-content:space-between;align-items:baseline;margin-top:4px}
+.co-sum-total span{font-weight:700;font-size:16px}
+.co-sum-total b{font-weight:800;font-size:28px;letter-spacing:-.5px}
+.co-pay{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:18px;text-align:center;background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;font-weight:800;font-size:17px;padding:16px;border-radius:16px;box-shadow:0 12px 26px rgba(255,46,154,.3);transition:transform .15s,filter .15s}
+.co-pay:hover{transform:translateY(-2px);filter:brightness(1.04)}
+.co-secure{text-align:center;font-size:12px;color:#8A6076;margin-top:12px}
+.co-reassure{display:flex;flex-direction:column;gap:9px;margin-top:16px;padding-top:16px;border-top:1px solid #F3D9E9}
+.co-reassure div{display:flex;align-items:center;gap:9px;font-size:12.5px;color:#7A5468}
+.co-reassure span{font-size:16px}
+
+/* ---------- Panier vide ---------- */
+.co-empty{max-width:520px;margin:30px auto 90px;text-align:center;background:#fff;border:1px solid #F1DAE7;border-radius:24px;padding:52px 30px;box-shadow:0 12px 30px rgba(122,14,74,.08)}
+.co-empty .big{font-size:56px}
+.co-empty .t{font-weight:800;font-size:22px;margin-top:12px}
+.co-empty p{color:#8A6076;font-size:14.5px;margin:8px 0 0}
+.co-btn{display:inline-block;margin-top:22px;background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;font-weight:700;font-size:15px;padding:13px 24px;border-radius:14px;box-shadow:0 10px 22px rgba(255,46,154,.3)}
+.co-btn:hover{color:#fff;filter:brightness(1.04)}
+.co-btn2{display:inline-block;margin-top:12px;background:#fff;border:1.5px solid #F3C6DE;color:#E01784;font-weight:700;font-size:15px;padding:12px 24px;border-radius:14px}
+.co-btn2:hover{background:#FFEBF5}
+
+/* ---------- Confirmation ---------- */
+.co-done{max-width:660px;margin:24px auto 90px;text-align:center;background:#fff;border:1px solid #F1DAE7;border-radius:28px;padding:52px 36px;box-shadow:0 18px 44px rgba(122,14,74,.12);position:relative;overflow:hidden}
+.co-done::before{content:"";position:absolute;top:0;left:0;right:0;height:8px;background:linear-gradient(90deg,#FF2E9A,#22D3E4,#FFD23F,#8B3FD1)}
+.co-done .emoji{font-size:68px;animation:bob 2.4s ease-in-out infinite}
+.co-done h2{font-size:32px;letter-spacing:-.6px;margin-top:8px}
+.co-done .lead{color:#7A5468;font-size:16px;margin:12px auto 0;max-width:440px;line-height:1.55}
+.co-order{display:inline-flex;align-items:center;gap:10px;margin-top:22px;background:#FFF7EE;border:1px solid #F1DAE7;border-radius:14px;padding:12px 20px}
+.co-order small{font-size:11px;font-weight:700;letter-spacing:.6px;color:#B06089;text-transform:uppercase}
+.co-order b{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:19px;color:#2A0A1C;letter-spacing:.5px}
+.co-recap{max-width:400px;margin:24px auto 0;text-align:left;background:#FFF6FB;border:1px solid #F3D9E9;border-radius:16px;padding:18px 20px}
+.co-recap-row{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:6px 0;color:#4A2A3A}
+.co-recap-row span:last-child{font-weight:700;color:#2A0A1C;text-align:right;word-break:break-word}
+.co-recap-tot{border-top:1px solid #F3D9E9;margin-top:6px;padding-top:12px}
+.co-recap-tot b{font-size:20px}
+.co-done-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:28px}
+
+@media (max-width:860px){
+  .co-page{padding:20px 16px 50px}
+  .co-title{font-size:27px}
+  .co-grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"summary" "form"}
+  .co-aside{position:static}
+  .co-fields{grid-template-columns:1fr}
+  .co-card{padding:18px 18px}
+  .co-done{padding:40px 22px}
+  .co-done h2{font-size:26px}
+}
+</style>
+</head>
+<body data-nav="">
+
+<div class="co-page">
+  <div class="mc-crumb co-crumb"><a href="index.html">Accueil</a> › <a href="boutique.html">Boutique</a> › <span style="color:#2A0A1C;font-weight:600">Commande</span></div>
+  <h1 class="co-title">Finalise ta commande 🍬</h1>
+  <p class="co-sub">Encore quelques infos et tes snacks viraux filent chez toi.</p>
+  <div class="co-steps"><span>Panier</span><span class="dot">›</span><span class="on">Livraison &amp; paiement</span><span class="dot">›</span><span>Confirmation</span></div>
+
+  <!-- Panier vide -->
+  <div id="co-empty" class="co-empty" hidden>
+    <div class="big">🛒</div>
+    <div class="t">Ton panier est vide</div>
+    <p>Ajoute tes bonbons, sodas et snacks préférés avant de passer commande.</p>
+    <a href="boutique.html" class="co-btn">Découvrir la boutique →</a>
+  </div>
+
+  <!-- Tunnel -->
+  <form id="co-form" class="co-grid" autocomplete="on" hidden>
+    <div class="co-form">
+
+      <!-- 1. Coordonnées -->
+      <section class="co-card">
+        <div class="co-sec-head"><div class="co-sec-num">1</div><div class="co-sec-title">Tes coordonnées</div></div>
+        <div class="co-fields">
+          <div class="co-field full">
+            <label for="f-email">Email <span class="req">*</span></label>
+            <input class="co-input" id="f-email" name="email" type="email" required autocomplete="email" inputmode="email" placeholder="toi@email.com">
+          </div>
+          <div class="co-field">
+            <label for="f-first">Prénom <span class="req">*</span></label>
+            <input class="co-input" id="f-first" name="first" type="text" required autocomplete="given-name" placeholder="Léa">
+          </div>
+          <div class="co-field">
+            <label for="f-last">Nom <span class="req">*</span></label>
+            <input class="co-input" id="f-last" name="last" type="text" required autocomplete="family-name" placeholder="Martin">
+          </div>
+          <div class="co-field full">
+            <label for="f-tel">Téléphone <span class="req">*</span></label>
+            <input class="co-input" id="f-tel" name="tel" type="tel" required autocomplete="tel" inputmode="tel" placeholder="06 12 34 56 78">
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. Adresse -->
+      <section class="co-card">
+        <div class="co-sec-head"><div class="co-sec-num">2</div><div class="co-sec-title">Adresse de livraison</div></div>
+        <div class="co-fields">
+          <div class="co-field full">
+            <label for="f-addr">Adresse <span class="req">*</span></label>
+            <input class="co-input" id="f-addr" name="addr" type="text" required autocomplete="street-address" placeholder="12 rue des Gourmandises">
+          </div>
+          <div class="co-field full">
+            <label for="f-addr2">Complément d'adresse</label>
+            <input class="co-input" id="f-addr2" name="addr2" type="text" autocomplete="address-line2" placeholder="Bâtiment, appartement, étage…">
+          </div>
+          <div class="co-field">
+            <label for="f-zip">Code postal <span class="req">*</span></label>
+            <input class="co-input" id="f-zip" name="zip" type="text" required autocomplete="postal-code" inputmode="numeric" pattern="[0-9 ]{4,8}" placeholder="69006">
+          </div>
+          <div class="co-field">
+            <label for="f-city">Ville <span class="req">*</span></label>
+            <input class="co-input" id="f-city" name="city" type="text" required autocomplete="address-level2" placeholder="Lyon">
+          </div>
+          <div class="co-field full">
+            <label for="f-country">Pays <span class="req">*</span></label>
+            <select class="co-input" id="f-country" name="country" required autocomplete="country-name">
+              <option value="France">France métropolitaine</option>
+              <option value="Belgique">Belgique</option>
+              <option value="Suisse">Suisse</option>
+              <option value="Luxembourg">Luxembourg</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Mode de livraison -->
+      <section class="co-card">
+        <div class="co-sec-head"><div class="co-sec-num">3</div><div class="co-sec-title">Mode de livraison</div></div>
+        <div class="co-modes" id="co-modes">
+          <label class="co-mode on" data-mode="relais">
+            <input type="radio" name="ship" value="relais" required checked>
+            <span class="co-mode-ico">🏪</span>
+            <span class="co-mode-main"><span class="co-mode-t">Point relais</span><span class="co-mode-d">Retrait en point relais · 2 à 4 jours ouvrés</span></span>
+            <span class="co-mode-price" data-price="relais">4,90 €</span>
+          </label>
+          <label class="co-mode" data-mode="domicile">
+            <input type="radio" name="ship" value="domicile">
+            <span class="co-mode-ico">🚚</span>
+            <span class="co-mode-main"><span class="co-mode-t">Livraison à domicile</span><span class="co-mode-d">Chez toi, en main propre · 1 à 3 jours ouvrés</span></span>
+            <span class="co-mode-price" data-price="domicile">6,90 €</span>
+          </label>
+        </div>
+      </section>
+
+      <!-- 4. Paiement -->
+      <section class="co-card">
+        <div class="co-sec-head"><div class="co-sec-num">4</div><div class="co-sec-title">Paiement</div></div>
+        <div class="co-paynote">🔒 Démo — paiement 100% factice, aucune vraie transaction. <span class="co-cards"><span>VISA</span><span>MC</span><span>CB</span></span></div>
+        <div class="co-fields">
+          <div class="co-field full">
+            <label for="f-cc">Numéro de carte <span class="req">*</span></label>
+            <input class="co-input" id="f-cc" name="cc" type="text" required autocomplete="cc-number" inputmode="numeric" maxlength="19" placeholder="4242 4242 4242 4242">
+          </div>
+          <div class="co-field full">
+            <label for="f-ccname">Titulaire de la carte <span class="req">*</span></label>
+            <input class="co-input" id="f-ccname" name="ccname" type="text" required autocomplete="cc-name" placeholder="LÉA MARTIN">
+          </div>
+          <div class="co-field">
+            <label for="f-exp">Expiration <span class="req">*</span></label>
+            <input class="co-input" id="f-exp" name="exp" type="text" required autocomplete="cc-exp" inputmode="numeric" maxlength="5" placeholder="MM/AA">
+          </div>
+          <div class="co-field">
+            <label for="f-cvc">CVC <span class="req">*</span></label>
+            <input class="co-input" id="f-cvc" name="cvc" type="text" required autocomplete="cc-csc" inputmode="numeric" maxlength="4" placeholder="123">
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Récapitulatif -->
+    <aside class="co-aside">
+      <div class="co-sum">
+        <div class="co-sum-title">Ta commande</div>
+        <div class="co-sum-count" id="co-count">0 article</div>
+        <div class="co-lines" id="co-lines"></div>
+        <div class="co-sum-div"></div>
+        <div class="co-sum-row"><span>Sous-total</span><b id="co-sub">0,00 €</b></div>
+        <div class="co-sum-row"><span>Livraison <span id="co-shipmode" style="color:#8A6076"></span></span><b id="co-ship">—</b></div>
+        <div class="co-sum-div"></div>
+        <div class="co-sum-total"><span>Total</span><b id="co-total">0,00 €</b></div>
+        <button type="submit" class="co-pay" id="co-pay"><span>Payer</span> <span>🔒</span></button>
+        <div class="co-secure">Paiement chiffré · Tu peux payer en toute confiance</div>
+        <div class="co-reassure">
+          <div><span>🚚</span> Expédié sous 24h ouvrées</div>
+          <div><span>↩️</span> Retours &amp; SAV sous 30 jours</div>
+          <div><span>🎁</span> Une surprise glissée dans chaque colis</div>
+        </div>
+      </div>
+    </aside>
+  </form>
+
+  <!-- Confirmation -->
+  <div id="co-done" class="co-done" hidden>
+    <div class="emoji">🎉</div>
+    <h2>Merci pour ta commande&nbsp;!</h2>
+    <p class="lead">C'est validé&nbsp;! On prépare ton colis de snacks viraux avec amour. Tu vas recevoir un email de confirmation d'ici quelques minutes.</p>
+    <div class="co-order"><small>N° de commande</small><b id="co-num">MC-000000</b></div>
+    <div class="co-recap" id="co-done-recap"></div>
+    <div class="co-done-actions">
+      <a href="boutique.html" class="co-btn">Continuer mes achats →</a>
+      <a href="index.html" class="co-btn2">Retour à l'accueil</a>
+    </div>
+  </div>
+</div>
+
+<script src="cart-store.js"></script>
+<script src="products.js"></script>
+<script src="chrome.js"></script>
+<script src="app.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var money = function (n) { return MC.money(n); };
+
+  // Modes de livraison : coût de base + seuil de gratuité (offert dès X €)
+  var MODES = {
+    relais:   { label: 'Point relais',           cost: 4.90, free: 39 },
+    domicile: { label: 'Livraison à domicile',   cost: 6.90, free: 59 }
+  };
+  var mode = 'relais';
+
+  var elEmpty = $('#co-empty'), elForm = $('#co-form'), elDone = $('#co-done');
+
+  function shipCost(sub) {
+    var m = MODES[mode];
+    return sub >= m.free ? 0 : m.cost;
+  }
+
+  // Récap depuis MCCart
+  function render() {
+    var items = MCCart.items();
+    var count = items.reduce(function (n, l) { return n + l.qty; }, 0);
+
+    if (count === 0) {
+      elForm.hidden = true;
+      elDone.hidden = true;
+      elEmpty.hidden = false;
+      return;
+    }
+    elEmpty.hidden = true;
+    elForm.hidden = false;
+
+    var sub = items.reduce(function (n, l) { return n + l.price * l.qty; }, 0);
+    var ship = shipCost(sub);
+    var total = sub + ship;
+
+    $('#co-count').textContent = count + (count > 1 ? ' articles' : ' article');
+    $('#co-lines').innerHTML = items.map(function (l) {
+      return '' +
+        '<div class="co-line">' +
+          '<div class="co-line-img" style="background:' + (l.tint || '#FFE3F1') + '"><div class="mc-stripes"></div>' +
+            '<span class="co-line-qty">' + l.qty + '</span></div>' +
+          '<div class="co-line-mid">' +
+            '<div class="co-line-name">' + MC.esc(l.name) + '</div>' +
+            '<div class="co-line-unit">' + money(l.price) + ' l\'unité</div>' +
+          '</div>' +
+          '<div class="co-line-tot">' + money(l.price * l.qty) + '</div>' +
+        '</div>';
+    }).join('');
+
+    $('#co-sub').textContent = money(sub);
+    var shipEl = $('#co-ship'), modeEl = $('#co-shipmode');
+    modeEl.textContent = '(' + MODES[mode].label.toLowerCase() + ')';
+    if (ship === 0) { shipEl.textContent = 'Offerte'; shipEl.className = 'free'; }
+    else { shipEl.textContent = money(ship); shipEl.className = ''; }
+    $('#co-total').textContent = money(total);
+    $('#co-pay').firstElementChild.textContent = 'Payer ' + money(total);
+
+    // Prix affichés sur chaque mode (offert si seuil atteint pour ce mode)
+    Object.keys(MODES).forEach(function (k) {
+      var pe = document.querySelector('[data-price="' + k + '"]');
+      if (!pe) return;
+      if (sub >= MODES[k].free) { pe.textContent = 'Offerte'; pe.classList.add('free'); }
+      else { pe.textContent = money(MODES[k].cost); pe.classList.remove('free'); }
+    });
+  }
+
+  // Sélection du mode de livraison
+  $('#co-modes').addEventListener('change', function (e) {
+    var r = e.target.closest('input[name="ship"]');
+    if (!r) return;
+    mode = r.value;
+    document.querySelectorAll('.co-mode').forEach(function (m) {
+      m.classList.toggle('on', m.getAttribute('data-mode') === mode);
+    });
+    render();
+  });
+
+  // Soumission : AUCUN réseau, confirmation on-brand puis vidage du panier
+  elForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    // Snapshot AVANT de vider le panier
+    var items = MCCart.items();
+    var sub = items.reduce(function (n, l) { return n + l.price * l.qty; }, 0);
+    var ship = shipCost(sub);
+    var total = sub + ship;
+    var email = ($('#f-email').value || '').trim();
+    var num = 'MC-' + new Date().getFullYear() + '-' +
+              String(Math.floor(100000 + Math.random() * 900000));
+
+    $('#co-num').textContent = num;
+    $('#co-done-recap').innerHTML = '' +
+      '<div class="co-recap-row"><span>Email</span><span>' + MC.esc(email) + '</span></div>' +
+      '<div class="co-recap-row"><span>Livraison</span><span>' + MC.esc(MODES[mode].label) + '</span></div>' +
+      '<div class="co-recap-row"><span>Sous-total</span><span>' + money(sub) + '</span></div>' +
+      '<div class="co-recap-row"><span>Frais de livraison</span><span>' + (ship === 0 ? 'Offerte' : money(ship)) + '</span></div>' +
+      '<div class="co-recap-row co-recap-tot"><span>Total payé</span><b>' + money(total) + '</b></div>';
+
+    elForm.hidden = true;
+    elEmpty.hidden = true;
+    elDone.hidden = false;
+
+    // Vide le panier (persistant) — met à jour badge + drawer via l'événement
+    MCCart.clear();
+
+    try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (err) { window.scrollTo(0, 0); }
+  });
+
+  // Re-render si le panier change ailleurs (autre onglet) — mais pas après confirmation
+  window.addEventListener('mc-cart-change', function () { if (!elDone.hidden) return; render(); });
+  window.addEventListener('storage', function () { if (!elDone.hidden) return; render(); });
+
+  render();
+})();
+</script>
+</body>
+</html>

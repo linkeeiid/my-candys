@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Infos & aide — My Candy's</title>
+<meta name="description" content="FAQ, livraison &amp; retours, contact, notre histoire, nos boutiques et la franchise My Candy's. Toute l'aide dont tu as besoin, au même endroit.">
+<meta name="theme-color" content="#FF2E9A">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+/* ---------- Hero ---------- */
+.info-hero{background:#fff;position:relative;overflow:hidden;border-bottom:1px solid #F1DAE7}
+.info-hero-in{max-width:1220px;margin:0 auto;padding:30px 34px 26px;position:relative;z-index:1}
+.info-hero h1{font-size:42px;letter-spacing:-1px;margin:0}
+.info-hero p{font-size:16px;color:#7A5468;margin:10px 0 0;max-width:560px}
+.info-hero-decor{position:absolute;z-index:0;pointer-events:none;animation:floaty 8s ease-in-out infinite;filter:drop-shadow(0 22px 16px rgba(0,0,0,.2))}
+
+/* ---------- Layout ---------- */
+.info-band{background:#E9F5FB}
+.info-wrap{max-width:1220px;margin:0 auto;padding:26px 34px 54px;display:grid;grid-template-columns:262px 1fr;gap:26px;align-items:start}
+
+/* ---------- Sidebar nav ---------- */
+.info-aside{position:sticky;top:150px}
+.info-nav{background:#fff;border:1px solid #F1DAE7;border-radius:20px;padding:12px;box-shadow:0 8px 22px rgba(122,14,74,.06)}
+.info-navlink{display:flex;align-items:center;gap:11px;width:100%;text-align:left;font-weight:600;font-size:14.5px;color:#4A2A3A;padding:12px 14px;border-radius:13px;transition:background .14s,color .14s}
+.info-navlink .ic{font-size:18px;line-height:1;flex:none}
+.info-navlink:hover{background:#FFF1F8;color:#E01784}
+.info-navlink.is-active{background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;box-shadow:0 8px 18px rgba(255,46,154,.3)}
+.info-help{margin-top:16px;background:#FFF7EE;border:1px solid #F1DAE7;border-radius:20px;padding:18px 18px 20px}
+.info-help .t{font-weight:800;font-size:15px;margin-bottom:6px}
+.info-help p{font-size:13px;color:#7A5468;line-height:1.55;margin:0 0 12px}
+.info-help a.btn{display:block;text-align:center;background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;font-weight:700;font-size:13.5px;padding:11px;border-radius:13px;box-shadow:0 8px 18px rgba(255,46,154,.28)}
+
+/* ---------- Main content card ---------- */
+.info-main{min-width:0}
+.info-sec{display:none;animation:secIn .3s ease}
+.info-sec.is-active{display:block}
+@keyframes secIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.info-card{background:#fff;border:1px solid #F1DAE7;border-radius:24px;padding:30px 34px;box-shadow:0 12px 30px rgba(122,14,74,.07)}
+.info-card + .info-card{margin-top:20px}
+.info-card h2{font-size:24px;letter-spacing:-.5px;margin:0 0 6px}
+.info-card h3{font-size:17px;font-weight:800;letter-spacing:-.3px;margin:22px 0 8px;color:#2A0A1C}
+.info-card p{font-size:15px;line-height:1.7;color:#4A2A3A;margin:0 0 12px}
+.info-card p.lead{font-size:16px;color:#2A0A1C}
+.info-card a.inl{font-weight:600}
+.info-card ul{margin:6px 0 14px;padding-left:20px;color:#4A2A3A;font-size:15px;line-height:1.7}
+.info-card ul li{margin-bottom:6px}
+.info-card strong{color:#2A0A1C}
+.info-eyebrow{display:inline-block;background:#FFEBF5;color:#E01784;font-weight:700;font-size:12px;letter-spacing:.4px;text-transform:uppercase;padding:6px 12px;border-radius:999px;margin-bottom:12px}
+
+/* ---------- FAQ accordion ---------- */
+.faq-item{border:1px solid #F1DAE7;border-radius:16px;margin-bottom:12px;overflow:hidden;background:#FFFDFB;transition:border-color .15s,box-shadow .15s}
+.faq-item.open{border-color:#F3C6DE;box-shadow:0 10px 24px rgba(122,14,74,.08)}
+.faq-q{display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;text-align:left;font-weight:700;font-size:15.5px;color:#2A0A1C;padding:17px 20px;transition:color .15s}
+.faq-q:hover{color:#E01784}
+.faq-item.open .faq-q{color:#E01784}
+.faq-plus{flex:none;width:28px;height:28px;border-radius:50%;background:#FFEBF5;color:#E01784;font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:transform .28s,background .15s}
+.faq-item.open .faq-plus{transform:rotate(45deg);background:#FF2E9A;color:#fff}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .32s cubic-bezier(.4,0,.2,1)}
+.faq-a-in{padding:0 20px 18px;font-size:14.5px;line-height:1.7;color:#4A2A3A}
+.faq-a-in a{font-weight:600}
+
+/* ---------- Info tiles (livraison) ---------- */
+.info-tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:16px 0 6px}
+.info-tile{background:#FFF7EE;border:1px solid #F1DAE7;border-radius:18px;padding:18px}
+.info-tile .em{font-size:26px;line-height:1}
+.info-tile .tt{font-weight:800;font-size:15.5px;margin:8px 0 4px}
+.info-tile .dd{font-size:13.5px;color:#7A5468;line-height:1.55}
+.info-tile .dd strong{color:#E01784}
+.info-note{background:linear-gradient(135deg,#FFF1F8,#FDE9F3);border:1px dashed #F3C6DE;border-radius:16px;padding:16px 18px;font-size:14.5px;color:#4A2A3A;line-height:1.6;margin-top:8px}
+.info-note strong{color:#E01784}
+
+/* ---------- Contact ---------- */
+.info-contact-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;align-items:start}
+.info-field{margin-bottom:14px}
+.info-field label{display:block;font-weight:700;font-size:13.5px;color:#2A0A1C;margin-bottom:6px}
+.info-field input,.info-field textarea{width:100%;border:1.5px solid #F3C6DE;border-radius:13px;padding:12px 15px;font-size:14.5px;font-family:inherit;color:#2A0A1C;background:#FFFDFB;outline:none;transition:border-color .15s,box-shadow .15s}
+.info-field input:focus,.info-field textarea:focus{border-color:#FF2E9A;box-shadow:0 0 0 3px rgba(255,46,154,.14)}
+.info-field textarea{resize:vertical;min-height:120px}
+.info-submit{width:100%;background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;font-weight:700;font-size:16px;padding:15px;border-radius:15px;box-shadow:0 12px 26px rgba(255,46,154,.3);transition:transform .15s}
+.info-submit:hover{transform:translateY(-2px)}
+.info-ok{display:none;align-items:center;gap:10px;background:#EEFBF4;border:1px solid #B6E8CE;color:#1B8A57;font-weight:700;font-size:15px;padding:14px 16px;border-radius:14px;margin-top:14px}
+.info-ok.show{display:flex}
+.info-reach{background:#FFF7EE;border:1px solid #F1DAE7;border-radius:20px;padding:22px}
+.info-reach .rt{font-weight:800;font-size:16px;margin-bottom:14px}
+.info-reach a.line,.info-reach div.line{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid #F1DAE7;font-size:14px;color:#4A2A3A}
+.info-reach a.line:last-child,.info-reach div.line:last-child{border-bottom:none}
+.info-reach a.line:hover{color:#E01784}
+.info-reach .line .em{font-size:20px;flex:none}
+.info-reach .line b{display:block;color:#2A0A1C;font-size:13px}
+.info-reach .line small{color:#8A6076;font-size:12.5px}
+
+/* ---------- Boutiques list ---------- */
+.info-shops{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:8px}
+.info-shop{background:#FFF7EE;border:1px solid #F1DAE7;border-radius:18px;padding:18px}
+.info-shop .city{font-weight:800;font-size:16px}
+.info-shop .addr{font-size:13.5px;color:#7A5468;margin-top:4px;line-height:1.5}
+.info-shop .tag{display:inline-block;margin-top:10px;font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px}
+.info-shop .tag.open{background:#EEFBF4;color:#1B8A57}
+.info-shop .tag.soon{background:#FFF4D6;color:#B8860B}
+
+/* ---------- Franchise steps / stats ---------- */
+.info-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0}
+.info-stat{background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;border-radius:18px;padding:18px;text-align:center;box-shadow:0 12px 26px rgba(255,46,154,.22)}
+.info-stat .n{font-weight:800;font-size:28px;letter-spacing:-1px}
+.info-stat .l{font-size:12.5px;opacity:.92;margin-top:2px}
+.info-steps{counter-reset:step;margin:6px 0 14px;padding:0;list-style:none}
+.info-steps li{position:relative;padding:4px 0 16px 46px;font-size:14.5px;line-height:1.6;color:#4A2A3A}
+.info-steps li::before{counter-increment:step;content:counter(step);position:absolute;left:0;top:0;width:32px;height:32px;border-radius:50%;background:#FFEBF5;color:#E01784;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.info-steps li strong{display:block;color:#2A0A1C;margin-bottom:2px;font-size:15px}
+.info-cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+.info-cta-row a{display:inline-block;font-weight:700;font-size:14.5px;padding:13px 22px;border-radius:14px}
+.info-cta-row a.primary{background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;box-shadow:0 10px 22px rgba(255,46,154,.28)}
+.info-cta-row a.ghost{background:#FFF1F8;color:#E01784;border:1.5px solid #F3C6DE}
+
+/* ---------- Responsive ---------- */
+@media (max-width:920px){
+  .info-contact-grid{grid-template-columns:1fr}
+}
+@media (max-width:860px){
+  .info-hero h1{font-size:30px}
+  .info-hero-decor{width:100px!important}
+  .info-wrap{grid-template-columns:1fr;padding:18px 15px 40px;gap:16px}
+  .info-aside{position:static;top:auto}
+  .info-nav{display:flex;gap:8px;overflow-x:auto;padding:10px;scrollbar-width:none}
+  .info-nav::-webkit-scrollbar{display:none}
+  .info-navlink{flex:none;white-space:nowrap;padding:10px 14px}
+  .info-navlink .ic{font-size:16px}
+  .info-help{display:none}
+  .info-card{padding:22px 20px;border-radius:20px}
+  .info-card h2{font-size:21px}
+  .info-tiles,.info-shops{grid-template-columns:1fr}
+  .info-stats{grid-template-columns:repeat(3,1fr);gap:8px}
+  .info-stat .n{font-size:22px}
+}
+@media (max-width:420px){
+  .info-stats{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body data-nav="">
+
+<div class="info-hero">
+  <div class="info-hero-in">
+    <div class="mc-crumb" style="margin-bottom:8px"><a href="index.html">Accueil</a> › <span id="info-crumb" style="color:#2A0A1C;font-weight:600">Infos &amp; aide</span></div>
+    <h1 id="info-title">Infos &amp; aide 💬</h1>
+    <p id="info-sub">Une question sur ta commande, la livraison ou nos boutiques ? Tout est là.</p>
+  </div>
+  <img src="assets/hero/nerds.png" alt="" aria-hidden="true" loading="lazy" decoding="async" class="info-hero-decor" style="width:150px;right:3%;top:-4px;--r:8deg">
+  <img src="assets/hero/reeses.png" alt="" aria-hidden="true" loading="lazy" decoding="async" class="info-hero-decor" style="width:130px;right:15%;top:44px;--r:-9deg">
+</div>
+
+<div class="info-band">
+  <div class="info-wrap">
+
+    <aside class="info-aside">
+      <nav class="info-nav" id="info-nav" aria-label="Sections d'aide">
+        <a class="info-navlink" data-sec="faq"       href="infos.html?p=faq"><span class="ic">❓</span> FAQ</a>
+        <a class="info-navlink" data-sec="livraison" href="infos.html?p=livraison"><span class="ic">🚚</span> Livraison &amp; retours</a>
+        <a class="info-navlink" data-sec="contact"   href="infos.html?p=contact"><span class="ic">✉️</span> Nous contacter</a>
+        <a class="info-navlink" data-sec="about"     href="infos.html?p=about"><span class="ic">🍬</span> Qui sommes-nous ?</a>
+        <a class="info-navlink" data-sec="boutiques" href="infos.html?p=boutiques"><span class="ic">🏪</span> Nos boutiques</a>
+        <a class="info-navlink" data-sec="franchise" href="infos.html?p=franchise"><span class="ic">🤝</span> Devenir franchisé</a>
+      </nav>
+      <div class="info-help">
+        <div class="t">Besoin d'un coup de main ? 🍭</div>
+        <p>Notre équipe répond du lundi au samedi, 9h–19h. On adore parler snacks.</p>
+        <a class="btn" href="infos.html?p=contact" data-sec="contact">Nous écrire →</a>
+      </div>
+    </aside>
+
+    <div class="info-main">
+
+      <!-- ============ FAQ ============ -->
+      <section class="info-sec" data-sec="faq" aria-labelledby="faq-h">
+        <div class="info-card">
+          <span class="info-eyebrow">Foire aux questions</span>
+          <h2 id="faq-h">Les questions qu'on nous pose le plus ❓</h2>
+          <p class="lead">Délais, paiement, fraîcheur, retours… on t'a préparé les réponses. Il en manque une ? <a class="inl" href="infos.html?p=contact" data-sec="contact">Écris-nous</a>.</p>
+
+          <div class="faq" id="faq">
+            <div class="faq-item">
+              <button class="faq-q" type="button">Quels sont les délais de livraison ? <span class="faq-plus">+</span></button>
+              <div class="faq-a"><div class="faq-a-in">On expédie sous <strong>24 à 48h ouvrées</strong> après ta commande. Comptez ensuite <strong>2 à 4 jours ouvrés</strong> en point relais et <strong>2 à 3 jours</strong> à domicile en France métropolitaine. Un email de suivi t'est envoyé dès que ton colis part de notre atelier lyonnais.</div></div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-q" type="button">Quels moyens de paiement acceptez-vous ? <span class="faq-plus">+</span></button>
+              <div class="faq-a"><div class="faq-a-in">Carte bancaire (Visa, Mastercard), <strong>Apple Pay</strong>, <strong>Google Pay</strong> et <strong>PayPal</strong>. Le paiement est 100% sécurisé et chiffré — on ne stocke jamais tes coordonnées bancaires.</div></div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-q" type="button">Vos produits sont-ils frais et bien conservés ? <span class="faq-plus">+</span></button>
+              <div class="faq-a"><div class="faq-a-in">Oui ! On tourne notre stock en permanence et on ne référence que des produits avec une <strong>DLC confortable</strong>. Chaque commande est préparée à la main, calée avec soin, et les boissons voyagent dans un emballage renforcé pour arriver nickel.</div></div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-q" type="button">Comment utiliser un code promo ? <span class="faq-plus">+</span></button>
+              <div class="faq-a"><div class="faq-a-in">Ajoute tes snacks au panier, puis saisis ton code (par ex. <strong>Candysummer26</strong>) dans le champ « Code promo » du panier ou à l'étape paiement. La réduction s'applique aussitôt. Un seul code par commande, non cumulable avec les Box et l'Anti-Gaspi.</div></div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-q" type="button">Puis-je retourner ou échanger un produit ? <span class="faq-plus">+</span></button>
+              <div class="faq-a"><div class="faq-a-in">Pour des raisons d'hygiène alimentaire, les produits <strong>ouverts ou consommés</strong> ne sont ni repris ni échangés. En revanche, si un article est <strong>abîmé, manquant ou périmé</strong> à l'arrivée, écris-nous sous 48h avec une photo : on te rembourse ou on te réexpédie, sans discuter.</div></div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-q" type="button">Que contient une Mystery Box ? <span class="faq-plus">+</span></button>
+              <div class="faq-a"><div class="faq-a-in">Une sélection <strong>surprise</strong> de nos snacks et boissons viraux, avec une valeur toujours <strong>supérieure au prix payé</strong>. La taille (S, M, XXL) détermine le nombre de produits. Tu peux nous signaler une allergie en commentaire de commande, on l'adapte.</div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ LIVRAISON ============ -->
+      <section class="info-sec" data-sec="livraison" aria-labelledby="liv-h">
+        <div class="info-card">
+          <span class="info-eyebrow">Livraison &amp; retours</span>
+          <h2 id="liv-h">Ta commande, livrée comme il faut 🚚</h2>
+          <p class="lead">On expédie partout en France métropolitaine, avec le choix entre point relais et livraison à domicile.</p>
+
+          <div class="info-tiles">
+            <div class="info-tile">
+              <div class="em">📦</div>
+              <div class="tt">Point relais</div>
+              <div class="dd">Dès <strong>3,90 €</strong> · 2 à 4 jours ouvrés · plus de 15 000 points en France.</div>
+            </div>
+            <div class="info-tile">
+              <div class="em">🏠</div>
+              <div class="tt">À domicile</div>
+              <div class="dd">Dès <strong>5,90 €</strong> · 2 à 3 jours ouvrés · suivi en temps réel.</div>
+            </div>
+            <div class="info-tile">
+              <div class="em">⚡</div>
+              <div class="tt">Préparation express</div>
+              <div class="dd">Commande avant <strong>14h</strong> = expédiée le jour même (jours ouvrés).</div>
+            </div>
+            <div class="info-tile">
+              <div class="em">🎉</div>
+              <div class="tt">Livraison offerte</div>
+              <div class="dd">En point relais <strong>dès 39 €</strong> d'achat, automatiquement.</div>
+            </div>
+          </div>
+
+          <div class="info-note">🎁 <strong>Astuce :</strong> il te manque quelques euros pour débloquer la livraison offerte ? La barre de progression dans ton panier te dit exactement combien ajouter.</div>
+
+          <h3>Suivi de commande</h3>
+          <p>Dès l'expédition, tu reçois un email avec ton numéro de suivi. Tu peux aussi le retrouver à tout moment depuis ton <a class="inl" href="compte.html">compte</a>.</p>
+
+          <h3>Retours &amp; remboursements</h3>
+          <ul>
+            <li>Produit <strong>abîmé, manquant ou périmé</strong> à réception : signale-le sous 48h avec une photo, on te rembourse ou te réexpédie.</li>
+            <li>Pour des raisons d'hygiène, les produits alimentaires <strong>ouverts</strong> ne sont pas repris.</li>
+            <li>Colis retourné faute de retrait en point relais : on te recontacte pour un renvoi (frais de réexpédition à prévoir).</li>
+          </ul>
+          <p>Un souci ? <a class="inl" href="infos.html?p=contact" data-sec="contact">Contacte-nous</a>, on règle ça vite et bien.</p>
+        </div>
+      </section>
+
+      <!-- ============ CONTACT ============ -->
+      <section class="info-sec" data-sec="contact" aria-labelledby="ct-h">
+        <div class="info-card">
+          <span class="info-eyebrow">Nous contacter</span>
+          <h2 id="ct-h">On adore te lire ✉️</h2>
+          <p class="lead">Une question, une idée de produit, un souci de commande ? Écris-nous, on te répond en un rien de temps.</p>
+
+          <div class="info-contact-grid">
+            <form id="contact-form" novalidate>
+              <div class="info-field">
+                <label for="cf-name">Ton prénom</label>
+                <input id="cf-name" name="name" type="text" autocomplete="name" placeholder="Camille" required>
+              </div>
+              <div class="info-field">
+                <label for="cf-email">Ton email</label>
+                <input id="cf-email" name="email" type="email" autocomplete="email" placeholder="camille@email.com" required>
+              </div>
+              <div class="info-field">
+                <label for="cf-msg">Ton message</label>
+                <textarea id="cf-msg" name="message" placeholder="Dis-nous tout…" required></textarea>
+              </div>
+              <button class="info-submit" type="submit">Envoyer mon message →</button>
+              <div class="info-ok" id="contact-ok" role="status">✅ Merci, on te répond vite !</div>
+            </form>
+
+            <div class="info-reach">
+              <div class="rt">Autres moyens de nous joindre</div>
+              <a class="line" href="mailto:hello@mycandys.fr"><span class="em">📧</span><span><b>hello@mycandys.fr</b><small>Réponse sous 24h ouvrées</small></span></a>
+              <a class="line" href="https://www.instagram.com/my.candys.lyon" target="_blank" rel="noopener"><span class="em">📸</span><span><b>@my.candys.lyon</b><small>Instagram — coulisses &amp; concours</small></span></a>
+              <a class="line" href="https://www.tiktok.com/@my.candys.lyon" target="_blank" rel="noopener"><span class="em">🎵</span><span><b>@my.candys.lyon</b><small>TikTok — nos dernières trouvailles</small></span></a>
+              <div class="line"><span class="em">📍</span><span><b>Lyon, France</b><small>Notre atelier &amp; notre première boutique</small></span></div>
+              <div class="line"><span class="em">🕘</span><span><b>Lun – Sam · 9h – 19h</b><small>Service client francophone</small></span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ ABOUT ============ -->
+      <section class="info-sec" data-sec="about" aria-labelledby="ab-h">
+        <div class="info-card">
+          <span class="info-eyebrow">Qui sommes-nous ?</span>
+          <h2 id="ab-h">My Candy's, c'est né à Lyon 🍬</h2>
+          <p class="lead">On est une bande de gourmands convaincus qu'un bon snack, ça rend la journée meilleure.</p>
+          <p>Tout a commencé en <strong>2023</strong>, dans un petit local du 6e arrondissement de Lyon. On rapportait des valises entières de Prime, de Takis et de bonbons introuvables en France, et nos amis nous en redemandaient sans arrêt. On s'est dit qu'il fallait partager ça avec tout le monde — et My Candy's était né.</p>
+          <p>Aujourd'hui, on sillonne le monde (physiquement et sur TikTok 👀) pour dénicher les snacks les plus fous : sodas américains, chips coréennes ultra-épicées, chocolats de Dubaï, éditions limitées japonaises… Ce que tu vois devenir viral, on te le déniche et on te le livre.</p>
+          <h3>Ce à quoi on tient</h3>
+          <ul>
+            <li><strong>La fraîcheur d'abord :</strong> stock qui tourne vite, DLC surveillées, colis calés avec soin.</li>
+            <li><strong>Des vrais prix :</strong> on chasse les meilleures sources pour t'éviter les tarifs délirants.</li>
+            <li><strong>La proximité :</strong> une équipe lyonnaise qui te répond comme un pote, pas comme un robot.</li>
+            <li><strong>Moins de gaspi :</strong> notre rayon Anti-Gaspi sauve les produits à DLC courte à prix mini.</li>
+          </ul>
+          <p>Merci de faire partie de l'aventure. On a encore plein de trouvailles pour toi. 💕</p>
+        </div>
+      </section>
+
+      <!-- ============ BOUTIQUES ============ -->
+      <section class="info-sec" data-sec="boutiques" aria-labelledby="bt-h">
+        <div class="info-card">
+          <span class="info-eyebrow">Nos boutiques</span>
+          <h2 id="bt-h">Retrouve-nous en vrai 🏪</h2>
+          <p class="lead">Rien ne vaut de choisir ses snacks les yeux dans les rayons. Voici où nous trouver — et ça s'agrandit vite.</p>
+
+          <div class="info-shops">
+            <div class="info-shop">
+              <div class="city">Lyon 6e — La Maison mère</div>
+              <div class="addr">42 rue Vitton, 69006 Lyon<br>Lun–Sam · 10h–19h30</div>
+              <span class="tag open">Ouverte</span>
+            </div>
+            <div class="info-shop">
+              <div class="city">Lyon 2e — Presqu'île</div>
+              <div class="addr">18 rue de la République, 69002 Lyon<br>Lun–Sam · 10h–20h</div>
+              <span class="tag open">Ouverte</span>
+            </div>
+            <div class="info-shop">
+              <div class="city">Villeurbanne</div>
+              <div class="addr">Centre commercial Gratte-Ciel<br>Lun–Sam · 10h–20h</div>
+              <span class="tag open">Ouverte</span>
+            </div>
+            <div class="info-shop">
+              <div class="city">Paris 11e</div>
+              <div class="addr">Rue Oberkampf<br>Ouverture prévue automne 2026</div>
+              <span class="tag soon">Bientôt</span>
+            </div>
+            <div class="info-shop">
+              <div class="city">Marseille</div>
+              <div class="addr">Vieux-Port<br>Ouverture prévue fin 2026</div>
+              <span class="tag soon">Bientôt</span>
+            </div>
+            <div class="info-shop">
+              <div class="city">Ta ville ?</div>
+              <div class="addr">On s'installe partout où la communauté grandit. Franchisés bienvenus !</div>
+              <span class="tag soon">À venir</span>
+            </div>
+          </div>
+
+          <div class="info-note" style="margin-top:16px">🛒 Pas de boutique près de chez toi ? Pas de panique — la <a class="inl" href="boutique.html">boutique en ligne</a> livre partout en France.</div>
+        </div>
+      </section>
+
+      <!-- ============ FRANCHISE ============ -->
+      <section class="info-sec" data-sec="franchise" aria-labelledby="fr-h">
+        <div class="info-card">
+          <span class="info-eyebrow">Devenir franchisé</span>
+          <h2 id="fr-h">Ouvre ta boutique My Candy's 🤝</h2>
+          <p class="lead">Tu veux entreprendre dans un concept qui cartonne auprès des jeunes ? Rejoins le réseau My Candy's.</p>
+
+          <div class="info-stats">
+            <div class="info-stat"><div class="n">3</div><div class="l">boutiques ouvertes</div></div>
+            <div class="info-stat"><div class="n">+40k</div><div class="l">clients servis</div></div>
+            <div class="info-stat"><div class="n">6 mois</div><div class="l">pour ouvrir</div></div>
+          </div>
+
+          <p>On te transmet tout ce qui fait le succès de My Candy's : notre <strong>image de marque</strong>, nos <strong>fournisseurs</strong> du monde entier, notre savoir-faire logistique et notre communauté déjà fan. Toi, tu apportes l'énergie et l'amour du contact.</p>
+
+          <h3>Comment ça marche ?</h3>
+          <ol class="info-steps">
+            <li><strong>On fait connaissance</strong> Tu nous parles de toi, de ta ville et de ton projet via le formulaire de contact.</li>
+            <li><strong>On étudie ton local</strong> Emplacement, surface, potentiel : on t'accompagne pour valider le spot idéal.</li>
+            <li><strong>On te forme</strong> Produits, merchandising, réseaux sociaux, gestion des stocks — une semaine d'immersion à Lyon.</li>
+            <li><strong>Tu ouvres 🎉</strong> On t'épaule pour le lancement et on continue de te soutenir au quotidien.</li>
+          </ol>
+
+          <h3>Le profil qu'on adore</h3>
+          <ul>
+            <li>Passionné(e) de snacking, de culture pop et de TikTok.</li>
+            <li>À l'aise avec le contact client et les réseaux sociaux.</li>
+            <li>Apport personnel indicatif à partir de <strong>25 000 €</strong>.</li>
+          </ul>
+
+          <div class="info-cta-row">
+            <a class="primary" href="infos.html?p=contact" data-sec="contact">Déposer ma candidature →</a>
+            <a class="ghost" href="mailto:franchise@mycandys.fr">franchise@mycandys.fr</a>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<script src="cart-store.js"></script>
+<script src="products.js"></script>
+<script src="chrome.js"></script>
+<script src="app.js"></script>
+<script>
+(function () {
+  'use strict';
+  var SECTIONS = ['faq', 'livraison', 'contact', 'about', 'boutiques', 'franchise'];
+  var META = {
+    faq:       ['Foire aux questions ❓', 'FAQ', 'Délais, paiement, fraîcheur, retours… on répond à tout.'],
+    livraison: ['Livraison & retours 🚚', 'Livraison & retours', 'Délais, points relais, livraison offerte dès 39 € et retours.'],
+    contact:   ['Nous contacter ✉️', 'Nous contacter', 'Une question ? On te répond en un rien de temps.'],
+    about:     ['Qui sommes-nous ? 🍬', 'Qui sommes-nous ?', "L'histoire de My Candy's, née à Lyon."],
+    boutiques: ['Nos boutiques 🏪', 'Nos boutiques', "Retrouve-nous en vrai, un peu partout en France."],
+    franchise: ['Devenir franchisé 🤝', 'Devenir franchisé', 'Ouvre ta boutique My Candy\'s et rejoins le réseau.']
+  };
+
+  var titleEl = document.getElementById('info-title');
+  var subEl   = document.getElementById('info-sub');
+  var crumbEl = document.getElementById('info-crumb');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('.info-navlink'));
+  var secEls   = Array.prototype.slice.call(document.querySelectorAll('.info-sec'));
+
+  function currentFromURL() {
+    var p = new URLSearchParams(location.search).get('p');
+    return (p && SECTIONS.indexOf(p) >= 0) ? p : 'faq';
+  }
+
+  function show(sec, push) {
+    if (SECTIONS.indexOf(sec) < 0) sec = 'faq';
+    secEls.forEach(function (s) { s.classList.toggle('is-active', s.getAttribute('data-sec') === sec); });
+    document.querySelectorAll('.info-navlink[data-sec]').forEach(function (a) {
+      a.classList.toggle('is-active', a.getAttribute('data-sec') === sec);
+    });
+    // Only the main nav links get aria-current
+    navLinks.forEach(function (a) {
+      if (a.getAttribute('data-sec') === sec) a.setAttribute('aria-current', 'page');
+      else a.removeAttribute('aria-current');
+    });
+    var m = META[sec];
+    if (m) { titleEl.textContent = m[0]; crumbEl.textContent = m[1]; subEl.textContent = m[2]; }
+    document.title = (m ? m[1] : 'Infos') + " — My Candy's";
+    // On mobile the nav is a horizontal scroller: bring the active tab into view.
+    var activeLink = document.querySelector('.info-navlink.is-active');
+    if (activeLink && activeLink.scrollIntoView) {
+      try { activeLink.scrollIntoView({ inline: 'center', block: 'nearest' }); } catch (e) {}
+    }
+    if (push) {
+      try { history.pushState({ sec: sec }, '', 'infos.html?p=' + sec); } catch (e) {}
+    }
+    try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); }
+  }
+
+  // Delegate clicks on any [data-sec] link (sidebar nav, help card, in-content links)
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[data-sec]');
+    if (!a) return;
+    var sec = a.getAttribute('data-sec');
+    if (SECTIONS.indexOf(sec) < 0) return;
+    e.preventDefault();
+    show(sec, true);
+  });
+
+  window.addEventListener('popstate', function () { show(currentFromURL(), false); });
+
+  // ----- FAQ accordion -----
+  var faq = document.getElementById('faq');
+  if (faq) {
+    faq.addEventListener('click', function (e) {
+      var q = e.target.closest('.faq-q');
+      if (!q) return;
+      var item = q.parentNode;
+      var ans = item.querySelector('.faq-a');
+      var open = item.classList.toggle('open');
+      ans.style.maxHeight = open ? (ans.scrollHeight + 'px') : '0';
+    });
+  }
+
+  // ----- Contact form (preventDefault, NO network) -----
+  var form = document.getElementById('contact-form');
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!form.checkValidity()) { form.reportValidity(); return; }
+      var ok = document.getElementById('contact-ok');
+      ok.classList.add('show');
+      form.reset();
+      if (window.MCui && MCui.toast) MCui.toast('Message envoyé — on te répond vite !');
+      setTimeout(function () { ok.classList.remove('show'); }, 5000);
+    });
+  }
+
+  // Initial render
+  show(currentFromURL(), false);
+})();
+</script>
+</body>
+</html>

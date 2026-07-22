@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mystery Box 🎁 — My Candy's</title>
+<meta name="description" content="Nos Mystery Box de snacks viraux : un mélange surprise de bonbons US, sodas TikTok et pépites introuvables, toujours d'une valeur supérieure au prix. Parfait à unboxer sur TikTok.">
+<meta name="theme-color" content="#FF2E9A">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+/* ---------- Hero ---------- */
+.mb-hero{background:linear-gradient(135deg,#FF2E9A 0%,#B0146A 45%,#8B3FD1 100%);color:#fff;position:relative;overflow:hidden}
+.mb-hero::before{content:"";position:absolute;width:320px;height:320px;border-radius:50%;background:rgba(34,211,228,.28);top:-120px;right:12%;filter:blur(18px);pointer-events:none}
+.mb-hero::after{content:"";position:absolute;width:220px;height:220px;border-radius:50%;background:rgba(255,210,63,.22);bottom:-80px;left:6%;filter:blur(14px);pointer-events:none}
+.mb-hero-in{max-width:1220px;margin:0 auto;padding:34px 34px 60px;display:flex;gap:44px;align-items:center;flex-wrap:wrap;position:relative;z-index:1}
+.mb-hero-txt{flex:1;min-width:300px}
+.mb-crumb{font-size:13px;color:rgba(255,255,255,.82);margin-bottom:12px}
+.mb-crumb a{color:rgba(255,255,255,.82)}
+.mb-crumb a:hover{color:#fff}
+.mb-tagline{display:inline-block;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.32);color:#fff;font-weight:700;font-size:13px;letter-spacing:.3px;padding:7px 15px;border-radius:999px}
+.mb-hero h1{font-size:48px;letter-spacing:-1.2px;margin:14px 0 0;line-height:1.03}
+.mb-hero p{font-size:17px;line-height:1.55;margin:14px 0 0;max-width:520px;color:rgba(255,255,255,.95)}
+.mb-hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
+.mb-btn{display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:15.5px;padding:14px 26px;border-radius:14px;transition:transform .15s,filter .15s}
+.mb-btn-solid{background:#fff;color:#E01784;box-shadow:0 12px 26px rgba(0,0,0,.18)}
+.mb-btn-solid:hover{transform:translateY(-2px);color:#E01784}
+.mb-btn-ghost{background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.55);color:#fff}
+.mb-btn-ghost:hover{background:rgba(255,255,255,.2);color:#fff}
+.mb-hero-gift{flex:none;width:290px;max-width:100%}
+.mb-giftbox{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.4);border-radius:30px;height:270px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#fff;animation:bob 6s ease-in-out infinite;box-shadow:0 20px 44px rgba(42,10,28,.28)}
+.mb-giftbox span{font-size:118px;line-height:1;filter:drop-shadow(0 10px 12px rgba(0,0,0,.25))}
+.mb-giftbox small{font-family:ui-monospace,Menlo,monospace;font-size:11px;opacity:.85}
+.mb-wave{position:relative;z-index:2;line-height:0;margin-top:-1px}
+.mb-wave svg{display:block;width:100%;height:96px}
+
+/* ---------- Bandeau confiance ---------- */
+.mb-trust{max-width:1220px;margin:-30px auto 0;padding:0 22px;position:relative;z-index:3;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.mb-trust-item{background:#fff;border-radius:16px;padding:16px 18px;display:flex;align-items:center;gap:13px;box-shadow:0 10px 26px rgba(122,14,74,.12)}
+.mb-trust-item span{font-size:28px;flex:none}
+.mb-trust-item b{font-weight:700;font-size:15px;display:block}
+.mb-trust-item small{font-size:12.5px;color:#8A6076}
+
+/* ---------- Sections ---------- */
+.mb-sec{max-width:1220px;margin:0 auto;padding:44px 22px 6px}
+.mb-k{font-weight:700;font-size:26px;color:#E01784;transform:rotate(-2deg);display:inline-block}
+.mb-h2{font-weight:800;font-size:32px;letter-spacing:-.5px;color:#2A0A1C;margin:4px 0 0}
+.mb-sub{font-size:15.5px;color:#7A5468;margin:8px 0 0;max-width:620px}
+.mb-center{text-align:center}
+.mb-center .mb-sub{margin-left:auto;margin-right:auto}
+
+/* ---------- Comment ça marche ---------- */
+.mb-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:26px}
+.mb-step{background:#fff;border-radius:22px;padding:26px 20px 24px;text-align:center;box-shadow:0 10px 24px rgba(122,14,74,.1);position:relative;overflow:hidden}
+.mb-step-n{position:absolute;top:8px;right:16px;font-weight:800;font-size:40px;color:#FCE0EE;line-height:1}
+.mb-step-ico{font-size:46px;line-height:1}
+.mb-step b{display:block;font-weight:700;font-size:17px;margin:14px 0 6px}
+.mb-step p{font-size:13.5px;line-height:1.5;color:#7A5468;margin:0}
+
+/* ---------- Cartes box ---------- */
+.mb-boxes{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:26px;align-items:stretch}
+.mb-card{background:#FFF7EE;border:1px solid #F1DAE7;border-radius:26px;overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:0 14px 34px rgba(122,14,74,.13);transition:transform .2s,box-shadow .2s}
+.mb-card:hover{transform:translateY(-5px);box-shadow:0 22px 46px rgba(122,14,74,.2)}
+.mb-card.pop{border:2px solid #FF2E9A;box-shadow:0 20px 44px rgba(255,46,154,.26)}
+.mb-card-img{position:relative;height:186px}
+.mb-card-emoji{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:82px;filter:drop-shadow(0 10px 12px rgba(0,0,0,.16))}
+.mb-ribbon{position:absolute;top:14px;left:0;background:#2A0A1C;color:#fff;font-weight:800;font-size:11.5px;letter-spacing:.5px;padding:6px 14px;border-radius:0 999px 999px 0;box-shadow:0 6px 14px rgba(0,0,0,.2);z-index:2}
+.mb-card.pop .mb-ribbon{background:linear-gradient(135deg,#FF2E9A,#E01784)}
+.mb-pricepill{position:absolute;top:14px;right:14px;background:#FF2E9A;color:#fff;font-weight:800;font-size:16px;padding:7px 15px;border-radius:999px;transform:rotate(-4deg);box-shadow:0 6px 14px rgba(255,46,154,.45);z-index:2}
+.mb-card-body{padding:20px 22px 24px;display:flex;flex-direction:column;flex:1}
+.mb-card-name{font-weight:800;font-size:22px;letter-spacing:-.4px}
+.mb-card-desc{font-size:13.5px;color:#7A5468;margin-top:4px;min-height:38px}
+.mb-stars{display:flex;align-items:center;gap:6px;font-size:12.5px;color:#8A6076;margin-top:8px}
+.mb-stars .s{color:#FFB800;letter-spacing:1px}
+.mb-valrow{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-top:14px}
+.mb-price{font-weight:800;font-size:28px;color:#2A0A1C;letter-spacing:-.5px}
+.mb-old{font-size:15px;color:#B7A0AC;text-decoration:line-through}
+.mb-badge{font-weight:800;font-size:12px;color:#fff;background:#E23A2E;padding:3px 9px;border-radius:999px}
+.mb-worth{font-size:12.5px;color:#1B8A57;font-weight:700;margin-top:6px}
+.mb-list{list-style:none;padding:0;margin:16px 0 0;display:flex;flex-direction:column;gap:9px}
+.mb-list li{display:flex;gap:9px;align-items:flex-start;font-size:13.8px;color:#3A2230;line-height:1.4}
+.mb-list li span{flex:none}
+.mb-add{margin-top:20px;width:100%;background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;font-weight:800;font-size:16px;padding:15px;border-radius:15px;box-shadow:0 12px 26px rgba(255,46,154,.32);transition:transform .15s,filter .15s}
+.mb-add:hover{transform:translateY(-2px);filter:brightness(1.04)}
+.mb-cardnote{text-align:center;font-size:12px;color:#8A6076;margin-top:10px}
+
+/* ---------- Avis ---------- */
+.mb-revhead{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:8px}
+.mb-revhead .big{font-weight:800;font-size:46px;color:#2A0A1C;letter-spacing:-1px}
+.mb-revhead .stars{color:#FFD23F;font-size:22px;letter-spacing:2px}
+.mb-revhead small{font-size:13px;color:#8A6076}
+.mb-revgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:26px}
+.mb-rev{background:#fff;border-radius:20px;padding:22px;box-shadow:0 10px 24px rgba(122,14,74,.12)}
+.mb-rev-top{display:flex;align-items:center;gap:6px}
+.mb-rev-top .s{color:#FFB800;letter-spacing:1px}
+.mb-rev-badge{background:#EAFBF3;color:#1B8A57;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px}
+.mb-rev p{font-size:14.5px;line-height:1.55;color:#3A2230;margin:12px 0 14px}
+.mb-rev-who{display:flex;align-items:center;gap:10px}
+.mb-rev-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff}
+.mb-rev-who div{font-size:13px;font-weight:600}
+
+/* ---------- FAQ ---------- */
+.mb-faq{max-width:840px;margin:22px auto 0}
+.mb-q{background:#fff;border:1px solid #F1DAE7;border-radius:16px;padding:2px 4px;margin-bottom:12px;box-shadow:0 6px 16px rgba(122,14,74,.07)}
+.mb-q summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 20px;font-weight:700;font-size:16px;color:#2A0A1C}
+.mb-q summary::-webkit-details-marker{display:none}
+.mb-q summary::after{content:"+";font-size:24px;font-weight:700;color:#E01784;flex:none;transition:transform .2s}
+.mb-q[open] summary::after{content:"–"}
+.mb-q p{margin:0;padding:0 20px 20px;font-size:14.5px;line-height:1.6;color:#5A3B4C}
+
+/* ---------- CTA final ---------- */
+.mb-final{max-width:1220px;margin:8px auto 0;padding:0 22px}
+.mb-final-in{background:linear-gradient(120deg,#FF2E9A,#8B3FD1);border-radius:28px;padding:40px;color:#fff;text-align:center;position:relative;overflow:hidden}
+.mb-final-in h2{font-size:30px;letter-spacing:-.5px;margin:0}
+.mb-final-in p{font-size:15.5px;color:rgba(255,255,255,.94);margin:10px auto 22px;max-width:520px}
+.mb-spacer{height:52px}
+
+@media (max-width:900px){
+  .mb-hero h1{font-size:36px}
+  .mb-hero-in{padding:26px 20px 54px;gap:28px}
+  .mb-hero-gift{width:220px;margin:0 auto}
+  .mb-giftbox{height:210px}.mb-giftbox span{font-size:92px}
+  .mb-trust{grid-template-columns:1fr;margin-top:-24px}
+  .mb-steps{grid-template-columns:repeat(2,1fr)}
+  .mb-boxes{grid-template-columns:1fr;max-width:400px;margin-left:auto;margin-right:auto}
+  .mb-revgrid{grid-template-columns:1fr}
+  .mb-sec{padding:38px 18px 6px}
+  .mb-k{font-size:22px}
+  .mb-h2{font-size:26px}
+  .mb-sub{font-size:14.5px}
+}
+@media (max-width:480px){
+  .mb-steps{grid-template-columns:1fr}
+  .mb-hero h1{font-size:30px}
+  .mb-hero-in{padding:24px 18px 52px}
+  .mb-k{font-size:20px}
+  .mb-h2{font-size:24px}
+}
+</style>
+</head>
+<body data-nav="mystery">
+
+<!-- Hero -->
+<section class="mb-hero">
+  <div class="mb-hero-in">
+    <div class="mb-hero-txt">
+      <div class="mb-crumb"><a href="index.html">Accueil</a> › <span style="color:#fff;font-weight:600">Mystery Box</span></div>
+      <span class="mb-tagline">🎉 Surprise garantie · valeur &gt; prix</span>
+      <h1>Nos Mystery Box 🎉</h1>
+      <p>Un mélange surprise de nos snacks les plus viraux — bonbons US, sodas TikTok et pépites introuvables — pour une valeur toujours supérieure à ce que tu paies. Le colis parfait à unboxer devant la caméra. 📦✨</p>
+      <div class="mb-hero-cta">
+        <a href="#box" class="mb-btn mb-btn-solid">Choisir ma box →</a>
+        <a href="#comment" class="mb-btn mb-btn-ghost">Comment ça marche ?</a>
+      </div>
+    </div>
+    <div class="mb-hero-gift">
+      <div class="mb-giftbox"><span>🎁</span><small>photo · Mystery Box</small></div>
+    </div>
+  </div>
+  <div class="mb-wave"><svg viewBox="0 0 1440 96" preserveAspectRatio="none"><path d="M0,40 C180,90 340,92 520,60 C700,28 820,10 1000,34 C1160,55 1300,80 1440,52 L1440,96 L0,96 Z" fill="#E9F5FB"></path></svg></div>
+</section>
+
+<!-- Bandeau confiance -->
+<div class="mb-trust">
+  <div class="mb-trust-item"><span>💸</span><div><b>Valeur garantie</b><small>Toujours plus que le prix payé</small></div></div>
+  <div class="mb-trust-item"><span>🎲</span><div><b>100% surprise</b><small>Sélection fraîche à chaque box</small></div></div>
+  <div class="mb-trust-item"><span>🚚</span><div><b>Expédié en 24h</b><small>Livraison suivie partout en France</small></div></div>
+</div>
+
+<!-- Comment ça marche -->
+<section id="comment" class="mb-sec">
+  <div class="mb-center">
+    <div class="mb-k">c'est simple comme bonjour</div>
+    <h2 class="mb-h2">Comment ça marche ? 🤔</h2>
+    <p class="mb-sub">De ton clic à ton unboxing, 4 étapes et zéro prise de tête.</p>
+  </div>
+  <div class="mb-steps">
+    <div class="mb-step"><div class="mb-step-n">1</div><div class="mb-step-ico">📏</div><b>Choisis ta taille</b><p>S, M ou XXL selon ta faim (et ton budget).</p></div>
+    <div class="mb-step"><div class="mb-step-n">2</div><div class="mb-step-ico">🍬</div><b>On la remplit</b><p>Notre équipe glisse ses pépites virales du moment.</p></div>
+    <div class="mb-step"><div class="mb-step-n">3</div><div class="mb-step-ico">📦</div><b>Tu unbox</b><p>Reçois ton colis surprise et découvre le contenu.</p></div>
+    <div class="mb-step"><div class="mb-step-n">4</div><div class="mb-step-ico">🎬</div><b>Tu partages</b><p>Film ton unboxing et tague @my.candys.lyon !</p></div>
+  </div>
+</section>
+
+<!-- Les box -->
+<section id="box" class="mb-sec">
+  <div class="mb-center">
+    <div class="mb-k">à toi de jouer</div>
+    <h2 class="mb-h2">Choisis ta Mystery Box 🎁</h2>
+    <p class="mb-sub">Trois formats, une seule promesse : bien plus de plaisir que ce que tu paies. Contenu 100% surprise, zéro doublon garanti.</p>
+  </div>
+  <div class="mb-boxes" id="mb-boxes"></div>
+  <p class="mb-cardnote" style="margin-top:18px">🔒 Paiement sécurisé · Contenu adaptable aux allergies (indique-le en commentaire de commande)</p>
+</section>
+
+<!-- Avis -->
+<section class="mb-sec">
+  <div class="mb-center">
+    <div class="mb-k">+1 700 box unboxées</div>
+    <h2 class="mb-h2">Ils ont ouvert la leur 💌</h2>
+    <div class="mb-revhead">
+      <span class="big">4,8</span>
+      <div style="text-align:left"><div class="stars">★★★★★</div><small>sur 8 400+ avis vérifiés</small></div>
+    </div>
+  </div>
+  <div class="mb-revgrid">
+    <div class="mb-rev">
+      <div class="mb-rev-top"><span class="s">★★★★★</span><span class="mb-rev-badge">✓ Vérifié</span></div>
+      <p>"La Mystery Box M vaut carrément le coup, mon fils a adoré filmer l'unboxing pour TikTok ! Que des produits qu'on trouve nulle part."</p>
+      <div class="mb-rev-who"><div class="mb-rev-av" style="background:#22D3E4">K</div><div>Karim B.</div></div>
+    </div>
+    <div class="mb-rev">
+      <div class="mb-rev-top"><span class="s">★★★★★</span><span class="mb-rev-badge">✓ Vérifié</span></div>
+      <p>"J'ai pris la XXL pour un anniversaire, effet garanti. Il y avait genre 30 trucs différents, on a tout goûté à plusieurs. Trop bien !"</p>
+      <div class="mb-rev-who"><div class="mb-rev-av" style="background:#8B3FD1">M</div><div>Manon T.</div></div>
+    </div>
+    <div class="mb-rev">
+      <div class="mb-rev-top"><span class="s">★★★★★</span><span class="mb-rev-badge">✓ Vérifié</span></div>
+      <p>"Commande reçue en 24h, tout nickel emballé. La petite box S est parfaite pour tester, je vais reprendre la M direct 🔥"</p>
+      <div class="mb-rev-who"><div class="mb-rev-av" style="background:#FF2E9A">L</div><div>Léa M.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="mb-sec">
+  <div class="mb-center">
+    <div class="mb-k">les questions qui reviennent</div>
+    <h2 class="mb-h2">FAQ Mystery Box ❓</h2>
+  </div>
+  <div class="mb-faq">
+    <details class="mb-q"><summary>Qu'est-ce qu'il y a dans une Mystery Box ?</summary><p>Une sélection surprise de nos snacks et boissons les plus viraux : bonbons US, sodas TikTok, chips épicées, chocolats introuvables et parfois des éditions limitées. Le contenu change à chaque box, mais la valeur des produits dépasse toujours le prix payé.</p></details>
+    <details class="mb-q"><summary>Puis-je choisir les produits à l'intérieur ?</summary><p>Non — et c'est justement tout le fun ! 😄 En revanche on garantit un mix équilibré sucré / salé / boisson, aucun doublon dans une même box, et uniquement des produits qui cartonnent en ce moment.</p></details>
+    <details class="mb-q"><summary>Et si je suis allergique à quelque chose ?</summary><p>Nos box peuvent contenir arachides, fruits à coque, lait, gluten et soja. Indique-nous tes allergies en commentaire de commande : on adapte ta box et on remplace les produits concernés.</p></details>
+    <details class="mb-q"><summary>Je peux l'offrir en cadeau ?</summary><p>Carrément, c'est le cadeau parfait 🎁. Ajoute un petit mot au moment du paiement et on le glisse dans le colis. Effet waouh garanti à l'ouverture.</p></details>
+  </div>
+</section>
+
+<!-- CTA final -->
+<div class="mb-final">
+  <div class="mb-final-in">
+    <div style="position:absolute;width:180px;height:180px;border-radius:50%;background:rgba(34,211,228,.28);top:-60px;left:8%;filter:blur(14px)"></div>
+    <div style="position:absolute;width:150px;height:150px;border-radius:50%;background:rgba(255,210,63,.24);bottom:-50px;right:10%;filter:blur(12px)"></div>
+    <div style="position:relative">
+      <h2>Prêt pour la surprise ? 🎉</h2>
+      <p>Choisis ta taille, on s'occupe du reste. -26% sur le site avec le code <b>Candysummer26</b>.</p>
+      <a href="#box" class="mb-btn mb-btn-solid">Voir les Mystery Box →</a>
+    </div>
+  </div>
+</div>
+
+<div class="mb-spacer"></div>
+
+<script src="cart-store.js"></script>
+<script src="products.js"></script>
+<script src="chrome.js"></script>
+<script src="app.js"></script>
+<script>
+(function () {
+  // Métadonnées d'affichage propres à la page (contenu inventé, valeurs bidons)
+  var META = {
+    'box-s': {
+      emoji: '🎀',
+      ribbon: 'DÉCOUVERTE',
+      desc: 'Le format découverte, parfait pour un premier goût du monde entier.',
+      worth: 'Contenu d\'une valeur de ~25 €',
+      items: [
+        ['🍬', '8 produits surprise triés sur le volet'],
+        ['🥤', '1 boisson virale (Prime, Fanta US…)'],
+        ['🌶️', 'Un mix bonbons US &amp; snacks salés'],
+        ['🌟', '1 pépite en édition limitée']
+      ]
+    },
+    'box-m': {
+      emoji: '🎁',
+      ribbon: 'LA PLUS POPULAIRE',
+      pop: true,
+      desc: 'Le best-of ultime : le meilleur rapport surprise / prix pour un unboxing de folie.',
+      worth: 'Contenu d\'une valeur de ~45 €',
+      items: [
+        ['🍭', '15 produits surprise, best of TikTok'],
+        ['🥤', '3 boissons dont 1 énergisante Monster'],
+        ['🍫', 'Bonbons US, chocolats &amp; chips épicées'],
+        ['✨', '2 éditions limitées introuvables'],
+        ['💌', 'Sticker + carte surprise offerts']
+      ]
+    },
+    'box-xxl': {
+      emoji: '📦',
+      ribbon: 'ÉDITION ULTIME',
+      desc: 'Pour les vrais fans (ou à partager à plusieurs). Le colis qui déborde de pépites.',
+      worth: 'Contenu d\'une valeur de ~90 €',
+      items: [
+        ['🌍', '30 produits surprise du monde entier'],
+        ['🥤', '6 boissons virales sélectionnées'],
+        ['🍬', 'Le top des bonbons, snacks &amp; chocolats'],
+        ['🌶️', 'Le Chamoy Pickle Kit complet'],
+        ['🔥', '4 éditions limitées ultra-hype'],
+        ['🎉', 'Goodies My Candy\'s exclusifs']
+      ]
+    }
+  };
+
+  var host = document.getElementById('mb-boxes');
+  if (host && window.MC) {
+    host.innerHTML = MC.BOXES.map(function (p) {
+      var m = META[p.id] || { emoji: '🎁', desc: '', worth: '', items: [], ribbon: '' };
+      var b = MC.badge(p);
+      var items = m.items.map(function (it) {
+        return '<li><span>' + it[0] + '</span><span>' + it[1] + '</span></li>';
+      }).join('');
+      return '' +
+        '<article class="mb-card' + (m.pop ? ' pop' : '') + '">' +
+          '<div class="mb-card-img" style="background:' + p.tint + '">' +
+            '<div class="mc-stripes"></div>' +
+            (m.ribbon ? '<div class="mb-ribbon">' + m.ribbon + '</div>' : '') +
+            '<div class="mb-pricepill">' + MC.money(p.price) + '</div>' +
+            '<div class="mb-card-emoji">' + m.emoji + '</div>' +
+          '</div>' +
+          '<div class="mb-card-body">' +
+            '<div class="mb-card-name">' + MC.esc(p.name) + '</div>' +
+            '<div class="mb-card-desc">' + m.desc + '</div>' +
+            '<div class="mb-stars"><span class="s">★★★★★</span><span>4,8 · (' + p.reviews + ' avis)</span></div>' +
+            '<div class="mb-valrow">' +
+              '<span class="mb-price">' + MC.money(p.price) + '</span>' +
+              (p.old ? '<span class="mb-old">' + MC.money(p.old) + '</span>' : '') +
+              (b ? '<span class="mb-badge" style="background:' + b.bg + ';color:' + b.color + '">' + b.text + '</span>' : '') +
+            '</div>' +
+            (m.worth ? '<div class="mb-worth">🎯 ' + m.worth + '</div>' : '') +
+            '<ul class="mb-list">' + items + '</ul>' +
+            '<button class="mb-add" data-add="' + MC.esc(p.id) + '">Ajouter au panier 🛒</button>' +
+          '</div>' +
+        '</article>';
+    }).join('');
+  }
+})();
+</script>
+</body>
+</html>

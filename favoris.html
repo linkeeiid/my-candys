@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mes favoris — My Candy's</title>
+<meta name="description" content="Ta liste d'envies My Candy's : retrouve tous les bonbons US, sodas viraux et snacks que tu as mis en favoris, et ajoute-les au panier en un clic.">
+<meta name="theme-color" content="#FF2E9A">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+.fav-hero{background:#fff;position:relative;overflow:hidden}
+.fav-hero-in{max-width:1280px;margin:0 auto;padding:30px 34px 26px;position:relative;z-index:1}
+.fav-hero h1{font-size:44px;letter-spacing:-1px;margin:6px 0 0}
+.fav-hero p{font-size:16px;color:#7A5468;margin:8px 0 0;max-width:560px}
+.fav-hero-decor{position:absolute;z-index:0;pointer-events:none;animation:floaty 8s ease-in-out infinite;filter:drop-shadow(0 22px 16px rgba(0,0,0,.22))}
+
+.fav-band{background:#E9F5FB;position:relative}
+.fav-wrap{max-width:1280px;margin:0 auto;padding:26px 34px 48px}
+
+.fav-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:20px}
+.fav-count{font-size:14px;color:#7A5468}
+.fav-count b{color:#2A0A1C;font-weight:800}
+.fav-addall{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;font-weight:700;font-size:14px;padding:11px 20px;border-radius:12px;box-shadow:0 8px 18px rgba(255,46,154,.3);transition:transform .15s}
+.fav-addall:hover{transform:translateY(-2px)}
+
+.fav-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+
+.fav-empty{text-align:center;padding:64px 20px 76px;color:#8A6076}
+.fav-empty .big{font-size:64px;line-height:1;animation:bob 3.2s ease-in-out infinite}
+.fav-empty .t{font-weight:800;font-size:22px;color:#2A0A1C;margin-top:14px;letter-spacing:-.4px}
+.fav-empty .s{font-size:15px;margin-top:8px}
+.fav-empty a{display:inline-flex;align-items:center;gap:8px;margin-top:22px;background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;font-weight:700;font-size:15px;padding:13px 26px;border-radius:14px;box-shadow:0 12px 26px rgba(255,46,154,.3);transition:transform .15s}
+.fav-empty a:hover{transform:translateY(-2px);color:#fff}
+
+@media (max-width:980px){.fav-grid{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:860px){
+  .fav-hero h1{font-size:30px}
+  .fav-hero-in{padding:22px 16px 20px}
+  .fav-wrap{padding:20px 16px 34px}
+  .fav-grid{grid-template-columns:repeat(2,1fr);gap:14px}
+  .fav-hero-decor{width:120px!important}
+}
+</style>
+</head>
+<body data-nav="">
+
+<div class="fav-hero">
+  <div class="fav-hero-in">
+    <div class="mc-crumb" style="margin-bottom:8px"><a href="index.html">Accueil</a> › <span style="color:#2A0A1C;font-weight:600">Mes favoris</span></div>
+    <h1>Mes favoris 🤍</h1>
+    <p>Ta liste d'envies : tous les snacks viraux que tu as flashés, prêts à filer dans ton panier.</p>
+  </div>
+  <img src="assets/hero/nerds.png" alt="" aria-hidden="true" loading="lazy" decoding="async" class="fav-hero-decor" style="width:170px;right:3%;top:8px;--r:8deg">
+  <img src="assets/hero/reeses.png" alt="" aria-hidden="true" loading="lazy" decoding="async" class="fav-hero-decor" style="width:150px;right:16%;top:54px;--r:-9deg">
+</div>
+
+<div class="fav-band">
+  <div class="fav-wrap">
+    <div class="fav-toolbar" id="fav-toolbar" style="display:none">
+      <div class="fav-count"><b id="fav-count">0</b> <span id="fav-count-lbl">article dans ta liste d'envies</span></div>
+      <button class="fav-addall" id="fav-addall">🛒 Tout ajouter au panier</button>
+    </div>
+
+    <div class="fav-grid" id="fav-grid"></div>
+
+    <div class="fav-empty" id="fav-empty" style="display:none">
+      <div class="big">🤍</div>
+      <div class="t">Ta liste d'envies est vide</div>
+      <div class="s">Ajoute tes bonbons, sodas et snacks préférés en cliquant sur le cœur d'un produit.</div>
+      <a href="boutique.html">Explorer la boutique →</a>
+    </div>
+  </div>
+</div>
+
+<script src="cart-store.js"></script>
+<script src="products.js"></script>
+<script src="chrome.js"></script>
+<script src="app.js"></script>
+<script>
+(function () {
+  var grid = document.getElementById('fav-grid');
+  var empty = document.getElementById('fav-empty');
+  var toolbar = document.getElementById('fav-toolbar');
+  var countEl = document.getElementById('fav-count');
+  var lblEl = document.getElementById('fav-count-lbl');
+
+  function products() {
+    // Retrouve le produit complet du catalogue pour chaque favori (ignore les ids inconnus).
+    return MCWish.items().map(function (it) { return MC.byId(it.id); }).filter(Boolean);
+  }
+
+  function render() {
+    var list = products();
+    var n = list.length;
+    if (n === 0) {
+      grid.innerHTML = '';
+      grid.style.display = 'none';
+      toolbar.style.display = 'none';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+    grid.style.display = 'grid';
+    toolbar.style.display = 'flex';
+    countEl.textContent = n;
+    lblEl.textContent = (n > 1 ? 'articles' : 'article') + ' dans ta liste d\'envies';
+    grid.innerHTML = list.map(MC.card).join('');
+  }
+
+  // "Tout ajouter au panier" — ajoute chaque favori (data-add étant géré au clic simple).
+  document.getElementById('fav-addall').addEventListener('click', function () {
+    var list = products();
+    if (!list.length || !window.MCCart) return;
+    list.forEach(function (p) { MCCart.add({ id: p.id, name: p.name, price: p.price, tint: p.tint, old: p.old }); });
+    if (window.MCui) MCui.toast(list.length + (list.length > 1 ? ' articles ajoutés' : ' article ajouté') + ' au panier');
+  });
+
+  // Mise à jour en direct : retirer un favori (cœur d'une carte) le fait disparaître de la grille.
+  window.addEventListener('mc-wish-change', render);
+  window.addEventListener('storage', render);
+
+  render();
+})();
+</script>
+</body>
+</html>

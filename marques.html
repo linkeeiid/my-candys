@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nos marques cultes 🏆 — My Candy's</title>
+<meta name="description" content="Prime, Takis, Monster… toutes les marques de snacks virales du monde entier, réunies chez My Candy's. L'épicerie des bonbons et snacks TikTok, née à Lyon.">
+<meta name="theme-color" content="#FF2E9A">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+.mq-hero{background:#fff;position:relative;overflow:hidden}
+.mq-hero-in{max-width:1240px;margin:0 auto;padding:30px 34px 26px;position:relative;z-index:1}
+.mq-hero h1{font-size:44px;letter-spacing:-1px;margin:0}
+.mq-hero-img{position:absolute;width:150px;right:4%;top:6px;z-index:0;--r:8deg;animation:floaty 8s ease-in-out infinite;filter:drop-shadow(0 22px 16px rgba(0,0,0,.22));pointer-events:none}
+.mq-sec{max-width:1240px;margin:0 auto;padding:26px 34px 20px}
+.mq-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.mq-brand{background:#fff;border:1px solid #F1DAE7;border-radius:22px;padding:22px;display:flex;flex-direction:column;align-items:center;gap:14px;box-shadow:0 8px 20px rgba(122,14,74,.07);transition:transform .18s,box-shadow .18s}
+.mq-brand:hover{transform:translateY(-5px);box-shadow:0 18px 34px rgba(122,14,74,.14)}
+.mq-brand-logo{height:74px;display:flex;align-items:center;justify-content:center}
+.mq-brand-logo img{max-width:120px;max-height:70px;object-fit:contain}
+.mq-brand-name{font-weight:800;font-size:16px}
+.mq-brand-count{font-size:12.5px;color:#8A6076;margin-top:2px}
+.mq-brand-explore{font-size:12.5px;font-weight:700;color:#E01784}
+.mq-cta{max-width:1240px;margin:0 auto;padding:14px 34px 30px}
+.mq-cta-in{background:linear-gradient(120deg,#FF2E9A,#8B3FD1);border-radius:24px;padding:36px;color:#fff;display:flex;gap:26px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.mq-cta-btn{flex:none;background:#fff;color:#E01784;font-weight:800;font-size:16px;padding:15px 26px;border-radius:14px;transition:transform .15s}
+.mq-cta-btn:hover{transform:translateY(-2px)}
+@media (max-width:860px){
+  .mq-hero h1{font-size:32px}
+  .mq-hero-in,.mq-sec,.mq-cta{padding-left:16px;padding-right:16px}
+  .mq-grid{grid-template-columns:repeat(2,1fr);gap:14px}
+  .mq-hero-img{width:110px;right:2%}
+}
+</style>
+</head>
+<body data-nav="marques">
+
+<div class="mq-hero">
+  <div class="mq-hero-in">
+    <div class="mc-crumb" style="margin-bottom:8px"><a href="index.html">Accueil</a> › <span style="color:#2A0A1C;font-weight:600">Top Marques</span></div>
+    <h1>Nos marques cultes 🏆</h1>
+    <p style="font-size:16px;color:#7A5468;margin:8px 0 0;max-width:560px">Prime, Takis, Monster… toutes les marques virales du monde entier, réunies au même endroit. Clique pour explorer.</p>
+  </div>
+  <img class="mq-hero-img" src="assets/hero/reeses.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
+</div>
+
+<section class="mq-sec">
+  <div class="mq-grid" id="mq-grid"></div>
+</section>
+
+<section class="mq-cta">
+  <div class="mq-cta-in">
+    <div style="min-width:260px"><div style="font-weight:800;font-size:26px;letter-spacing:-.4px">Une marque introuvable ? 🔍</div><p style="font-size:15px;opacity:.95;margin:8px 0 0;max-width:460px">Dis-nous laquelle sur TikTok — on déniche les snacks les plus hype pour toi.</p></div>
+    <a href="https://www.tiktok.com/@my.candys.lyon" target="_blank" rel="noopener" class="mq-cta-btn">Nous écrire →</a>
+  </div>
+</section>
+
+<script src="cart-store.js"></script>
+<script src="products.js"></script>
+<script src="chrome.js"></script>
+<script src="app.js"></script>
+<script>
+(function () {
+  var BRANDS = [
+    { name: 'Prime', logo: null, tone: '#1FA9C4', count: 8, b: 'Prime' },
+    { name: 'Takis', logo: 'assets/logos/takis.png', count: 12, b: 'Takis' },
+    { name: 'Monster', logo: 'assets/logos/monster.webp', count: 9, b: 'Monster' },
+    { name: 'Fanta', logo: 'assets/logos/fanta.png', count: 7, b: 'Fanta' },
+    { name: 'Kinder', logo: 'assets/logos/kinder.png', count: 6, b: 'Kinder' },
+    { name: 'Samyang', logo: 'assets/logos/samyang.png', count: 5, b: 'Samyang' },
+    { name: 'Coca-Cola', logo: 'assets/logos/coca.png', count: 6, b: null },
+    { name: 'Pringles', logo: 'assets/logos/pringles.png', count: 5, b: null },
+    { name: 'KitKat', logo: 'assets/logos/kitkat.png', count: 4, b: null },
+    { name: '7 Up', logo: 'assets/logos/7up.png', count: 3, b: null },
+    { name: "Reese's", logo: 'assets/logos/reeses.png', count: 6, b: null },
+    { name: 'Calypso', logo: 'assets/logos/calypso.png', count: 4, b: null },
+    { name: 'Feastables', logo: 'assets/logos/feastables.png', count: 5, b: null },
+    { name: "Jack Link's", logo: 'assets/logos/jacklinks.png', count: 3, b: null }
+  ];
+  document.getElementById('mq-grid').innerHTML = BRANDS.map(function (x) {
+    var href = x.b ? ('boutique.html?b=' + encodeURIComponent(x.b)) : 'boutique.html';
+    var logo = x.logo
+      ? '<img src="' + x.logo + '" alt="' + MC.esc(x.name) + '" loading="lazy" decoding="async">'
+      : '<div style="font-weight:800;font-size:22px;letter-spacing:-.5px;color:' + (x.tone || '#2A0A1C') + '">' + MC.esc(x.name) + '</div>';
+    return '<a class="mq-brand" href="' + href + '">' +
+      '<div class="mq-brand-logo">' + logo + '</div>' +
+      '<div style="text-align:center"><div class="mq-brand-name">' + MC.esc(x.name) + '</div><div class="mq-brand-count">' + x.count + ' produits</div></div>' +
+      '<span class="mq-brand-explore">Explorer →</span></a>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

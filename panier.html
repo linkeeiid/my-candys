@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mon panier — My Candy's</title>
+<meta name="description" content="Ton panier My Candy's : bonbons US, sodas viraux, chips épicées et éditions limitées. Ajuste les quantités, débloque la livraison offerte dès 39 € et passe au paiement.">
+<meta name="theme-color" content="#FF2E9A">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+/* ---------- Page Panier ---------- */
+.pan-band{background:#E9F5FB;min-height:60vh}
+.pan-wrap{max-width:1180px;margin:0 auto;padding:26px 22px 60px}
+.pan-top{margin-bottom:20px}
+.pan-title{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.pan-title h1{font-size:38px;letter-spacing:-1px}
+.pan-title .n{font-size:16px;font-weight:600;color:#7A5468}
+
+/* grille : liste + récap */
+.pan-grid{display:grid;grid-template-columns:1fr 372px;gap:26px;align-items:start}
+
+/* carte liste */
+.pan-lines{background:#fff;border:1px solid #F1DAE7;border-radius:24px;box-shadow:0 10px 24px rgba(122,14,74,.08);overflow:hidden}
+.pan-lines-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 24px;border-bottom:1px solid #F3D9E9}
+.pan-lines-head .t{font-weight:700;font-size:17px}
+.pan-clear{font-size:13px;font-weight:600;color:#B7A0AC;display:inline-flex;align-items:center;gap:6px;transition:color .15s}
+.pan-clear:hover{color:#E01784}
+
+.pan-line{display:flex;gap:18px;align-items:center;padding:20px 24px;border-bottom:1px solid #F6E4EF}
+.pan-line:last-child{border-bottom:none}
+.pan-line-img{flex:none;width:98px;height:98px;border-radius:18px;position:relative;overflow:hidden;display:block;box-shadow:0 6px 14px rgba(122,14,74,.14)}
+.pan-line-body{flex:1;min-width:0}
+.pan-line-brand{font-size:11.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#B06089;margin-bottom:2px}
+.pan-line-name{display:inline-block;font-weight:700;font-size:16.5px;line-height:1.2;color:#2A0A1C}
+.pan-line-name:hover{color:#E01784}
+.pan-line-unit{font-size:13px;color:#8A6076;margin-top:4px}
+.pan-line-old{text-decoration:line-through;color:#C6AFBC;margin-left:6px}
+.pan-line-ctrls{display:flex;align-items:center;gap:16px;margin-top:12px}
+.pan-line-rm{font-size:13px;font-weight:600;color:#B7A0AC;display:inline-flex;align-items:center;gap:5px;transition:color .15s}
+.pan-line-rm:hover{color:#E01784}
+.pan-line-total{flex:none;text-align:right;min-width:92px}
+.pan-line-t{font-weight:800;font-size:19px;color:#2A0A1C}
+.pan-line-each{font-size:11.5px;color:#B06089;margin-top:3px}
+/* stepper un peu plus grand que le drawer */
+.pan-line .mc-step button{width:34px;height:34px;font-size:19px}
+.pan-line .mc-step span{min-width:26px;font-size:15px}
+
+/* barre "reprendre mes achats" sous la liste */
+.pan-backrow{margin-top:16px}
+.pan-back{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:14.5px;color:#E01784;background:#fff;border:2px solid #FFC4E2;padding:11px 20px;border-radius:999px;transition:background .15s}
+.pan-back:hover{background:#FFEBF5}
+
+/* récapitulatif (sticky) */
+.pan-sum{position:sticky;top:150px;background:#fff;border:1px solid #F1DAE7;border-radius:24px;box-shadow:0 14px 30px rgba(122,14,74,.10);padding:24px 24px 26px}
+.pan-sum h2{font-size:20px;margin-bottom:6px}
+.pan-free{margin:16px 0 18px}
+.pan-free .mc-free-msg{font-size:13px;color:#7A5468;margin-bottom:8px}
+.pan-free .mc-free-track{height:9px;background:#F3D9E9;border-radius:999px;overflow:hidden}
+.pan-free .mc-free-bar{height:100%;background:linear-gradient(90deg,#FF2E9A,#22D3E4);border-radius:999px;transition:width .4s;width:0}
+.pan-promo{display:flex;align-items:center;gap:10px;margin:0 0 18px}
+.pan-promo input{flex:1;border:1.5px solid #F3C6DE;border-radius:12px;padding:11px 14px;font-size:14px;font-family:inherit;outline:none;color:#2A0A1C}
+.pan-promo input:focus{border-color:#FF2E9A}
+.pan-promo button{background:#FFEBF5;color:#E01784;font-weight:700;font-size:14px;padding:11px 16px;border-radius:12px}
+.pan-sum-row{display:flex;justify-content:space-between;align-items:baseline;font-size:14.5px;color:#4A2A3A;padding:7px 0}
+.pan-sum-row span:last-child{font-weight:600;color:#2A0A1C}
+.pan-sum-row.free span:last-child{color:#1B8A57;font-weight:700}
+.pan-sum-div{height:1px;background:#F3D9E9;margin:12px 0}
+.pan-sum-total{display:flex;justify-content:space-between;align-items:baseline;margin:4px 0 18px}
+.pan-sum-total .l{font-size:16px;font-weight:700}
+.pan-sum-total .v{font-weight:800;font-size:28px;letter-spacing:-.5px}
+.pan-sum-total .v small{font-size:12px;font-weight:600;color:#8A6076;display:block;text-align:right;letter-spacing:0}
+.pan-perks{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:9px}
+.pan-perks li{display:flex;align-items:center;gap:9px;font-size:12.5px;color:#7A5468}
+.pan-perks li span{font-size:15px}
+
+/* état vide */
+.pan-empty{display:none;text-align:center;background:#fff;border:1px solid #F1DAE7;border-radius:24px;box-shadow:0 10px 24px rgba(122,14,74,.08);padding:70px 24px}
+.pan-empty .big{font-size:72px;line-height:1}
+.pan-empty .t{font-weight:800;font-size:24px;color:#2A0A1C;margin-top:14px}
+.pan-empty p{font-size:15px;color:#8A6076;margin:8px auto 0;max-width:380px}
+.pan-empty a{display:inline-flex;align-items:center;gap:9px;margin-top:22px;background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;font-weight:700;font-size:16px;padding:15px 28px;border-radius:16px;box-shadow:0 12px 26px rgba(255,46,154,.32);transition:transform .15s}
+.pan-empty a:hover{transform:translateY(-2px)}
+
+/* Tu aimeras aussi */
+.pan-reco{max-width:1180px;margin:0 auto;padding:4px 22px 8px}
+.pan-reco h2{font-size:26px;letter-spacing:-.5px;margin-bottom:16px}
+.pan-reco-row{display:flex;gap:16px;overflow-x:auto;padding:6px 2px 22px;scroll-snap-type:x mandatory}
+.pan-reco-row .mc-prod{flex:none;width:210px;scroll-snap-align:start}
+
+@media (max-width:900px){
+  .pan-grid{grid-template-columns:1fr;gap:18px}
+  .pan-sum{position:static;top:auto}
+}
+@media (max-width:560px){
+  .pan-title h1{font-size:28px}
+  .pan-line{gap:12px;padding:16px 14px;flex-wrap:wrap}
+  .pan-line-img{width:74px;height:74px}
+  .pan-line-total{min-width:0;margin-left:auto}
+  .pan-lines-head{padding:16px 16px}
+  .pan-reco-row .mc-prod{width:158px}
+}
+</style>
+</head>
+<body data-nav="">
+
+<div class="pan-band">
+  <div class="pan-wrap">
+    <div class="pan-top">
+      <div class="mc-crumb" style="margin-bottom:8px"><a href="index.html">Accueil</a> › <span style="color:#2A0A1C;font-weight:600">Panier</span></div>
+      <div class="pan-title">
+        <h1>Mon panier 🛒</h1>
+        <span class="n" id="pan-count-lbl"></span>
+      </div>
+    </div>
+
+    <!-- contenu (liste + récap) -->
+    <div class="pan-grid" id="pan-content">
+      <div>
+        <div class="pan-lines">
+          <div class="pan-lines-head">
+            <div class="t" id="pan-lines-title">Tes articles</div>
+            <button class="pan-clear" id="pan-clear">🗑 Vider le panier</button>
+          </div>
+          <div id="pan-lines"></div>
+        </div>
+        <div class="pan-backrow">
+          <a href="boutique.html" class="pan-back">← Continuer mes achats</a>
+        </div>
+      </div>
+
+      <aside class="pan-sum">
+        <h2>Récapitulatif</h2>
+        <div class="pan-free">
+          <div class="mc-free-msg" id="pan-free-msg">Plus que 39,00 € pour la livraison offerte</div>
+          <div class="mc-free-track"><div class="mc-free-bar" id="pan-free-bar"></div></div>
+        </div>
+        <div class="pan-promo">
+          <input placeholder="Code promo (ex : Candysummer26)" aria-label="Code promo">
+          <button type="button" id="pan-promo-btn">OK</button>
+        </div>
+        <div class="pan-sum-row"><span id="pan-sub-lbl">Sous-total</span><span id="pan-sub">0,00 €</span></div>
+        <div class="pan-sum-row" id="pan-ship-row"><span>Livraison</span><span id="pan-ship">Calculée ensuite</span></div>
+        <div class="pan-sum-div"></div>
+        <div class="pan-sum-total">
+          <div class="l">Total</div>
+          <div class="v" id="pan-total">0,00 €<small>TVA incluse</small></div>
+        </div>
+        <a href="checkout.html" class="mc-cart-pay">Passer au paiement →</a>
+        <div class="mc-cart-secure" style="margin-top:12px">🔒 Paiement sécurisé · CB, Apple Pay, PayPal</div>
+        <ul class="pan-perks">
+          <li><span>🚚</span> Livraison en point relais offerte dès 39 €</li>
+          <li><span>📦</span> Expédié sous 24-48 h depuis Lyon</li>
+          <li><span>↩️</span> Retours faciles sous 14 jours</li>
+        </ul>
+      </aside>
+    </div>
+
+    <!-- état vide -->
+    <div class="pan-empty" id="pan-empty">
+      <div class="big">🛒</div>
+      <div class="t">Ton panier est vide</div>
+      <p>Ajoute tes snacks viraux préférés — bonbons US, sodas TikTok et éditions limitées t'attendent !</p>
+      <a href="boutique.html">Continuer mes achats →</a>
+    </div>
+  </div>
+</div>
+
+<!-- Tu aimeras aussi -->
+<section class="pan-reco" id="pan-reco" style="display:none">
+  <h2>😋 Tu aimeras aussi</h2>
+  <div class="pan-reco-row mc-row" id="pan-reco-row"></div>
+</section>
+
+<script src="cart-store.js"></script>
+<script src="products.js"></script>
+<script src="chrome.js"></script>
+<script src="app.js"></script>
+<script>
+(function () {
+  'use strict';
+  var FREE = 39; // seuil livraison offerte (€), aligné sur app.js
+  var $ = function (s) { return document.querySelector(s); };
+
+  var contentEl = $('#pan-content');
+  var emptyEl   = $('#pan-empty');
+  var linesEl   = $('#pan-lines');
+  var recoSec   = $('#pan-reco');
+
+  function lineHTML(l) {
+    var p = (window.MC && MC.byId) ? MC.byId(l.id) : null;
+    var brand = (p && p.brand) ? p.brand : '';
+    var tint = l.tint || (p && p.tint) || '#FFE3F1';
+    var id = MC.esc(l.id);
+    return '' +
+      '<div class="pan-line" data-id="' + id + '">' +
+        '<a href="produit.html?id=' + encodeURIComponent(l.id) + '" class="pan-line-img" style="background:' + tint + '" aria-label="' + MC.esc(l.name) + '"><div class="mc-stripes"></div></a>' +
+        '<div class="pan-line-body">' +
+          (brand ? '<div class="pan-line-brand">' + MC.esc(brand) + '</div>' : '') +
+          '<a href="produit.html?id=' + encodeURIComponent(l.id) + '" class="pan-line-name">' + MC.esc(l.name) + '</a>' +
+          '<div class="pan-line-unit">' + MC.money(l.price) + ' / unité' + (l.old ? '<span class="pan-line-old">' + MC.money(l.old) + '</span>' : '') + '</div>' +
+          '<div class="pan-line-ctrls">' +
+            '<div class="mc-step"><button type="button" data-dec="' + id + '" aria-label="Diminuer la quantité">−</button><span>' + l.qty + '</span><button type="button" data-inc="' + id + '" aria-label="Augmenter la quantité">+</button></div>' +
+            '<button type="button" class="pan-line-rm" data-rm="' + id + '">🗑 Retirer</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="pan-line-total">' +
+          '<div class="pan-line-t">' + MC.money(l.price * l.qty) + '</div>' +
+          (l.qty > 1 ? '<div class="pan-line-each">' + l.qty + ' × ' + MC.money(l.price) + '</div>' : '') +
+        '</div>' +
+      '</div>';
+  }
+
+  function render() {
+    var items = window.MCCart ? MCCart.items() : [];
+    var count = items.reduce(function (n, l) { return n + l.qty; }, 0);
+    var sub = window.MCCart ? MCCart.subtotal() : 0;
+
+    // libellé compteur
+    var lbl = $('#pan-count-lbl');
+    if (lbl) lbl.textContent = count > 0 ? (count + (count > 1 ? ' articles' : ' article')) : '';
+    var lt = $('#pan-lines-title');
+    if (lt) lt.textContent = 'Tes articles' + (count > 0 ? ' (' + count + ')' : '');
+
+    // bascule vide / contenu
+    if (count === 0) {
+      if (contentEl) contentEl.style.display = 'none';
+      if (emptyEl) emptyEl.style.display = 'block';
+      if (recoSec) recoSec.style.display = 'block'; // suggestions même quand vide
+      return;
+    }
+    if (contentEl) contentEl.style.display = 'grid';
+    if (emptyEl) emptyEl.style.display = 'none';
+    if (recoSec) recoSec.style.display = 'block';
+
+    // lignes
+    if (linesEl) linesEl.innerHTML = items.map(lineHTML).join('');
+
+    // récap
+    var subEl = $('#pan-sub'); if (subEl) subEl.textContent = MC.money(sub);
+    var subLbl = $('#pan-sub-lbl'); if (subLbl) subLbl.textContent = 'Sous-total (' + count + ')';
+    var totalEl = $('#pan-total'); if (totalEl) totalEl.innerHTML = MC.money(sub) + '<small>TVA incluse</small>';
+
+    var remaining = Math.max(0, FREE - sub);
+    var msg = $('#pan-free-msg'), bar = $('#pan-free-bar');
+    if (msg) msg.textContent = remaining <= 0 ? '🎉 Livraison offerte débloquée !' : 'Plus que ' + MC.money(remaining) + ' pour la livraison offerte';
+    if (bar) bar.style.width = Math.min(100, Math.round(sub / FREE * 100)) + '%';
+
+    var shipRow = $('#pan-ship-row'), ship = $('#pan-ship');
+    if (ship) ship.textContent = remaining <= 0 ? 'Offerte' : 'Calculée ensuite';
+    if (shipRow) shipRow.classList.toggle('free', remaining <= 0);
+  }
+
+  // steppers / retirer (délégation sur la liste) — MCCart émet mc-cart-change → re-render
+  if (linesEl) linesEl.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-inc],[data-dec],[data-rm]');
+    if (!t || !window.MCCart) return;
+    if (t.hasAttribute('data-inc')) MCCart.inc(t.getAttribute('data-inc'));
+    else if (t.hasAttribute('data-dec')) MCCart.dec(t.getAttribute('data-dec'));
+    else if (t.hasAttribute('data-rm')) MCCart.remove(t.getAttribute('data-rm'));
+  });
+
+  // vider le panier
+  var clearBtn = $('#pan-clear');
+  if (clearBtn) clearBtn.addEventListener('click', function () {
+    if (window.MCCart && MCCart.count() > 0) {
+      MCCart.clear();
+      if (window.MCui) MCui.toast('Panier vidé');
+    }
+  });
+
+  // code promo (démo, sans réseau)
+  var promoBtn = $('#pan-promo-btn');
+  if (promoBtn) promoBtn.addEventListener('click', function () {
+    var inp = document.querySelector('.pan-promo input');
+    var code = (inp && inp.value || '').trim();
+    if (!code) return;
+    if (window.MCui) MCui.toast(code.toLowerCase() === 'candysummer26' ? 'Code appliqué au paiement 🎉' : 'Code « ' + code +' » vérifié au paiement');
+  });
+
+  // "Tu aimeras aussi" — bestsellers, hors panier ; rendu une fois (les +/♥ passent par app.js)
+  (function renderReco() {
+    var row = $('#pan-reco-row');
+    if (!row || !window.MC) return;
+    var inCart = {};
+    (window.MCCart ? MCCart.items() : []).forEach(function (l) { inCart[l.id] = true; });
+    var picks = MC.PRODUCTS.filter(function (p) { return p.best && !inCart[p.id]; });
+    if (picks.length < 4) {
+      MC.PRODUCTS.forEach(function (p) { if (picks.length < 8 && !inCart[p.id] && picks.indexOf(p) < 0) picks.push(p); });
+    }
+    row.innerHTML = picks.slice(0, 8).map(MC.card).join('');
+  })();
+
+  render();
+  window.addEventListener('mc-cart-change', render);
+  window.addEventListener('storage', render); // sync multi-onglets
+})();
+</script>
+</body>
+</html>

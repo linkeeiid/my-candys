@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mon compte — My Candy's</title>
+<meta name="description" content="Connecte-toi ou crée ton compte My Candy's : points fidélité, -10% sur ta 1ère commande, suivi de commandes et favoris synchronisés sur tous tes appareils.">
+<meta name="theme-color" content="#FF2E9A">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+/* ---------- Hero compte ---------- */
+.acc-hero{background:#fff;position:relative;overflow:hidden}
+.acc-hero-in{max-width:1120px;margin:0 auto;padding:30px 34px 26px;position:relative;z-index:1}
+.acc-hero h1{font-size:40px;letter-spacing:-1px;margin:6px 0 0}
+.acc-hero p{font-size:16px;color:#7A5468;margin:8px 0 0;max-width:520px}
+.acc-hero-decor{position:absolute;z-index:0;pointer-events:none;animation:floaty 8s ease-in-out infinite;filter:drop-shadow(0 20px 15px rgba(0,0,0,.2))}
+
+/* ---------- Bandeau + grille ---------- */
+.acc-band{background:#E9F5FB}
+.acc-wrap{max-width:1120px;margin:0 auto;padding:30px 34px 56px;display:grid;grid-template-columns:1.05fr .95fr;gap:28px;align-items:start}
+
+/* ---------- Carte auth ---------- */
+.acc-card{background:#fff;border:1px solid #F1DAE7;border-radius:26px;box-shadow:0 18px 40px rgba(122,14,74,.10);overflow:hidden}
+.acc-tabs{display:flex;background:#FFF1F8;padding:7px;gap:6px;margin:16px 16px 0;border-radius:16px}
+.acc-tab{flex:1;padding:13px 10px;border-radius:12px;font-weight:700;font-size:15px;color:#8A6076;transition:background .15s,color .15s,box-shadow .15s}
+.acc-tab:hover{color:#E01784}
+.acc-tab.on{background:#fff;color:#E01784;box-shadow:0 6px 14px rgba(122,14,74,.12)}
+.acc-pane{padding:26px 30px 30px}
+.acc-pane[hidden]{display:none}
+.acc-pane h2{font-size:23px;margin-bottom:4px}
+.acc-lead{font-size:14px;color:#7A5468;margin:0 0 22px}
+
+.acc-field{margin-bottom:16px}
+.acc-field label{display:block;font-size:13px;font-weight:700;color:#4A2A3A;margin-bottom:7px}
+.acc-input{width:100%;border:1.5px solid #F3C6DE;background:#FFF9FC;border-radius:13px;padding:14px 16px;font-size:15px;font-family:inherit;color:#2A0A1C;outline:none;transition:border-color .15s,box-shadow .15s}
+.acc-input::placeholder{color:#B7A0AC}
+.acc-input:focus{border-color:#FF2E9A;box-shadow:0 0 0 4px rgba(255,46,154,.12);background:#fff}
+.acc-pass{position:relative}
+.acc-pass .acc-input{padding-right:52px}
+.acc-eye{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:10px;font-size:17px;color:#8A6076;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.acc-eye:hover{background:#FFEBF5}
+
+.acc-rowbetween{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:-4px 0 20px;flex-wrap:wrap}
+.acc-check{display:flex;align-items:flex-start;gap:10px;font-size:13.5px;color:#4A2A3A;cursor:pointer;line-height:1.4}
+.acc-check input{width:18px;height:18px;margin-top:1px;accent-color:#E01784;flex:none;cursor:pointer}
+.acc-link{font-size:13.5px;font-weight:600;color:#E01784;background:none}
+.acc-link:hover{text-decoration:underline}
+
+.acc-cta{width:100%;background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;font-weight:800;font-size:16px;padding:16px;border-radius:15px;box-shadow:0 12px 26px rgba(255,46,154,.32);transition:transform .15s,filter .15s}
+.acc-cta:hover{transform:translateY(-2px);filter:brightness(1.03)}
+.acc-cta:active{transform:translateY(0)}
+
+.acc-hint{font-size:12.5px;color:#8A6076;text-align:center;margin:14px 0 0;min-height:17px;transition:color .2s}
+.acc-hint.show{color:#E01784;font-weight:600}
+.acc-switch{text-align:center;font-size:13.5px;color:#7A5468;margin:20px 0 0}
+.acc-switch button{font-weight:700;color:#E01784}
+.acc-switch button:hover{text-decoration:underline}
+.acc-secure{display:flex;align-items:center;justify-content:center;gap:7px;font-size:12px;color:#8A6076;margin-top:16px;border-top:1px solid #F6E4EF;padding-top:16px}
+
+/* ---------- État connecté (simulation locale) ---------- */
+.acc-me{padding:28px 30px 30px}
+.acc-me-head{display:flex;align-items:center;gap:16px}
+.acc-avatar{flex:none;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;font-weight:800;font-size:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 18px rgba(255,46,154,.35)}
+.acc-me-hi{font-size:22px;font-weight:800;letter-spacing:-.4px}
+.acc-me-mail{font-size:13.5px;color:#8A6076;margin-top:2px;word-break:break-all}
+.acc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0}
+.acc-stat{background:#FFF7EE;border:1px solid #F1DAE7;border-radius:16px;padding:16px 12px;text-align:center}
+.acc-stat b{display:block;font-size:26px;font-weight:800;color:#E01784;line-height:1}
+.acc-stat span{display:block;font-size:11.5px;font-weight:600;color:#8A6076;margin-top:6px}
+.acc-me-links{display:flex;flex-direction:column;gap:10px}
+.acc-me-links a,.acc-logout{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:14px;font-size:14.5px;font-weight:600;background:#FFF1F8;color:#2A0A1C;transition:background .15s}
+.acc-me-links a:hover{background:#FFEBF5;color:#E01784}
+.acc-me-links a span:last-child{margin-left:auto;color:#B06089}
+.acc-logout{width:100%;justify-content:center;background:none;border:1.5px solid #F3C6DE;color:#B0146A;margin-top:4px}
+.acc-logout:hover{background:#FFF4F9}
+
+/* ---------- Colonne latérale (avantages membre) ---------- */
+.acc-perks{background:linear-gradient(160deg,#FFF7EE,#FFF1F8);border:1px solid #F1DAE7;border-radius:26px;padding:26px 26px 24px;box-shadow:0 14px 32px rgba(122,14,74,.08)}
+.acc-perks-badge{display:inline-flex;align-items:center;gap:7px;background:#2A0A1C;color:#fff;font-weight:800;font-size:12px;letter-spacing:.4px;padding:7px 14px;border-radius:999px}
+.acc-perks h2{font-size:22px;letter-spacing:-.4px;margin:14px 0 4px}
+.acc-perks-sub{font-size:14px;color:#7A5468;margin:0 0 20px}
+.acc-perk{display:flex;gap:14px;padding:14px 0;border-top:1px dashed #F1DAE7}
+.acc-perk:first-of-type{border-top:none}
+.acc-perk-ic{flex:none;width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.acc-perk-t{font-weight:700;font-size:15px;color:#2A0A1C}
+.acc-perk-d{font-size:13px;color:#7A5468;margin-top:2px;line-height:1.45}
+
+.acc-help{background:#fff;border:1px solid #F1DAE7;border-radius:22px;padding:22px 24px;margin-top:20px;box-shadow:0 10px 26px rgba(122,14,74,.06)}
+.acc-help-t{font-weight:800;font-size:16px;margin-bottom:6px}
+.acc-help p{font-size:13px;color:#7A5468;margin:0 0 14px}
+.acc-help-links{display:flex;flex-direction:column;gap:2px}
+.acc-help-links a{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:12px;font-size:14px;font-weight:600;color:#2A0A1C;transition:background .15s,color .15s}
+.acc-help-links a:hover{background:#FFF1F8;color:#E01784}
+.acc-help-links a span:last-child{margin-left:auto;color:#B06089;font-weight:700}
+
+/* ---------- Responsive ---------- */
+@media (max-width:920px){
+  .acc-wrap{grid-template-columns:1fr;gap:20px;padding:22px 16px 44px}
+  .acc-hero h1{font-size:30px}
+  .acc-hero-decor{width:96px!important}
+  .acc-pane{padding:22px 20px 26px}
+}
+</style>
+</head>
+<body data-nav="">
+
+<div class="acc-hero">
+  <div class="acc-hero-in">
+    <div class="mc-crumb" style="margin-bottom:2px"><a href="index.html">Accueil</a> › <span style="color:#2A0A1C;font-weight:600">Mon compte</span></div>
+    <h1>Mon compte 🍬</h1>
+    <p>Connecte-toi pour retrouver tes commandes, tes favoris et tes points fidélité — ou crée ton compte en 30 secondes.</p>
+  </div>
+  <img src="assets/hero/nerds.png" alt="" aria-hidden="true" loading="lazy" decoding="async" class="acc-hero-decor" style="width:150px;right:3%;top:-4px;--r:8deg">
+  <img src="assets/hero/reeses.png" alt="" aria-hidden="true" loading="lazy" decoding="async" class="acc-hero-decor" style="width:130px;right:16%;top:44px;--r:-9deg">
+</div>
+
+<div class="acc-band">
+  <div class="acc-wrap">
+
+    <!-- Carte auth / espace membre -->
+    <div class="acc-card">
+
+      <!-- Onglets (masqués une fois connecté) -->
+      <div class="acc-tabs" id="acc-tabs">
+        <button class="acc-tab on" type="button" data-tab="login">Connexion</button>
+        <button class="acc-tab" type="button" data-tab="signup">Créer un compte</button>
+      </div>
+
+      <!-- Onglet : Connexion -->
+      <section class="acc-pane" id="pane-login">
+        <h2>Bon retour ! 👋</h2>
+        <p class="acc-lead">Connecte-toi pour accéder à ton espace My Candy's.</p>
+        <form id="form-login" novalidate>
+          <div class="acc-field">
+            <label for="log-email">Adresse e-mail</label>
+            <input class="acc-input" id="log-email" name="email" type="email" autocomplete="email" placeholder="ton@email.com" required>
+          </div>
+          <div class="acc-field">
+            <label for="log-pass">Mot de passe</label>
+            <div class="acc-pass">
+              <input class="acc-input" id="log-pass" name="password" type="password" autocomplete="current-password" placeholder="••••••••" required>
+              <button class="acc-eye" type="button" data-eye="log-pass" aria-label="Afficher le mot de passe" title="Afficher / masquer">👁️</button>
+            </div>
+          </div>
+          <div class="acc-rowbetween">
+            <label class="acc-check"><input type="checkbox" name="remember" checked> Se souvenir de moi</label>
+            <button class="acc-link" type="button" data-hint="login">Mot de passe oublié ?</button>
+          </div>
+          <button class="acc-cta" type="submit">Se connecter</button>
+          <p class="acc-hint" id="hint-login"></p>
+        </form>
+        <p class="acc-switch">Pas encore de compte ? <button type="button" data-goto="signup">Créer mon compte</button></p>
+        <div class="acc-secure"><span>🔒</span> Connexion sécurisée · tes données restent privées</div>
+      </section>
+
+      <!-- Onglet : Inscription -->
+      <section class="acc-pane" id="pane-signup" hidden>
+        <h2>Rejoins le club 🎉</h2>
+        <p class="acc-lead">Crée ton compte et débloque <b style="color:#E01784">-10% sur ta 1ère commande</b>.</p>
+        <form id="form-signup" novalidate>
+          <div class="acc-field">
+            <label for="sig-first">Prénom</label>
+            <input class="acc-input" id="sig-first" name="firstName" type="text" autocomplete="given-name" placeholder="Ton prénom" required>
+          </div>
+          <div class="acc-field">
+            <label for="sig-email">Adresse e-mail</label>
+            <input class="acc-input" id="sig-email" name="email" type="email" autocomplete="email" placeholder="ton@email.com" required>
+          </div>
+          <div class="acc-field">
+            <label for="sig-pass">Mot de passe</label>
+            <div class="acc-pass">
+              <input class="acc-input" id="sig-pass" name="password" type="password" autocomplete="new-password" placeholder="8 caractères minimum" required minlength="8">
+              <button class="acc-eye" type="button" data-eye="sig-pass" aria-label="Afficher le mot de passe" title="Afficher / masquer">👁️</button>
+            </div>
+          </div>
+          <div style="margin:2px 0 20px">
+            <label class="acc-check"><input type="checkbox" name="newsletter" checked> Je veux recevoir les bons plans, nouveautés et codes promo par e-mail 💌</label>
+          </div>
+          <button class="acc-cta" type="submit">Créer mon compte</button>
+          <p class="acc-hint" id="hint-signup"></p>
+        </form>
+        <p class="acc-switch">Déjà membre ? <button type="button" data-goto="login">Se connecter</button></p>
+        <div class="acc-secure"><span>🔒</span> En créant un compte, tu acceptes nos conditions d'utilisation</div>
+      </section>
+
+      <!-- Espace membre (après connexion locale simulée) -->
+      <section class="acc-me" id="pane-me" hidden>
+        <div class="acc-me-head">
+          <div class="acc-avatar" id="me-avatar">🍬</div>
+          <div style="min-width:0">
+            <div class="acc-me-hi" id="me-hi">Salut !</div>
+            <div class="acc-me-mail" id="me-mail"></div>
+          </div>
+        </div>
+        <div class="acc-stats">
+          <div class="acc-stat"><b id="me-points">0</b><span>Points fidélité</span></div>
+          <div class="acc-stat"><b id="me-orders">0</b><span>Commandes</span></div>
+          <div class="acc-stat"><b id="me-wish">0</b><span>Favoris</span></div>
+        </div>
+        <div class="acc-me-links">
+          <a href="favoris.html"><span>🤍</span> Mes favoris <span>→</span></a>
+          <a href="infos.html?p=livraison"><span>📦</span> Suivi de commande <span>→</span></a>
+          <a href="boutique.html?c=bestsellers"><span>🛍️</span> Continuer mes achats <span>→</span></a>
+          <button class="acc-logout" type="button" id="me-logout">Se déconnecter</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- Colonne : avantages membre + aide -->
+    <aside>
+      <div class="acc-perks">
+        <span class="acc-perks-badge">🎁 CLUB MY CANDY'S</span>
+        <h2>Tes avantages membre</h2>
+        <p class="acc-perks-sub">Gratuit, sans engagement. Juste plus de bonbons dans ta vie.</p>
+
+        <div class="acc-perk">
+          <div class="acc-perk-ic" style="background:#FFE3F1">💖</div>
+          <div><div class="acc-perk-t">-10% sur ta 1ère commande</div><div class="acc-perk-d">Un code de bienvenue dès l'inscription, à utiliser sur tout le site.</div></div>
+        </div>
+        <div class="acc-perk">
+          <div class="acc-perk-ic" style="background:#FFEFC2">⭐</div>
+          <div><div class="acc-perk-t">Points fidélité</div><div class="acc-perk-d">1€ dépensé = 1 point. Cumule et transforme tes points en réductions.</div></div>
+        </div>
+        <div class="acc-perk">
+          <div class="acc-perk-ic" style="background:#DEF7FA">📦</div>
+          <div><div class="acc-perk-t">Suivi de commandes</div><div class="acc-perk-d">Retrouve l'historique et le suivi de tous tes colis au même endroit.</div></div>
+        </div>
+        <div class="acc-perk">
+          <div class="acc-perk-ic" style="background:#F3E6FF">🤍</div>
+          <div><div class="acc-perk-t">Favoris synchronisés</div><div class="acc-perk-d">Ta wishlist te suit sur mobile et ordinateur, sans rien perdre.</div></div>
+        </div>
+      </div>
+
+      <div class="acc-help">
+        <div class="acc-help-t">Besoin d'un coup de main ?</div>
+        <p>On te répond en moins de 24h, du lundi au samedi.</p>
+        <div class="acc-help-links">
+          <a href="infos.html?p=faq"><span>❓</span> Questions fréquentes (FAQ) <span>→</span></a>
+          <a href="infos.html?p=livraison"><span>🚚</span> Livraison &amp; retours <span>→</span></a>
+          <a href="favoris.html"><span>🤍</span> Voir mes favoris <span>→</span></a>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</div>
+
+<script src="cart-store.js"></script>
+<script src="products.js"></script>
+<script src="chrome.js"></script>
+<script src="app.js"></script>
+<script>
+/* Compte — 100% cosmétique + localStorage léger. Aucun backend, aucun appel réseau. */
+(function () {
+  'use strict';
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var UKEY = 'mcUserV1';
+
+  function readUser() { try { return JSON.parse(localStorage.getItem(UKEY)); } catch (e) { return null; } }
+  function writeUser(u) { try { localStorage.setItem(UKEY, JSON.stringify(u)); } catch (e) {} }
+  function clearUser() { try { localStorage.removeItem(UKEY); } catch (e) {} }
+  function toast(m) { if (window.MCui && MCui.toast) MCui.toast(m); }
+
+  var tabs = $('#acc-tabs');
+  var paneLogin = $('#pane-login'), paneSignup = $('#pane-signup'), paneMe = $('#pane-me');
+
+  /* ---- Bascule des onglets ---- */
+  function showTab(name) {
+    var login = name === 'login';
+    paneLogin.hidden = !login;
+    paneSignup.hidden = login;
+    Array.prototype.forEach.call(tabs.querySelectorAll('.acc-tab'), function (b) {
+      b.classList.toggle('on', b.getAttribute('data-tab') === name);
+    });
+  }
+  tabs.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-tab]'); if (t) showTab(t.getAttribute('data-tab'));
+  });
+  document.addEventListener('click', function (e) {
+    var g = e.target.closest('[data-goto]'); if (g) showTab(g.getAttribute('data-goto'));
+  });
+
+  /* ---- Afficher / masquer les mots de passe ---- */
+  document.addEventListener('click', function (e) {
+    var eye = e.target.closest('[data-eye]'); if (!eye) return;
+    var inp = document.getElementById(eye.getAttribute('data-eye')); if (!inp) return;
+    var show = inp.type === 'password';
+    inp.type = show ? 'text' : 'password';
+    eye.textContent = show ? '🙈' : '👁️';
+  });
+
+  /* ---- "Mot de passe oublié" : message cosmétique ---- */
+  document.addEventListener('click', function (e) {
+    var h = e.target.closest('[data-hint]'); if (!h) return;
+    var el = $('#hint-' + h.getAttribute('data-hint'));
+    if (el) { el.textContent = 'Un e-mail de réinitialisation te sera envoyé (bientôt disponible).'; el.classList.add('show'); }
+  });
+
+  /* ---- Espace membre (simulation locale) ---- */
+  function renderMe(u) {
+    $('#me-hi').textContent = 'Salut, ' + (u.firstName || 'toi') + ' 👋';
+    $('#me-mail').textContent = u.email || '';
+    $('#me-avatar').textContent = (u.firstName || '🍬').trim().charAt(0).toUpperCase() || '🍬';
+    $('#me-points').textContent = (u.points != null ? u.points : 0);
+    $('#me-orders').textContent = (u.orders != null ? u.orders : 0);
+    $('#me-wish').textContent = (window.MCWish ? MCWish.count() : 0);
+    tabs.hidden = true;
+    paneLogin.hidden = true; paneSignup.hidden = true;
+    paneMe.hidden = false;
+  }
+  function logout() {
+    clearUser();
+    paneMe.hidden = true;
+    tabs.hidden = false;
+    showTab('login');
+    toast('Tu es déconnecté');
+  }
+  $('#me-logout').addEventListener('click', logout);
+  window.addEventListener('mc-wish-change', function () {
+    if (!paneMe.hidden) $('#me-wish').textContent = (window.MCWish ? MCWish.count() : 0);
+  });
+
+  /* ---- Connexion (preventDefault, pas de réseau) ---- */
+  $('#form-login').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var email = ($('#log-email').value || '').trim();
+    if (!email) { $('#log-email').focus(); return; }
+    var name = email.split('@')[0].replace(/[._-]+/g, ' ').trim();
+    name = name.charAt(0).toUpperCase() + name.slice(1);
+    var existing = readUser();
+    var u = (existing && existing.email === email) ? existing
+          : { firstName: name || 'toi', email: email, newsletter: false, points: 0, orders: 0 };
+    writeUser(u);
+    renderMe(u);
+    toast('Connexion réussie · content de te revoir !');
+  });
+
+  /* ---- Inscription (preventDefault, pas de réseau) ---- */
+  $('#form-signup').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var first = ($('#sig-first').value || '').trim();
+    var email = ($('#sig-email').value || '').trim();
+    var pass = ($('#sig-pass').value || '');
+    if (!first) { $('#sig-first').focus(); return; }
+    if (!email) { $('#sig-email').focus(); return; }
+    if (pass.length < 8) {
+      var el = $('#hint-signup');
+      el.textContent = 'Choisis un mot de passe d\'au moins 8 caractères.';
+      el.classList.add('show'); $('#sig-pass').focus(); return;
+    }
+    var u = { firstName: first, email: email, newsletter: $('#form-signup').newsletter.checked, points: 50, orders: 0 };
+    writeUser(u); // +50 points de bienvenue offerts
+    renderMe(u);
+    toast('Bienvenue ' + first + ' ! +50 points offerts 🎉');
+  });
+
+  /* ---- Au chargement : reprendre la session locale ---- */
+  var u0 = readUser();
+  if (u0 && u0.email) renderMe(u0);
+  else showTab('login');
+})();
+</script>
+</body>
+</html>
