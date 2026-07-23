@@ -268,7 +268,9 @@ body.mc-home{background:#FB2E9A}
       (p.old ? '<div class="mc-old" style="margin-top:2px">' + MC.money(p.old) + '</div>' : '') +
       '<button class="mc-mbox-add" data-add="' + p.id + '">Ajouter</button></div></div>';
   }).join(''));
-  var one = MC.LOGOS.map(function (l) { return '<a class="mc-mqlogo" href="' + l.href + '" title="Voir ' + MC.esc(l.name) + '"><img src="' + l.src + '" alt="' + MC.esc(l.name) + '" loading="lazy"></a>'; }).join('');
+  var one = MC.LOGOS.map(function (l) { return '<a class="mc-mqlogo" href="' + l.href + '" title="Voir ' + MC.esc(l.name) + '"><img src="' + l.src + '" alt="' + MC.esc(l.name) + '" decoding="async"></a>'; }).join('');
+  // Précharge les logos pour que la marquee défile déjà chargée (pas de "pop-in")
+  MC.LOGOS.forEach(function (l) { var im = new Image(); im.src = l.src; });
   fill('mc-marquee', '<div>' + one + '</div><div aria-hidden="true">' + one + '</div>');
   var TT = [
     { cap: 'On teste TOUS les Takis 🌶️', views: '1,2M', tint: 'linear-gradient(160deg,#FF5FAE,#B0146A)' },
