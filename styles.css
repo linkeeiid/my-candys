@@ -152,7 +152,7 @@ h1,h2,h3{font-weight:800;letter-spacing:-.5px;margin:0}
 .mc-toast.is-on{opacity:1;visibility:visible;transform:translate(-50%,0)}
 
 /* ---------- Footer ---------- */
-.mc-footer{background:#1c0512;color:#fff}
+.mc-footer{background:#1c0512;color:#fff;margin-top:-1px}
 .mc-foot{max-width:1220px;margin:0 auto;padding:52px 22px 30px;display:flex;gap:40px;flex-wrap:wrap}
 .mc-fbrand{flex:1;min-width:260px}
 .mc-fbrand-logo{background:#fff;border-radius:16px;padding:12px 14px;display:inline-block}
