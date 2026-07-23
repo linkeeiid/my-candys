@@ -94,21 +94,25 @@ window.MC = window.MC || {};
       '</article>';
   };
 
-  // Marques défilantes (marquee) du bas de l'accueil
+  // Marques défilantes (marquee) du bas de l'accueil — chaque logo est cliquable.
+  // href = filtre marque si on la vend en catalogue, sinon catégorie du produit.
+  // href = filtre marque (chaque logo mène à sa propre marque). "Monster Energy"
+  // pointe sur le nom catalogue "Monster". Les marques pas encore au catalogue
+  // affichent un message "bientôt" dans la boutique.
   MC.LOGOS = [
-    { name:'Coca-Cola',     src:'assets/logos/coca.png' },
-    { name:'Takis',         src:'assets/logos/takis.png' },
-    { name:'Monster Energy',src:'assets/logos/monster.webp' },
-    { name:'Fanta',         src:'assets/logos/fanta.png' },
-    { name:'Kinder',        src:'assets/logos/kinder.png' },
-    { name:'Pringles',      src:'assets/logos/pringles.png' },
-    { name:'Red Bull',      src:'assets/logos/redbull.png' },
-    { name:'KitKat',        src:'assets/logos/kitkat.png' },
-    { name:'7 Up',          src:'assets/logos/7up.png' },
-    { name:"Reese's",       src:'assets/logos/reeses.png' },
-    { name:'Samyang',       src:'assets/logos/samyang.png' },
-    { name:'Calypso',       src:'assets/logos/calypso.png' },
-    { name:'Feastables',    src:'assets/logos/feastables.png' },
-    { name:"Jack Link's",   src:'assets/logos/jacklinks.png' }
+    { name:'Coca-Cola',     src:'assets/logos/coca.png',       href:'boutique.html?b=Coca-Cola' },
+    { name:'Takis',         src:'assets/logos/takis.png',      href:'boutique.html?b=Takis' },
+    { name:'Monster Energy',src:'assets/logos/monster.webp',   href:'boutique.html?b=Monster' },
+    { name:'Fanta',         src:'assets/logos/fanta.png',      href:'boutique.html?b=Fanta' },
+    { name:'Kinder',        src:'assets/logos/kinder.png',     href:'boutique.html?b=Kinder' },
+    { name:'Pringles',      src:'assets/logos/pringles.png',   href:'boutique.html?b=Pringles' },
+    { name:'Red Bull',      src:'assets/logos/redbull.png',    href:'boutique.html?b=Red%20Bull' },
+    { name:'KitKat',        src:'assets/logos/kitkat.png',     href:'boutique.html?b=KitKat' },
+    { name:'7 Up',          src:'assets/logos/7up.png',        href:'boutique.html?b=7%20Up' },
+    { name:"Reese's",       src:'assets/logos/reeses.png',     href:"boutique.html?b=Reese's" },
+    { name:'Samyang',       src:'assets/logos/samyang.png',    href:'boutique.html?b=Samyang' },
+    { name:'Calypso',       src:'assets/logos/calypso.png',    href:'boutique.html?b=Calypso' },
+    { name:'Feastables',    src:'assets/logos/feastables.png', href:'boutique.html?b=Feastables' },
+    { name:"Jack Link's",   src:'assets/logos/jacklinks.png',  href:"boutique.html?b=Jack%20Link's" }
   ];
 })();

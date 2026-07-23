@@ -98,7 +98,7 @@
       </div>
       <div class="shop-chips" id="shop-chips" style="display:none"></div>
       <div class="shop-grid" id="shop-grid"></div>
-      <div class="shop-empty" id="shop-empty" style="display:none"><div class="big">🔎</div><div class="t">Aucun produit ne correspond</div><button id="shop-reset">Réinitialiser les filtres</button></div>
+      <div class="shop-empty" id="shop-empty" style="display:none"><div class="big">🔎</div><div class="t" id="shop-empty-title">Aucun produit ne correspond</div><div id="shop-empty-sub" style="font-size:14px;margin-top:6px"></div><button id="shop-reset">Voir toute la boutique</button></div>
     </div>
   </div>
 </div>
@@ -193,6 +193,11 @@
     document.getElementById('shop-count').textContent = L.length;
     document.getElementById('shop-grid').innerHTML = L.map(MC.card).join('');
     document.getElementById('shop-empty').style.display = L.length ? 'none' : 'block';
+    if (!L.length) {
+      var et = document.getElementById('shop-empty-title'), es = document.getElementById('shop-empty-sub');
+      if (st.brand !== 'all') { et.textContent = 'Les produits ' + st.brand + ' arrivent très vite ! 🔜'; es.textContent = 'En attendant, explore le reste de la boutique.'; }
+      else { et.textContent = 'Aucun produit ne correspond'; es.textContent = ''; }
+    }
     var ch = chips();
     var cw = document.getElementById('shop-chips');
     if (ch.length) {

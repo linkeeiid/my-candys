@@ -53,8 +53,9 @@ body.mc-home{background:#FB2E9A}
 .mc-marquee-track{display:flex;white-space:nowrap;width:max-content;animation:marquee 36s linear infinite}
 .mc-marquee-track:hover{animation-play-state:paused}
 .mc-marquee-track > div{display:flex;gap:26px;padding-right:26px;align-items:center}
-.mc-mqlogo{flex:none;width:240px;height:150px;display:flex;align-items:center;justify-content:center}
-.mc-mqlogo img{max-width:100%;max-height:100%;object-fit:contain}
+.mc-mqlogo{flex:none;width:240px;height:150px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s}
+.mc-mqlogo:hover{transform:scale(1.07)}
+.mc-mqlogo img{max-width:100%;max-height:100%;object-fit:contain;pointer-events:none}
 .mc-tt-sec{max-width:1220px;margin:0 auto;padding:44px 22px 20px}
 .mc-tt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
 .mc-tt{position:relative;aspect-ratio:9/16;border-radius:20px;overflow:hidden;box-shadow:0 12px 28px rgba(0,0,0,.2);transition:transform .2s;display:block}
@@ -100,7 +101,7 @@ body.mc-home{background:#FB2E9A}
   .mc-decor{display:none}
   .mc-mdecor{display:block;position:absolute;z-index:0;pointer-events:none;animation:floaty 8s ease-in-out infinite;filter:drop-shadow(0 18px 14px rgba(0,0,0,.24))}
   .mc-hero{aspect-ratio:1.27/1;max-height:none}
-  .mc-wave svg{height:52px}
+  .mc-wave svg{height:52px!important}
   .mc-wave{margin-top:-30px!important}
   /* Badges confiance : 3 sur une ligne, compacts (mobile uniquement) */
   .mc-trust{gap:8px;flex-wrap:nowrap}
@@ -267,7 +268,7 @@ body.mc-home{background:#FB2E9A}
       (p.old ? '<div class="mc-old" style="margin-top:2px">' + MC.money(p.old) + '</div>' : '') +
       '<button class="mc-mbox-add" data-add="' + p.id + '">Ajouter</button></div></div>';
   }).join(''));
-  var one = MC.LOGOS.map(function (l) { return '<div class="mc-mqlogo"><img src="' + l.src + '" alt="' + MC.esc(l.name) + '" loading="lazy"></div>'; }).join('');
+  var one = MC.LOGOS.map(function (l) { return '<a class="mc-mqlogo" href="' + l.href + '" title="Voir ' + MC.esc(l.name) + '"><img src="' + l.src + '" alt="' + MC.esc(l.name) + '" loading="lazy"></a>'; }).join('');
   fill('mc-marquee', '<div>' + one + '</div><div aria-hidden="true">' + one + '</div>');
   var TT = [
     { cap: 'On teste TOUS les Takis 🌶️', views: '1,2M', tint: 'linear-gradient(160deg,#FF5FAE,#B0146A)' },
