@@ -11,11 +11,23 @@
   function initCountdown() {
     var h = $('#cd-h'), m = $('#cd-m'), s = $('#cd-s');
     if (!h || !m || !s) return;
-    var end = Date.now() + 24 * 3600 * 1000;
+    var KEY = 'mcCountdownEnd';
+    // Fin du compte à rebours partagée entre les pages (persistée en localStorage)
+    // → le chrono reste continu pendant tout le parcours, ne se réinitialise pas.
+    function loadEnd() {
+      var e;
+      try { e = parseInt(localStorage.getItem(KEY), 10); } catch (x) {}
+      if (!e || isNaN(e) || e <= Date.now()) {
+        e = Date.now() + 24 * 3600 * 1000;
+        try { localStorage.setItem(KEY, String(e)); } catch (x) {}
+      }
+      return e;
+    }
+    var end = loadEnd();
     var p2 = function (n) { return String(n).padStart(2, '0'); };
     function tick() {
       var left = Math.max(0, Math.round((end - Date.now()) / 1000));
-      if (left === 0) { end = Date.now() + 24 * 3600 * 1000; left = 24 * 3600; }
+      if (left === 0) { end = loadEnd(); left = Math.max(0, Math.round((end - Date.now()) / 1000)); }
       h.textContent = p2(Math.floor(left / 3600));
       m.textContent = p2(Math.floor((left % 3600) / 60));
       s.textContent = p2(left % 60);
