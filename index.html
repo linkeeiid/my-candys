@@ -49,12 +49,10 @@ body.mc-home{background:#FB2E9A}
 .mc-prow{display:flex;gap:16px;overflow-x:auto;padding:8px 2px 20px;scroll-snap-type:x mandatory}
 .mc-prow .mc-prod{width:calc((100% - 64px)/5);scroll-snap-align:start}
 #row-brand .mc-prod{width:210px}
-.mc-marquee{overflow:hidden;padding:4px 0 6px;position:relative;z-index:1}
-.mc-marquee-track{display:flex;white-space:nowrap;width:max-content;animation:marquee 36s linear infinite}
-.mc-marquee-track:hover{animation-play-state:paused}
+.mc-marquee{overflow:hidden;padding:6px 0 8px;position:relative;z-index:1}
+.mc-marquee-track{display:flex;white-space:nowrap;width:max-content;animation:marquee 38s linear infinite;will-change:transform;backface-visibility:hidden}
 .mc-marquee-track > div{display:flex;gap:26px;padding-right:26px;align-items:center}
-.mc-mqlogo{flex:none;width:240px;height:150px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s}
-.mc-mqlogo:hover{transform:scale(1.07)}
+.mc-mqlogo{flex:none;width:220px;height:130px;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .mc-mqlogo img{max-width:100%;max-height:100%;object-fit:contain;pointer-events:none}
 .mc-tt-sec{max-width:1220px;margin:0 auto;padding:44px 22px 20px}
 .mc-tt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
@@ -110,6 +108,8 @@ body.mc-home{background:#FB2E9A}
   .mc-trust-item small{display:none}
   .mc-trust-item b{font-size:11px;line-height:1.15}
   .mc-cat4{gap:8px}
+  .mc-mqlogo{width:148px;height:84px}
+  .mc-marquee-track > div{gap:16px;padding-right:16px}
   .mc-tt-grid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;padding-bottom:6px}
   .mc-tt{flex:none;width:46%;scroll-snap-align:center}
   .mc-rev-grid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px}
