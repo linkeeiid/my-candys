@@ -146,6 +146,14 @@ h1,h2,h3{font-weight:800;letter-spacing:-.5px;margin:0}
 .mc-old{font-size:12px;color:#B7A0AC;text-decoration:line-through;margin-top:2px}
 .mc-add{position:absolute;bottom:12px;right:12px;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;font-size:26px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 18px rgba(255,46,154,.4);transition:transform .15s}
 .mc-add:hover{transform:scale(1.1)}
+/* ---------- Stock (miroir temps réel Firebase) ---------- */
+.mc-add[disabled],.mc-add[data-out]{background:#D9C7D1;box-shadow:none;cursor:not-allowed;pointer-events:none}
+.mc-add[disabled]:hover,.mc-add[data-out]:hover{transform:none}
+.mc-prod.is-out .mc-prod-img{filter:grayscale(.75) opacity(.62)}
+.mc-prod.is-out .mc-pname{color:#9B8592}
+.mc-out-flag{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-6deg);background:#2A0A1C;color:#fff;font-weight:800;font-size:13px;letter-spacing:.4px;padding:7px 16px;border-radius:999px;box-shadow:0 6px 16px rgba(0,0,0,.28);z-index:3;pointer-events:none;text-transform:uppercase}
+.mc-stocktag{margin:6px 0 0;font-size:12px;font-weight:700;display:block}
+.mc-stocktag.is-low{color:#D9481B}
 
 /* ---------- Toast ---------- */
 .mc-toast{position:fixed;bottom:28px;left:50%;transform:translate(-50%,24px);z-index:90;background:#2A0A1C;color:#fff;font-weight:600;font-size:15px;padding:14px 22px;border-radius:14px;box-shadow:0 14px 34px rgba(0,0,0,.28);display:flex;align-items:center;gap:10px;opacity:0;visibility:hidden;transition:opacity .3s,transform .3s}

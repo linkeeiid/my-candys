@@ -33,6 +33,11 @@
 .pd-revlink{font-size:14px;color:#8A6076}
 .pd-revlink:hover{color:#E01784}
 .pd-stock{background:#EAFBF3;color:#1B8A57;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px}
+.pd-stock.low{background:#FFF3E8;color:#D9481B}
+.pd-stock.out{background:#FDECEC;color:#C62A22}
+.pd-add[disabled]{filter:grayscale(.35);opacity:.55;box-shadow:none;cursor:not-allowed}
+.pd-add[disabled]:hover{transform:none;filter:grayscale(.35)}
+.pd-step.is-off{opacity:.5;pointer-events:none}
 .pd-price{display:flex;align-items:baseline;gap:12px;margin-top:20px;flex-wrap:wrap}
 .pd-now{font-weight:800;font-size:38px;color:#E01784;letter-spacing:-1px}
 .pd-old{font-size:17px;color:#B7A0AC;text-decoration:line-through}
@@ -130,7 +135,7 @@
       <span class="pd-stars">★★★★★</span>
       <span class="pd-note" id="pd-note">4,9</span>
       <a href="#avis" class="pd-revlink" id="pd-revlink">0 avis</a>
-      <span class="pd-stock">● En stock</span>
+      <span class="pd-stock" id="pd-stock">● En stock</span>
     </div>
 
     <div class="pd-price" id="pd-price"></div>
@@ -182,6 +187,7 @@
 
 <script src="cart-store.js"></script>
 <script src="products.js"></script>
+<script src="stock-store.js"></script>
 <script src="chrome.js"></script>
 <script src="app.js"></script>
 <script>
@@ -267,19 +273,57 @@
   $('pd-desc').textContent = descText;
   $('pd-tags').innerHTML = tags.map(function (t) { return '<div class="pd-tag">' + MC.esc(t) + '</div>'; }).join('');
 
-  /* --- Sélecteur de quantité + Ajout au panier (avec la quantité choisie) --- */
-  var addBtn = $('pd-add'), qtyEl = $('pd-qty');
-  function refreshAdd() {
-    qtyEl.textContent = qty;
-    addBtn.textContent = '🛒 Ajouter au panier — ' + MC.money(p.price * qty);
+  /* --- Sélecteur de quantité + Ajout au panier (stock temps réel Firebase) --- */
+  var addBtn = $('pd-add'), qtyEl = $('pd-qty'), stockPill = $('pd-stock');
+  var stepEl = document.querySelector('.pd-step');
+  // Quantité disponible : nombre connu, ou Infini si stock inconnu (jamais bloquant).
+  function avail() {
+    if (!window.MCStock) return Infinity;
+    var v = MCStock.get(p.id);
+    return v === null ? Infinity : v;
   }
-  refreshAdd();
-  $('pd-inc').addEventListener('click', function () { qty++; refreshAdd(); });
+  function refreshAdd() {
+    var a = avail();
+    if (qty > a) qty = Math.max(1, a);
+    qtyEl.textContent = qty;
+    if (a <= 0) {
+      addBtn.disabled = true;
+      addBtn.textContent = '😔 Rupture de stock';
+      if (stepEl) stepEl.classList.add('is-off');
+    } else {
+      addBtn.disabled = false;
+      addBtn.textContent = '🛒 Ajouter au panier — ' + MC.money(p.price * qty);
+      if (stepEl) stepEl.classList.remove('is-off');
+    }
+  }
+  function refreshStockPill() {
+    if (!stockPill) return;
+    var a = avail();
+    if (a === Infinity) { stockPill.className = 'pd-stock'; stockPill.textContent = '● En stock'; }
+    else if (a <= 0) { stockPill.className = 'pd-stock out'; stockPill.textContent = '● Rupture de stock'; }
+    else if (window.MCStock && a <= MCStock.LOW) { stockPill.className = 'pd-stock low'; stockPill.textContent = '🔥 Plus que ' + a + ' en stock'; }
+    else { stockPill.className = 'pd-stock'; stockPill.textContent = '● En stock'; }
+  }
+  function refreshStock() { refreshStockPill(); refreshAdd(); }
+  refreshStock();
+  $('pd-inc').addEventListener('click', function () { if (qty < avail()) { qty++; refreshAdd(); } });
   $('pd-dec').addEventListener('click', function () { qty = Math.max(1, qty - 1); refreshAdd(); });
   addBtn.addEventListener('click', function () {
-    MCCart.add({ id: p.id, name: p.name, price: p.price, tint: p.tint, old: p.old }, qty);
-    MCui.toast(p.name + ' ajouté au panier');
+    var a = avail();
+    if (a <= 0) { MCui.toast('Rupture de stock 😔'); return; }
+    var inCart = 0;
+    try { var l = MCCart.items().filter(function (x) { return x.id === p.id; })[0]; inCart = l ? l.qty : 0; } catch (e) {}
+    var canAdd = a - inCart;
+    if (canAdd <= 0) { MCui.toast('Tu as déjà tout le stock dispo (' + a + ') dans ton panier'); return; }
+    if (qty > canAdd) {
+      MCCart.add({ id: p.id, name: p.name, price: p.price, tint: p.tint, old: p.old }, canAdd);
+      MCui.toast('Ajouté : il ne reste que ' + a + ' en stock');
+    } else {
+      MCCart.add({ id: p.id, name: p.name, price: p.price, tint: p.tint, old: p.old }, qty);
+      MCui.toast(p.name + ' ajouté au panier');
+    }
   });
+  window.addEventListener('mc-stock-change', refreshStock);
 
   /* --- Cœur favori (branché sur MCWish via la délégation d'app.js) --- */
   var wishBtn = $('pd-wish');

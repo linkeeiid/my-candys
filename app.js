@@ -149,7 +149,19 @@
     document.addEventListener('click', function (e) {
       var add = e.target.closest('[data-add]');
       if (add) {
-        var p = MC.byId(add.getAttribute('data-add'));
+        var addId = add.getAttribute('data-add');
+        // Garde anti-survente : on n'ajoute pas au-delà du stock connu (Firebase).
+        // Stock inconnu (null) => on laisse passer (le site ne se bloque jamais).
+        if (window.MCStock) {
+          var avail = MCStock.get(addId);
+          if (avail !== null) {
+            if (avail <= 0) { toast('Rupture de stock 😔'); return; }
+            var inCart = 0;
+            try { var l = MCCart.items().filter(function (x) { return x.id === addId; })[0]; inCart = l ? l.qty : 0; } catch (x) {}
+            if (inCart >= avail) { toast('Il ne reste que ' + avail + ' en stock'); return; }
+          }
+        }
+        var p = MC.byId(addId);
         if (p && window.MCCart) { MCCart.add({ id: p.id, name: p.name, price: p.price, tint: p.tint, old: p.old }); toast(p.name + ' ajouté au panier'); }
         return;
       }
@@ -193,6 +205,60 @@
     go(0);
   }
 
+  /* ---------- Stock temps réel : décoration des cartes produit ----------
+     Marque en "épuisé" (grisé + bouton désactivé + pastille) ou "plus que X".
+     Fonctionne sur toutes les cartes .mc-prod[data-id] présentes dans le DOM,
+     y compris celles rendues dynamiquement (grille boutique, carrousels, liés). */
+  function decorateCard(el) {
+    if (!window.MCStock) return;
+    var id = el.getAttribute('data-id'); if (!id) return;
+    var av = MCStock.get(id);                       // null = inconnu => disponible
+    var img = el.querySelector('.mc-prod-img');
+    var body = el.querySelector('.mc-prod-body');
+    var addBtn = el.querySelector('.mc-add');
+    var flag = el.querySelector('.mc-out-flag');
+    var tag = el.querySelector('.mc-stocktag');
+
+    // Reset visuel
+    el.classList.remove('is-out');
+    if (addBtn) { addBtn.disabled = false; addBtn.removeAttribute('data-out'); addBtn.title = 'Ajouter au panier'; }
+
+    if (av !== null && av <= 0) {                   // ÉPUISÉ
+      el.classList.add('is-out');
+      if (img && !flag) { flag = document.createElement('div'); flag.className = 'mc-out-flag'; flag.textContent = 'Épuisé'; img.appendChild(flag); }
+      if (addBtn) { addBtn.disabled = true; addBtn.setAttribute('data-out', '1'); addBtn.title = 'Rupture de stock'; }
+      if (tag) tag.parentNode.removeChild(tag);
+      return;
+    }
+    if (flag) flag.parentNode.removeChild(flag);
+
+    if (av !== null && av <= MCStock.LOW) {          // BIENTÔT ÉPUISÉ
+      if (!tag) { tag = document.createElement('div'); tag.className = 'mc-stocktag'; if (body) body.appendChild(tag); }
+      tag.className = 'mc-stocktag is-low';
+      tag.textContent = '🔥 Plus que ' + av + ' !';
+    } else if (tag) {                                // stock sain (ou inconnu)
+      tag.parentNode.removeChild(tag);
+    }
+  }
+  function decorateAllStock() {
+    if (!window.MCStock) return;
+    $$('.mc-prod[data-id]').forEach(decorateCard);
+  }
+  // Re-décore quand des cartes apparaissent (filtres boutique, carrousels…), groupé par frame.
+  function watchStockDom() {
+    if (typeof MutationObserver === 'undefined') return;
+    var queued = false;
+    var mo = new MutationObserver(function (muts) {
+      for (var i = 0; i < muts.length; i++) {
+        if (muts[i].addedNodes && muts[i].addedNodes.length) {
+          if (!queued) { queued = true; requestAnimationFrame(function () { queued = false; decorateAllStock(); }); }
+          break;
+        }
+      }
+    });
+    try { mo.observe(document.body, { childList: true, subtree: true }); } catch (e) {}
+  }
+
   /* ---------- Init ---------- */
   function init() {
     initCountdown();
@@ -206,6 +272,11 @@
     window.addEventListener('mc-wish-change', updateBadges);
     window.addEventListener('storage', function () { updateBadges(); if (cartApi) cartApi.render(); });
     window.MCui.openCart = function () { if (cartApi) cartApi.open(); };
+    // Stock temps réel : décore au chargement + à chaque mise à jour Firebase.
+    decorateAllStock();
+    watchStockDom();
+    window.addEventListener('mc-stock-change', decorateAllStock);
+    window.MCui.decorateStock = decorateAllStock;
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
