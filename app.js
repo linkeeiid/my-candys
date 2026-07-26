@@ -4,7 +4,7 @@
   'use strict';
   var FREE = 39; // seuil livraison offerte (€)
   // === URL du backend (Cloudflare Worker). Vide = aucun appel réseau (comportement local). ===
-  var MC_API = ''; // ← coller ici l'URL du Worker après déploiement, ex: 'https://my-candys-api.xxxx.workers.dev'
+  var MC_API = 'https://my-candys-api.halimjeremy.workers.dev';
   window.MC_API = MC_API;
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
