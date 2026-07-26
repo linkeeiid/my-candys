@@ -291,7 +291,17 @@ body.mc-home{background:#FB2E9A}
   var pone = PR.map(function (p) { return '<div class="mc-press"><b>' + MC.esc(p.name) + '</b><p>' + MC.esc(p.q) + '</p></div>'; }).join('');
   fill('mc-press', '<div>' + pone + '</div><div aria-hidden="true">' + pone + '</div>');
   var f = document.getElementById('mc-news-form');
-  if (f) f.addEventListener('submit', function (e) { e.preventDefault(); f.style.display = 'none'; var ok = document.getElementById('mc-news-ok'); if (ok) ok.style.display = 'inline-block'; });
+  if (f) f.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var inp = f.querySelector('input[type=email]');
+    var email = inp ? inp.value.trim() : '';
+    // Envoi au backend si configuré (sinon rien ne part → local)
+    if (window.MC_API && email) {
+      try { fetch(window.MC_API.replace(/\/$/, '') + '/newsletter', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email, website: '' }) }); } catch (x) {}
+    }
+    f.style.display = 'none';
+    var ok = document.getElementById('mc-news-ok'); if (ok) ok.style.display = 'inline-block';
+  });
 })();
 </script>
 </body>
