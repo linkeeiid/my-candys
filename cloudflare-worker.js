@@ -26,7 +26,7 @@ function corsHeaders(origin) {
   return {
     'Access-Control-Allow-Origin': origin || '*',
     'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Access-Control-Max-Age': '86400',
     'Vary': 'Origin'
   };
@@ -41,12 +41,20 @@ function isEmail(e) { return typeof e === 'string' && /^[^@\s]+@[^@\s]+\.[^@\s]+
 function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 function money(n) { return (Number(n) || 0).toFixed(2).replace('.', ',') + ' €'; }
 
-/* ---- Firebase Realtime Database (REST) ---- */
+/* ---- Firebase Realtime Database (REST, authentifié par FIREBASE_SECRET) ---- */
+function fbUrl(env, path) {
+  const auth = env.FIREBASE_SECRET ? ('?auth=' + encodeURIComponent(env.FIREBASE_SECRET)) : '';
+  return env.FIREBASE_DB_URL.replace(/\/+$/, '') + '/' + path + '.json' + auth;
+}
 async function fbPush(env, path, obj) {
   if (!env.FIREBASE_DB_URL) return null;
-  const url = env.FIREBASE_DB_URL.replace(/\/+$/, '') + '/' + path + '.json';
-  const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(obj) });
+  const r = await fetch(fbUrl(env, path), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(obj) });
   try { return await r.json(); } catch (e) { return null; } // { name: "<pushId>" }
+}
+async function fbGet(env, path) {
+  if (!env.FIREBASE_DB_URL) return null;
+  const r = await fetch(fbUrl(env, path));
+  try { return await r.json(); } catch (e) { return null; }
 }
 
 /* ---- Brevo : ajouter/mettre à jour un contact (newsletter) ---- */
@@ -104,6 +112,17 @@ export default {
     if (path === '/' || path === '/health') {
       return json({ ok: true, service: 'my-candys-api' }, 200, allow);
     }
+
+    // --- Console admin : lecture protégée par mot de passe (header Authorization: Bearer <ADMIN_KEY>) ---
+    if (path === '/admin/data') {
+      const auth = request.headers.get('Authorization') || '';
+      if (!env.ADMIN_KEY || auth !== ('Bearer ' + env.ADMIN_KEY)) {
+        return json({ ok: false, error: 'unauthorized' }, 401, allow);
+      }
+      const parts = await Promise.all([fbGet(env, 'newsletter'), fbGet(env, 'messages'), fbGet(env, 'orders')]);
+      return json({ ok: true, newsletter: parts[0], messages: parts[1], orders: parts[2] }, 200, allow);
+    }
+
     if (request.method !== 'POST') return json({ ok: false, error: 'method_not_allowed' }, 405, allow);
 
     let body = {};
