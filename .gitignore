@@ -11,3 +11,6 @@ _qa*.html
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Sauvegarde locale (non publiée)
+_gestion-*.html
