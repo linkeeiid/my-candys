@@ -124,11 +124,11 @@
 @media (max-width:860px){
   .info-hero h1{font-size:30px}
   .info-hero-decor{display:none!important}
-  .info-wrap{grid-template-columns:1fr;padding:18px 15px 40px;gap:16px}
-  .info-aside{position:static;top:auto}
+  .info-wrap{grid-template-columns:minmax(0,1fr);padding:18px 15px 40px;gap:16px}
+  .info-aside{position:static;top:auto;min-width:0}
   .info-nav{display:flex;gap:8px;overflow-x:auto;padding:10px;scrollbar-width:none}
   .info-nav::-webkit-scrollbar{display:none}
-  .info-navlink{flex:none;white-space:nowrap;padding:10px 14px}
+  .info-navlink{flex:none;width:auto;white-space:nowrap;padding:10px 14px}
   .info-navlink .ic{font-size:16px}
   .info-help{display:none}
   .info-card{padding:22px 20px;border-radius:20px}
