@@ -35,5 +35,18 @@ On commence par la **newsletter** (100% débloquée). Contact/commandes/SumUp vi
 ## 4) Test (je m'en occupe)
 Une fois l'URL reçue, je branche la newsletter du site dessus et on teste : un email saisi sur le site doit apparaître dans ta liste Brevo + dans Firebase.
 
+## 5) Activer la page de gestion (`gestion.html`)
+La console lit les données **via le Worker** (protégé par mot de passe). Il faut donner au Worker un accès Firebase authentifié + un mot de passe admin.
+
+1. **Secret Firebase** : Firebase Console → ⚙️ (Paramètres du projet) → onglet **Comptes de service** → section **Secrets de base de données** → **Afficher** → copie le secret.
+   *(Si cette section n'existe pas sur ton projet récent, dis-le-moi : on passera par un « compte de service » à la place.)*
+2. Sur **Cloudflare** (Worker → Settings → Variables and Secrets), ajoute 2 **Secrets** :
+   - `FIREBASE_SECRET` = *(le secret Firebase de l'étape 1)*
+   - `ADMIN_KEY` = *(un mot de passe fort que TU choisis — c'est celui pour entrer dans la page gestion)*
+3. **Re-colle le contenu à jour de `cloudflare-worker.js`** dans le Worker (il a été mis à jour) → **Deploy**.
+4. Ouvre **`gestion.html`** (sur le site en ligne) → entre ton `ADMIN_KEY` → tu vois inscrits newsletter + messages + (plus tard) commandes.
+
+Le `ADMIN_KEY` reste entre toi et Cloudflare — ne me le donne pas.
+
 ---
 **Note** : `BREVO_API_KEY` ne doit jamais être partagée dans le chat — elle vit uniquement dans Cloudflare. La newsletter n'envoie aucun email en ton nom → aucun souci de délivrabilité (le sujet DMARC ne concernera que le formulaire contact + les emails de commande, qu'on réglera avec un vrai domaine).
