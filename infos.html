@@ -482,6 +482,20 @@
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       if (!form.checkValidity()) { form.reportValidity(); return; }
+      // Envoi au backend si configuré (le message est enregistré ; l'email d'alerte s'activera avec le domaine)
+      if (window.MC_API) {
+        try {
+          fetch(window.MC_API.replace(/\/$/, '') + '/contact', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: (document.getElementById('cf-name').value || '').trim(),
+              email: (document.getElementById('cf-email').value || '').trim(),
+              message: (document.getElementById('cf-msg').value || '').trim(),
+              website: ''
+            })
+          });
+        } catch (x) {}
+      }
       var ok = document.getElementById('contact-ok');
       ok.classList.add('show');
       form.reset();
