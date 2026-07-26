@@ -7,6 +7,35 @@
 <meta name="description" content="FAQ, livraison &amp; retours, contact, notre histoire, nos boutiques et la franchise My Candy's. Toute l'aide dont tu as besoin, au même endroit.">
 <meta name="theme-color" content="#FF2E9A">
 <link rel="icon" href="assets/logo.png">
+<link rel="canonical" href="https://linkeeiid.github.io/my-candys/infos.html">
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="My Candy's">
+<meta property="og:title" content="Infos &amp; aide — My Candy's">
+<meta property="og:description" content="FAQ, livraison &amp; retours, contact, nos boutiques, la franchise et les informations légales de My Candy's.">
+<meta property="og:url" content="https://linkeeiid.github.io/my-candys/infos.html">
+<meta property="og:image" content="https://linkeeiid.github.io/my-candys/assets/banners/promo-site.png">
+<meta property="og:locale" content="fr_FR">
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Infos &amp; aide — My Candy's">
+<meta name="twitter:description" content="FAQ, livraison &amp; retours, contact, nos boutiques, la franchise et les informations légales de My Candy's.">
+<meta name="twitter:image" content="https://linkeeiid.github.io/my-candys/assets/banners/promo-site.png">
+<!-- FAQ structured data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type":"Question","name":"Quels sont les délais de livraison ?","acceptedAnswer":{"@type":"Answer","text":"On expédie sous 24 à 48h ouvrées après ta commande. Comptez ensuite 2 à 4 jours ouvrés en point relais et 2 à 3 jours à domicile en France métropolitaine. Un email de suivi t'est envoyé dès que ton colis part de notre atelier lyonnais."}},
+    {"@type":"Question","name":"Quels moyens de paiement acceptez-vous ?","acceptedAnswer":{"@type":"Answer","text":"Carte bancaire (Visa, Mastercard), Apple Pay, Google Pay et PayPal. Le paiement est 100% sécurisé et chiffré — on ne stocke jamais tes coordonnées bancaires."}},
+    {"@type":"Question","name":"Vos produits sont-ils frais et bien conservés ?","acceptedAnswer":{"@type":"Answer","text":"Oui ! On tourne notre stock en permanence et on ne référence que des produits avec une DLC confortable. Chaque commande est préparée à la main, calée avec soin, et les boissons voyagent dans un emballage renforcé pour arriver nickel."}},
+    {"@type":"Question","name":"Comment utiliser un code promo ?","acceptedAnswer":{"@type":"Answer","text":"Ajoute tes snacks au panier, puis saisis ton code dans le champ « Code promo » du panier ou à l'étape paiement. La réduction s'applique aussitôt. Un seul code par commande, non cumulable avec les Box et l'Anti-Gaspi."}},
+    {"@type":"Question","name":"Puis-je retourner ou échanger un produit ?","acceptedAnswer":{"@type":"Answer","text":"Pour des raisons d'hygiène alimentaire, les produits ouverts ou consommés ne sont ni repris ni échangés. En revanche, si un article est abîmé, manquant ou périmé à l'arrivée, écris-nous sous 48h avec une photo : on te rembourse ou on te réexpédie."}},
+    {"@type":"Question","name":"Que contient une Mystery Box ?","acceptedAnswer":{"@type":"Answer","text":"Une sélection surprise de nos snacks et boissons viraux, avec une valeur toujours supérieure au prix payé. La taille (S, M, XXL) détermine le nombre de produits. Tu peux nous signaler une allergie en commentaire de commande."}}
+  ]
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -35,6 +64,12 @@
 .info-help p{font-size:13px;color:#7A5468;line-height:1.55;margin:0 0 12px}
 .info-help a.btn{display:block;text-align:center;background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;font-weight:700;font-size:13.5px;padding:11px;border-radius:13px;box-shadow:0 8px 18px rgba(255,46,154,.28)}
 
+/* ---------- Legal nav group (discreet) ---------- */
+.info-nav-legal{margin-top:14px;padding:8px 10px}
+.info-navgroup-t{font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:#B58AA0;padding:6px 14px 8px}
+.info-nav-legal .info-navlink{font-size:13.5px;color:#6E4A5C}
+.info-nav-legal .info-navlink .ic{font-size:15px;opacity:.85}
+
 /* ---------- Main content card ---------- */
 .info-main{min-width:0}
 .info-sec{display:none;animation:secIn .3s ease}
@@ -51,6 +86,13 @@
 .info-card ul li{margin-bottom:6px}
 .info-card strong{color:#2A0A1C}
 .info-eyebrow{display:inline-block;background:#FFEBF5;color:#E01784;font-weight:700;font-size:12px;letter-spacing:.4px;text-transform:uppercase;padding:6px 12px;border-radius:999px;margin-bottom:12px}
+
+/* ---------- Legal pages helpers ---------- */
+.legal-date{font-size:12.5px;color:#8A6076;font-style:italic;margin:20px 0 0;padding-top:14px;border-top:1px solid #F1DAE7}
+.legal-meta{background:#FFF7EE;border:1px solid #F1DAE7;border-radius:16px;padding:16px 18px;margin:6px 0 14px;font-size:14px;line-height:1.7;color:#4A2A3A}
+.legal-meta strong{color:#2A0A1C}
+.legal-todo{color:#B8860B;font-weight:700}
+.info-card h4{font-size:15px;font-weight:800;margin:16px 0 6px;color:#2A0A1C}
 
 /* ---------- FAQ accordion ---------- */
 .faq-item{border:1px solid #F1DAE7;border-radius:16px;margin-bottom:12px;overflow:hidden;background:#FFFDFB;transition:border-color .15s,box-shadow .15s}
@@ -130,6 +172,8 @@
   .info-nav::-webkit-scrollbar{display:none}
   .info-navlink{flex:none;width:auto;white-space:nowrap;padding:10px 14px}
   .info-navlink .ic{font-size:16px}
+  .info-nav-legal{margin-top:10px;align-items:center}
+  .info-navgroup-t{flex:none;white-space:nowrap;padding:0 8px 0 6px}
   .info-help{display:none}
   .info-card{padding:22px 20px;border-radius:20px}
   .info-card h2{font-size:21px}
@@ -171,6 +215,12 @@
         <p>Notre équipe répond du lundi au samedi, 9h–19h. On adore parler snacks.</p>
         <a class="btn" href="infos.html?p=contact" data-sec="contact">Nous écrire →</a>
       </div>
+      <nav class="info-nav info-nav-legal" aria-label="Informations légales">
+        <div class="info-navgroup-t">Informations légales</div>
+        <a class="info-navlink" data-sec="mentions"        href="infos.html?p=mentions"><span class="ic">⚖️</span> Mentions légales</a>
+        <a class="info-navlink" data-sec="cgv"             href="infos.html?p=cgv"><span class="ic">📜</span> CGV</a>
+        <a class="info-navlink" data-sec="confidentialite" href="infos.html?p=confidentialite"><span class="ic">🔒</span> Confidentialité</a>
+      </nav>
     </aside>
 
     <div class="info-main">
@@ -393,6 +443,168 @@
         </div>
       </section>
 
+      <!-- ============ MENTIONS LÉGALES ============ -->
+      <section class="info-sec" data-sec="mentions" aria-labelledby="ml-h">
+        <div class="info-card">
+          <span class="info-eyebrow">Informations légales</span>
+          <h2 id="ml-h">Mentions légales ⚖️</h2>
+          <p class="lead">Conformément à la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique (LCEN), voici les informations relatives à l'éditeur et à l'hébergeur de ce site.</p>
+
+          <h3>Éditeur du site</h3>
+          <div class="legal-meta">
+            <strong>MY CANDYS LYON</strong> — Société par actions simplifiée (SAS)<br>
+            Capital social : 1 000 €<br>
+            Siège social : 16 Boulevard Pierre Mendès France, 69330 Meyzieu, France<br>
+            SIREN : 951 608 512 · SIRET (siège) : 951 608 512 00012<br>
+            RCS Lyon 951 608 512<br>
+            Code APE/NAF : 47.91A (Vente à distance sur catalogue général)<br>
+            Numéro de TVA intracommunautaire : <span class="legal-todo">[n° de TVA intracommunautaire — à compléter]</span>
+          </div>
+
+          <h3>Contact</h3>
+          <p>
+            Email : <span class="legal-todo">[email de contact — à compléter]</span><br>
+            Téléphone : <span class="legal-todo">[téléphone — optionnel]</span><br>
+            Pour toute question, tu peux aussi passer par notre <a class="inl" href="infos.html?p=contact" data-sec="contact">formulaire de contact</a>.
+          </p>
+
+          <h3>Directeur de la publication</h3>
+          <p><span class="legal-todo">[Directeur de la publication — à compléter]</span>, en qualité de représentant légal de la société MY CANDYS LYON.</p>
+
+          <h3>Hébergement</h3>
+          <p>Le site est hébergé par :</p>
+          <div class="legal-meta">
+            <strong>GitHub, Inc.</strong> (GitHub Pages)<br>
+            88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis
+          </div>
+          <p>Les services d'infrastructure et d'API (back-end) sont fournis par :</p>
+          <div class="legal-meta">
+            <strong>Cloudflare, Inc.</strong><br>
+            101 Townsend Street, San Francisco, CA 94107, États-Unis
+          </div>
+
+          <h3>Propriété intellectuelle</h3>
+          <p>L'ensemble des éléments composant ce site (marque « My Candy's », logo, textes, visuels, mise en page, code) est protégé par le droit de la propriété intellectuelle et demeure la propriété de MY CANDYS LYON ou de ses partenaires. Toute reproduction, représentation ou réutilisation, totale ou partielle, sans autorisation écrite préalable est interdite. Les marques et logos des produits présentés restent la propriété de leurs détenteurs respectifs.</p>
+
+          <h3>Données personnelles</h3>
+          <p>Le traitement de tes données personnelles est détaillé dans notre <a class="inl" href="infos.html?p=confidentialite" data-sec="confidentialite">politique de confidentialité</a>.</p>
+
+          <p class="legal-date">Dernière mise à jour : 27 juillet 2026</p>
+        </div>
+      </section>
+
+      <!-- ============ CGV ============ -->
+      <section class="info-sec" data-sec="cgv" aria-labelledby="cgv-h">
+        <div class="info-card">
+          <span class="info-eyebrow">Informations légales</span>
+          <h2 id="cgv-h">Conditions Générales de Vente 📜</h2>
+          <p class="lead">Les présentes CGV encadrent les ventes réalisées sur le site My Candy's. En passant commande, tu reconnais en avoir pris connaissance et les accepter.</p>
+
+          <h3>1. Objet et champ d'application</h3>
+          <p>Les présentes conditions régissent les ventes de produits proposés par <strong>MY CANDYS LYON</strong> (SAS, siège : 16 Boulevard Pierre Mendès France, 69330 Meyzieu) via son site de vente en ligne, à destination de clients consommateurs situés en France métropolitaine. Elles s'appliquent à l'exclusion de toute autre condition.</p>
+
+          <h3>2. Produits</h3>
+          <p>Nous proposons des <strong>denrées alimentaires</strong> (bonbons, snacks, boissons) ainsi que des <strong>produits d'importation</strong>. Les produits sont décrits et présentés avec la plus grande exactitude possible. Les photographies et descriptifs sont indicatifs et n'engagent pas le vendeur en cas de légère variation (format, édition, emballage). Nos offres sont valables dans la limite des stocks disponibles.</p>
+
+          <h3>3. Prix</h3>
+          <p>Les prix sont indiqués en <strong>euros toutes taxes comprises (TTC)</strong>, hors frais de livraison précisés avant la validation de la commande. MY CANDYS LYON se réserve le droit de modifier ses prix à tout moment ; les produits sont facturés sur la base des tarifs en vigueur au moment de la validation de la commande.</p>
+
+          <h3>4. Commande</h3>
+          <p>La commande est validée après acceptation des présentes CGV et confirmation du paiement. Un email de confirmation récapitulant la commande t'est adressé. MY CANDYS LYON se réserve le droit d'annuler ou de refuser toute commande en cas de litige antérieur, de commande anormale ou de suspicion de fraude.</p>
+
+          <h3>5. Paiement sécurisé</h3>
+          <p>Le paiement s'effectue par <strong>carte bancaire</strong> via notre prestataire de paiement sécurisé <strong>SumUp</strong>. Les données de paiement sont chiffrées et transmises directement au prestataire : elles ne transitent pas et ne sont jamais stockées sur nos serveurs.</p>
+
+          <h3>6. Livraison</h3>
+          <p>Nous livrons en France métropolitaine, au choix en <strong>point relais</strong> ou <strong>à domicile</strong>.</p>
+          <ul>
+            <li>Expédition sous 24 à 48h ouvrées, puis 2 à 4 jours ouvrés en point relais et 2 à 3 jours ouvrés à domicile.</li>
+            <li>Frais de livraison : à partir de 3,90 € en point relais et 5,90 € à domicile, indiqués avant paiement.</li>
+            <li><strong>Livraison offerte en point relais dès 39 € d'achat.</strong></li>
+          </ul>
+          <p>Les délais sont donnés à titre indicatif. En cas de retard anormal, contacte-nous : nous mettons tout en œuvre pour trouver une solution.</p>
+
+          <h3>7. Droit de rétractation</h3>
+          <p>Conformément aux articles L221-18 et suivants du Code de la consommation, tu disposes en principe d'un délai de <strong>14 jours</strong> à compter de la réception de ta commande pour exercer ton droit de rétractation, sans avoir à motiver ta décision.</p>
+          <div class="info-note">⚠️ <strong>Exception importante — produits alimentaires :</strong> en application de l'<strong>article L221-28 du Code de la consommation</strong>, le droit de rétractation <strong>ne s'applique pas</strong> aux biens susceptibles de se détériorer ou de se périmer rapidement (denrées alimentaires périssables), ni aux produits <strong>descellés après la livraison</strong> et ne pouvant être renvoyés pour des raisons d'hygiène ou de protection de la santé. En conséquence, nos produits alimentaires, une fois <strong>livrés et/ou ouverts</strong>, ne sont ni repris ni remboursés.</div>
+
+          <h3>8. Retours et remboursements</h3>
+          <p>Si un article arrive <strong>abîmé, manquant ou périmé</strong>, signale-le sous 48h à réception, photo à l'appui : nous procédons au remboursement ou à la réexpédition du produit concerné. Les remboursements éventuels sont effectués via le moyen de paiement d'origine dans les meilleurs délais.</p>
+
+          <h3>9. Garanties légales</h3>
+          <p>Indépendamment de toute garantie commerciale, tu bénéficies de la <strong>garantie légale de conformité</strong> (articles L217-3 et suivants du Code de la consommation) et de la <strong>garantie contre les vices cachés</strong> (articles 1641 et suivants du Code civil), dans les conditions prévues par la loi.</p>
+
+          <h3>10. Service client</h3>
+          <p>Notre service client francophone est joignable du lundi au samedi, de 9h à 19h, via le <a class="inl" href="infos.html?p=contact" data-sec="contact">formulaire de contact</a> ou par email à <span class="legal-todo">[email de contact — à compléter]</span>.</p>
+
+          <h3>11. Médiation de la consommation</h3>
+          <p>Conformément à l'article L612-1 du Code de la consommation, le consommateur peut recourir gratuitement à un médiateur de la consommation en vue de la résolution amiable d'un litige. Médiateur désigné : <span class="legal-todo">[médiateur de la consommation — à désigner]</span>.</p>
+
+          <h3>12. Droit applicable et litiges</h3>
+          <p>Les présentes CGV sont soumises au <strong>droit français</strong>. En cas de litige, une solution amiable sera recherchée en priorité. À défaut, les tribunaux français seront compétents. La Commission européenne met par ailleurs à disposition une plateforme de <strong>règlement en ligne des litiges (RLL)</strong>, accessible à l'adresse <a class="inl" href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener">ec.europa.eu/consumers/odr</a>.</p>
+
+          <p class="legal-date">Dernière mise à jour : 27 juillet 2026</p>
+        </div>
+      </section>
+
+      <!-- ============ CONFIDENTIALITÉ ============ -->
+      <section class="info-sec" data-sec="confidentialite" aria-labelledby="conf-h">
+        <div class="info-card">
+          <span class="info-eyebrow">Informations légales</span>
+          <h2 id="conf-h">Politique de confidentialité 🔒</h2>
+          <p class="lead">La protection de tes données compte pour nous. Cette page explique quelles données on collecte, pourquoi, avec qui on les partage et comment exercer tes droits (RGPD).</p>
+
+          <h3>Responsable du traitement</h3>
+          <div class="legal-meta">
+            <strong>MY CANDYS LYON</strong> (SAS)<br>
+            16 Boulevard Pierre Mendès France, 69330 Meyzieu, France<br>
+            Contact données personnelles : <span class="legal-todo">[email de contact — à compléter]</span>
+          </div>
+
+          <h3>Données collectées</h3>
+          <ul>
+            <li><strong>Newsletter :</strong> ton adresse email.</li>
+            <li><strong>Formulaire de contact :</strong> ton prénom, ton email et le contenu de ton message.</li>
+            <li><strong>Commandes (à venir) :</strong> nom, coordonnées de livraison, détail de la commande. Les données bancaires sont traitées directement par notre prestataire de paiement et ne sont pas conservées par nos soins.</li>
+          </ul>
+
+          <h3>Finalités et bases légales</h3>
+          <ul>
+            <li><strong>Envoi de la newsletter</strong> — base légale : ton <strong>consentement</strong> (retirable à tout moment).</li>
+            <li><strong>Réponse à tes messages / support client</strong> — base légale : notre <strong>intérêt légitime</strong> à te répondre.</li>
+            <li><strong>Gestion et suivi des commandes</strong> — base légale : l'<strong>exécution du contrat</strong> de vente.</li>
+          </ul>
+
+          <h3>Destinataires et sous-traitants</h3>
+          <p>Tes données ne sont jamais vendues. Elles peuvent être traitées par nos sous-traitants techniques, uniquement pour les besoins des finalités ci-dessus :</p>
+          <ul>
+            <li><strong>Brevo</strong> (Sendinblue SAS, France) — envoi des emails et de la newsletter.</li>
+            <li><strong>Google Firebase</strong> — hébergement et stockage des données.</li>
+            <li><strong>Cloudflare, Inc.</strong> — infrastructure et sécurité (API du site).</li>
+            <li><strong>SumUp</strong> — traitement des paiements.</li>
+          </ul>
+
+          <h3>Durées de conservation</h3>
+          <ul>
+            <li>Email de newsletter : jusqu'à ton désabonnement.</li>
+            <li>Messages du formulaire de contact : le temps nécessaire au traitement de ta demande, puis archivage limité.</li>
+            <li>Données de commande : conservées le temps de la relation commerciale et selon les obligations légales et comptables applicables.</li>
+          </ul>
+
+          <h3>Transferts hors Union européenne</h3>
+          <p>Certains prestataires (par ex. GitHub, Cloudflare) sont établis aux États-Unis. Lorsque des données sont transférées hors de l'Union européenne, ces transferts sont encadrés par des <strong>garanties appropriées</strong> (notamment les clauses contractuelles types de la Commission européenne) afin d'assurer un niveau de protection adéquat.</p>
+
+          <h3>Tes droits</h3>
+          <p>Conformément au RGPD, tu disposes des droits d'<strong>accès</strong>, de <strong>rectification</strong>, d'<strong>effacement</strong>, d'<strong>opposition</strong>, de <strong>portabilité</strong> et de <strong>limitation</strong> du traitement de tes données. Tu peux les exercer par email à <span class="legal-todo">[email de contact — à compléter]</span>.</p>
+          <p>Tu peux également introduire une réclamation auprès de la <strong>CNIL</strong> (Commission nationale de l'informatique et des libertés) : <a class="inl" href="https://www.cnil.fr" target="_blank" rel="noopener">cnil.fr</a>.</p>
+
+          <h3>Cookies</h3>
+          <p>Bonne nouvelle : ce site <strong>n'utilise pas de cookies publicitaires ni de traceurs tiers</strong>. Nous recourons uniquement à du <strong>stockage local technique</strong> (panier, favoris) nécessaire au bon fonctionnement du site, ainsi qu'à une <strong>mesure d'audience sans cookie</strong> et anonyme. Aucun consentement cookie n'est donc requis pour naviguer.</p>
+
+          <p class="legal-date">Dernière mise à jour : 27 juillet 2026</p>
+        </div>
+      </section>
+
     </div>
   </div>
 </div>
@@ -405,14 +617,17 @@
 <script>
 (function () {
   'use strict';
-  var SECTIONS = ['faq', 'livraison', 'contact', 'about', 'boutiques', 'franchise'];
+  var SECTIONS = ['faq', 'livraison', 'contact', 'about', 'boutiques', 'franchise', 'mentions', 'cgv', 'confidentialite'];
   var META = {
     faq:       ['Foire aux questions ❓', 'FAQ', 'Délais, paiement, fraîcheur, retours… on répond à tout.'],
     livraison: ['Livraison & retours 🚚', 'Livraison & retours', 'Délais, points relais, livraison offerte dès 39 € et retours.'],
     contact:   ['Nous contacter ✉️', 'Nous contacter', 'Une question ? On te répond en un rien de temps.'],
     about:     ['Qui sommes-nous ? 🍬', 'Qui sommes-nous ?', "L'histoire de My Candy's, née à Lyon."],
     boutiques: ['Nos boutiques 🏪', 'Nos boutiques', "Retrouve-nous en vrai, un peu partout en France."],
-    franchise: ['Devenir franchisé 🤝', 'Devenir franchisé', 'Ouvre ta boutique My Candy\'s et rejoins le réseau.']
+    franchise: ['Devenir franchisé 🤝', 'Devenir franchisé', 'Ouvre ta boutique My Candy\'s et rejoins le réseau.'],
+    mentions:        ['Mentions légales ⚖️', 'Mentions légales', "Éditeur, hébergeur et informations légales du site My Candy's."],
+    cgv:             ['Conditions Générales de Vente 📜', 'Conditions Générales de Vente', 'Commande, paiement, livraison, rétractation et garanties.'],
+    confidentialite: ['Politique de confidentialité 🔒', 'Politique de confidentialité', 'Données personnelles, cookies et tes droits (RGPD).']
   };
 
   var titleEl = document.getElementById('info-title');

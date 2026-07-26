@@ -1,0 +1,30 @@
+# robots.txt — My Candy's (https://linkeeiid.github.io/my-candys/)
+
+User-agent: *
+Allow: /
+Disallow: /gestion.html
+Disallow: /console.html
+
+# --- Bots IA explicitement autorisés ---
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+Sitemap: https://linkeeiid.github.io/my-candys/sitemap.xml

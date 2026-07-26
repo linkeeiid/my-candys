@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Page introuvable 🍬 — My Candy's</title>
+<meta name="theme-color" content="#FF2E9A">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    font-family:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(1200px 800px at 50% -10%,#4A0F2E 0%,#2A0A1C 60%,#1C0512 100%);
+    color:#fff;min-height:100%;
+    display:flex;align-items:center;justify-content:center;
+    padding:32px 20px;overflow-x:hidden;
+  }
+  .wrap{width:100%;max-width:560px;text-align:center;position:relative;z-index:1}
+  .blob{position:fixed;border-radius:50%;filter:blur(60px);opacity:.55;z-index:0;pointer-events:none}
+  .blob.a{width:340px;height:340px;background:#FF2E9A;top:-120px;left:-80px}
+  .blob.b{width:300px;height:300px;background:#8B3FD1;bottom:-110px;right:-70px}
+  .emoji{font-size:64px;line-height:1;margin-bottom:10px;animation:bob 4s ease-in-out infinite}
+  .code{
+    font-size:clamp(88px,26vw,150px);font-weight:800;letter-spacing:-4px;line-height:.9;
+    background:linear-gradient(180deg,#FF2E9A,#E01784);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:#FF2E9A;
+  }
+  h1{font-size:clamp(24px,6vw,32px);font-weight:800;margin:14px 0 8px;letter-spacing:-.5px}
+  p{font-size:16px;line-height:1.55;color:#F7D6E8;max-width:420px;margin:0 auto 26px}
+  .btn{
+    display:inline-block;text-decoration:none;font-weight:700;font-size:16px;
+    background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;
+    padding:15px 30px;border-radius:999px;
+    box-shadow:0 14px 30px rgba(255,46,154,.4);transition:transform .2s,box-shadow .2s;
+  }
+  .btn:hover{transform:translateY(-3px);box-shadow:0 20px 42px rgba(255,46,154,.55)}
+  .links{margin-top:22px;font-size:14.5px}
+  .links a{color:#FFC4E2;text-decoration:none;font-weight:600;margin:0 10px;white-space:nowrap}
+  .links a:hover{color:#fff;text-decoration:underline}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+  @media(max-width:420px){.links a{margin:0 7px}}
+</style>
+</head>
+<body>
+  <div class="blob a"></div>
+  <div class="blob b"></div>
+  <div class="wrap">
+    <div class="emoji">🍬</div>
+    <div class="code">404</div>
+    <h1>Oups, page introuvable !</h1>
+    <p>Ce bonbon a dû tomber du bocal… La page que tu cherches n'existe pas ou a été déplacée. Reviens vite grignoter avec nous !</p>
+    <a class="btn" href="/my-candys/">Retour à l'accueil 🏠</a>
+    <div class="links">
+      <a href="/my-candys/boutique.html">Boutique</a>
+      <a href="/my-candys/marques.html">Marques</a>
+      <a href="/my-candys/mystery-box.html">Mystery Box</a>
+    </div>
+  </div>
+</body>
+</html>

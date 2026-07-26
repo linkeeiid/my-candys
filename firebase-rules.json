@@ -2,8 +2,6 @@
   "rules": {
     ".read": false,
     ".write": false,
-    "newsletter": { ".write": true },
-    "messages":   { ".write": true },
-    "stock":      { ".read": true }
+    "stock": { ".read": true }
   }
 }

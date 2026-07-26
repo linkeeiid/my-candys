@@ -48,5 +48,21 @@ La console lit les données **via le Worker** (protégé par mot de passe). Il f
 
 Le `ADMIN_KEY` reste entre toi et Cloudflare — ne me le donne pas.
 
+## 6) Renforcement sécurité (à refaire une fois)
+On a durci le backend — il faut re-appliquer 2 choses :
+1. **Règles Firebase** : Firebase Console → **Realtime Database** → onglet **Règles** → colle le **nouveau** contenu de `firebase-rules.json` (plus aucune écriture publique : seul le Worker écrit via son secret) → **Publier**.
+2. **Worker à jour** : Cloudflare → ton Worker `my-candys-api` → **Edit code** → efface tout → colle le contenu à jour de `cloudflare-worker.js` (validation anti-spam : limites de taille email/message) → **Deploy**.
+
+*(Vérif : le formulaire newsletter du site doit toujours marcher — il passe par le Worker, pas en direct.)*
+
+## 7) Statistiques de visites (Cloudflare Web Analytics — gratuit, sans cookie)
+1. **dash.cloudflare.com** → menu **Analytics & Logs** → **Web Analytics** → **Add a site**.
+2. Mets l'hostname **`linkeeiid.github.io`** → Cloudflare te donne un petit script avec un **token** (une longue chaîne dans `data-cf-beacon='{"token":"XXXXXXXX"}'`).
+3. Copie **juste le token** (la valeur `XXXXXXXX`) → ouvre `chrome.js` → tout en bas, colle-le entre les guillemets de `var CF_TOKEN = '';` → `var CF_TOKEN = 'XXXXXXXX';`.
+4. Pousse le site. Les visites apparaîtront dans Cloudflare → Web Analytics (aucun bandeau cookies nécessaire, c'est sans traceur).
+
+## 8) Réseaux sociaux (footer)
+Le footer pointe vers `tiktok.com/@my.candys.lyon`, `instagram.com/my.candys.lyon`, `snapchat.com/add/my.candys.lyon`. **Vérifie que ces @ sont les bons** (surtout Instagram/Snapchat, je les ai déduits du TikTok) et dis-moi si à corriger.
+
 ---
 **Note** : `BREVO_API_KEY` ne doit jamais être partagée dans le chat — elle vit uniquement dans Cloudflare. La newsletter n'envoie aucun email en ton nom → aucun souci de délivrabilité (le sujet DMARC ne concernera que le formulaire contact + les emails de commande, qu'on réglera avec un vrai domaine).

@@ -132,17 +132,17 @@ export default {
     try {
       if (path === '/newsletter') {
         const email = (body.email || '').trim();
-        if (!isEmail(email)) return json({ ok: false, error: 'email_invalide' }, 400, allow);
+        if (!isEmail(email) || email.length > 254) return json({ ok: false, error: 'email_invalide' }, 400, allow);
         await brevoAddContact(env, email, { SOURCE: 'site-newsletter' });
         await fbPush(env, 'newsletter', { email: email, ts: Date.now() });
         return json({ ok: true }, 200, allow);
       }
 
       if (path === '/contact') {
-        const name = (body.name || '').trim();
+        const name = (body.name || '').trim().slice(0, 80);
         const email = (body.email || '').trim();
         const message = (body.message || '').trim();
-        if (!isEmail(email) || !message) return json({ ok: false, error: 'champs_invalides' }, 400, allow);
+        if (!isEmail(email) || email.length > 254 || !message || message.length > 3000) return json({ ok: false, error: 'champs_invalides' }, 400, allow);
         const html = '<div style="font-family:Arial,sans-serif;color:#2A0A1C">' +
           '<h3 style="color:#E01784">Nouveau message — site My Candy\'s</h3>' +
           '<p><b>De :</b> ' + esc(name) + ' &lt;' + esc(email) + '&gt;</p>' +
