@@ -101,6 +101,26 @@ body.mc-home{background:#FB2E9A}
 .mc-mqlogo{flex:none;width:220px;height:130px;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .mc-mqlogo img{max-width:100%;max-height:100%;object-fit:contain;pointer-events:none}
 .mc-tt-sec{max-width:1220px;margin:0 auto;padding:44px 22px 20px}
+.mc-ttrow{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:6px 2px 16px;-webkit-overflow-scrolling:touch}
+.mc-ttrow>*{flex:0 0 auto;scroll-snap-align:center}
+.mc-ttrow::-webkit-scrollbar{height:8px}
+.mc-ttrow::-webkit-scrollbar-thumb{background:rgba(255,255,255,.28);border-radius:999px}
+.mc-ttcard{position:relative;width:200px;height:340px;border-radius:16px;overflow:hidden;cursor:pointer;background:#25091a;border:none;padding:0;display:block}
+.mc-ttcard .mc-ttthumb{width:100%;height:100%;object-fit:cover;display:block}
+.mc-ttcard .mc-tt-grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05) 45%,rgba(0,0,0,.5))}
+.mc-ttcard .mc-ttplay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:54px;height:54px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;transition:transform .15s}
+.mc-ttcard:hover .mc-ttplay{transform:translate(-50%,-50%) scale(1.08)}
+.mc-ttcard .mc-ttplay i{display:block;width:0;height:0;border-left:18px solid #E01784;border-top:11px solid transparent;border-bottom:11px solid transparent;margin-left:5px}
+.mc-ttcard .mc-ttlogo{position:absolute;top:10px;right:10px;width:24px;height:24px;opacity:.95}
+body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
+.mc-ttlb{position:fixed;inset:0;z-index:9999;background:rgba(10,2,8,.87);display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .22s}
+.mc-ttlb.open{opacity:1;pointer-events:auto}
+.mc-ttlb-close{position:fixed;top:14px;right:16px;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.16);color:#fff;font-size:22px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;z-index:2}
+.mc-ttlb-box{position:relative;width:min(94vw,330px);height:min(88vh,720px);display:flex;flex-direction:column;will-change:transform,opacity}
+.mc-ttlb-grab{height:28px;display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:none;flex:none}
+.mc-ttlb-grab span{width:44px;height:5px;border-radius:999px;background:rgba(255,255,255,.55)}
+.mc-ttlb-box iframe{flex:1;width:100%;border:0;border-radius:14px;background:#000}
+.mc-ttlb-hint{position:fixed;bottom:16px;left:0;right:0;text-align:center;color:rgba(255,255,255,.6);font-size:12.5px;pointer-events:none}
 .mc-tt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
 .mc-tt{position:relative;aspect-ratio:9/16;border-radius:20px;overflow:hidden;box-shadow:0 12px 28px rgba(0,0,0,.2);transition:transform .2s;display:block}
 .mc-tt:hover{transform:translateY(-5px)}
@@ -242,7 +262,7 @@ body.mc-home{background:#FB2E9A}
   <div style="text-align:center;margin-bottom:26px">
     <h2 class="mc-h2 mc-white-h" style="font-weight:800;font-size:34px;display:inline-flex;align-items:center;gap:12px">Vu sur <a href="https://www.tiktok.com/@my.candys.lyon" target="_blank" rel="noopener" title="Suivre @my.candys.lyon" style="display:inline-flex"><img src="assets/tiktok-logo.png" alt="TikTok" style="height:44px;width:auto"></a></h2>
   </div>
-  <div class="mc-tt-grid" id="mc-tiktok"></div>
+  <div class="mc-ttrow" id="mc-tiktok"></div>
 </section>
 
 <!-- Mystery Box -->
@@ -319,15 +339,71 @@ body.mc-home{background:#FB2E9A}
   // Précharge les logos pour que la marquee défile déjà chargée (pas de "pop-in")
   MC.LOGOS.forEach(function (l) { var im = new Image(); im.src = l.src; });
   fill('mc-marquee', '<div>' + one + '</div><div aria-hidden="true">' + one + '</div>');
-  var TT = [
-    { cap: 'On teste TOUS les Takis 🌶️', views: '1,2M', tint: 'linear-gradient(160deg,#FF5FAE,#B0146A)' },
-    { cap: 'Unboxing Mystery Box 🎁', views: '890K', tint: 'linear-gradient(160deg,#22D3E4,#0E7C88)' },
-    { cap: 'Prime restock ⚡', views: '2,4M', tint: 'linear-gradient(160deg,#7B8CFF,#3B2F8F)' },
-    { cap: 'Le mur de bonbons US 🍬', views: '760K', tint: 'linear-gradient(160deg,#FFC94D,#C97E00)' }
-  ];
-  fill('mc-tiktok', TT.map(function (t) {
-    return '<a class="mc-tt" href="https://www.tiktok.com/@my.candys.lyon" target="_blank" rel="noopener" style="background:' + t.tint + '"><div class="mc-tt-grad"></div><div class="mc-tt-play"><i></i></div><div class="mc-tt-cap"><b>' + MC.esc(t.cap) + '</b><small>▶ ' + t.views + ' vues</small></div></a>';
-  }).join(''));
+  // Vraies vidéos TikTok — vignettes réelles + lightbox (clic → grand ; ferme au swipe / tap dehors / ✕ / Échap)
+  var TT_IDS = ['7514635342855556374', '7598635752326499606', '7596394549946387734', '7659079352839114016', '7660947035301956896'];
+  (function () {
+    var host = document.getElementById('mc-tiktok');
+    if (!host) return;
+    host.innerHTML = TT_IDS.map(function (id) {
+      return '<button class="mc-ttcard" data-tt="' + id + '" aria-label="Voir la vidéo TikTok">' +
+        '<img class="mc-ttthumb" src="assets/tiktok/' + id + '.jpg" alt="Vidéo TikTok My Candy\'s" loading="lazy" decoding="async">' +
+        '<span class="mc-tt-grad"></span>' +
+        '<img class="mc-ttlogo" src="assets/tiktok-logo.png" alt="" aria-hidden="true">' +
+        '<span class="mc-ttplay"><i></i></span>' +
+        '</button>';
+    }).join('');
+
+    var lb, box, iframe, sy0 = 0;
+    function build() {
+      lb = document.createElement('div');
+      lb.className = 'mc-ttlb';
+      lb.innerHTML =
+        '<button class="mc-ttlb-close" aria-label="Fermer">✕</button>' +
+        '<div class="mc-ttlb-box"><div class="mc-ttlb-grab"><span></span></div>' +
+        '<iframe allow="autoplay; encrypted-media; fullscreen" allowfullscreen scrolling="no" title="Vidéo TikTok"></iframe></div>' +
+        '<div class="mc-ttlb-hint">Glisse la vidéo ou tape en dehors pour fermer</div>';
+      document.body.appendChild(lb);
+      box = lb.querySelector('.mc-ttlb-box');
+      iframe = lb.querySelector('iframe');
+      lb.addEventListener('click', function (e) { if (e.target === lb) closeLb(); });
+      lb.querySelector('.mc-ttlb-close').addEventListener('click', closeLb);
+      swipe(lb.querySelector('.mc-ttlb-grab'));
+    }
+    function openLb(id) {
+      if (!lb) build();
+      iframe.src = 'https://www.tiktok.com/embed/v2/' + id;
+      sy0 = window.pageYOffset || 0;
+      document.body.style.top = (-sy0) + 'px';
+      document.body.classList.add('mc-noscroll');
+      requestAnimationFrame(function () { lb.classList.add('open'); });
+    }
+    function closeLb() {
+      if (!lb) return;
+      lb.classList.remove('open');
+      box.style.transform = ''; box.style.opacity = '';
+      document.body.classList.remove('mc-noscroll');
+      document.body.style.top = '';
+      window.scrollTo(0, sy0);
+      setTimeout(function () { if (iframe) iframe.src = 'about:blank'; }, 240);
+    }
+    function swipe(handle) {
+      var x0 = 0, y0 = 0, on = false;
+      handle.addEventListener('touchstart', function (e) { var t = e.touches[0]; x0 = t.clientX; y0 = t.clientY; on = true; box.style.transition = 'none'; }, { passive: true });
+      handle.addEventListener('touchmove', function (e) {
+        if (!on) return; var t = e.touches[0]; var dx = t.clientX - x0, dy = t.clientY - y0;
+        box.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+        box.style.opacity = String(Math.max(0.2, 1 - Math.max(Math.abs(dx), Math.abs(dy)) / 340));
+      }, { passive: true });
+      handle.addEventListener('touchend', function (e) {
+        if (!on) return; on = false; box.style.transition = '';
+        var t = e.changedTouches[0]; var dx = t.clientX - x0, dy = t.clientY - y0;
+        if (Math.abs(dx) > 90 || Math.abs(dy) > 110) closeLb();
+        else { box.style.transform = ''; box.style.opacity = ''; }
+      });
+    }
+    host.addEventListener('click', function (e) { var b = e.target.closest('[data-tt]'); if (b) openLb(b.getAttribute('data-tt')); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && lb && lb.classList.contains('open')) closeLb(); });
+  })();
   var PR = [
     { name: 'Le Progrès', q: 'La franchise lyonnaise qui transforme les snacks viraux en véritable phénomène de quartier.' },
     { name: 'BFM Lyon', q: 'My Candy’s surfe sur la vague TikTok avec des files d’attente devant sa boutique.' },
