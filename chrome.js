@@ -28,7 +28,7 @@
       '<div class="mc-actions">' +
         '<button id="mc-search-btn" class="mc-act" title="Recherche"><span>🔍</span><span class="mc-lbl">Recherche</span></button>' +
         '<span class="mc-fr">🇫🇷 FR</span>' +
-        '<a href="compte.html" class="mc-act" title="Mon compte"><span>👤</span><span class="mc-lbl">Compte</span></a>' +
+        '<a href="compte.html" class="mc-act" data-account title="Mon compte"><span>👤</span><span class="mc-lbl">Compte</span></a>' +
         '<a href="favoris.html" class="mc-act" title="Favoris"><span>🤍</span><span class="mc-lbl">Favoris</span><span id="wish-badge" class="mc-wbadge">0</span></a>' +
         '<button id="mc-cart-btn" class="mc-cartbtn" title="Panier"><span>🛒</span><span class="mc-lbl">Panier</span><span id="cart-badge" class="mc-cbadge">0</span></button>' +
       '</div>' +
@@ -119,7 +119,7 @@
       '<div class="mc-menu-div"></div>' +
       '<div class="mc-menu-sec"><div class="mc-menu-sectitle">🏆 Marques</div><a href="boutique.html?b=Prime" class="mc-menu-link">Prime</a><a href="boutique.html?b=Takis" class="mc-menu-link">Takis</a><a href="boutique.html?b=Monster" class="mc-menu-link">Monster</a><a href="marques.html" class="mc-menu-link mc-menu-link--all">Toutes les marques →</a></div>' +
     '</div>' +
-    '<div class="mc-menu-foot"><a href="compte.html"><span>👤</span> Compte</a><a href="favoris.html"><span>🤍</span> Favoris</a></div>' +
+    '<div class="mc-menu-foot"><a href="compte.html" data-account><span>👤</span> Compte</a><a href="favoris.html"><span>🤍</span> Favoris</a></div>' +
   '</aside>' +
   '<div id="mc-cart-ov" class="mc-ov"></div>' +
   '<aside id="mc-cart" class="mc-drawer">' +
@@ -136,6 +136,39 @@
       '<div class="mc-cart-secure">🔒 Paiement sécurisé · CB, Apple Pay, PayPal</div>' +
     '</div>' +
   '</aside>' +
+  '<div id="mc-auth" class="mc-authov" role="dialog" aria-modal="true" aria-label="Mon compte">' +
+    '<div class="mc-authbox">' +
+      '<button class="mc-auth-x" id="mc-auth-x" aria-label="Fermer">✕</button>' +
+      '<div id="mc-auth-forms">' +
+        '<div class="mc-auth-head"><img src="assets/logo.png" alt="My Candy\'s"><h2 id="mc-auth-title">Bon retour ! 👋</h2><p id="mc-auth-sub">Connecte-toi pour accéder à ton espace My Candy\'s.</p></div>' +
+        '<div class="mc-auth-social">' +
+          '<button type="button" class="mc-authbtn mc-authbtn-google" data-social="Google"><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Continuer avec Google</button>' +
+          '<button type="button" class="mc-authbtn mc-authbtn-apple" data-social="Apple"><svg viewBox="0 0 384 512" fill="#fff" aria-hidden="true"><path d="M318.7 268.7c-.2-36.71 16.41-64.39 50.01-84.78-18.83-26.91-47.26-41.72-84.72-44.6-35.5-2.79-74.32 20.69-88.51 20.69-14.99 0-49.4-19.68-76.44-19.68C36.5 141.09 0 184.66 0 273.65c0 26.35 4.81 53.57 14.44 81.63 12.83 36.9 59.06 127.3 107.3 125.79 25.21-.6 43.04-17.9 75.85-17.9 31.83 0 48.34 17.9 76.44 17.9 48.68-.71 90.51-82.86 102.71-119.87-65.24-30.76-61.61-90.11-61.61-91.6zm-56.51-164.19c27.25-32.35 24.77-61.82 23.96-72.42-23.06 1.35-49.75 15.74-64.96 33.44-16.75 18.95-26.6 42.39-24.48 71.83 24.93 1.9 47.7-10.9 65.48-32.85z"/></svg> Continuer avec Apple</button>' +
+        '</div>' +
+        '<div class="mc-auth-or">ou</div>' +
+        '<form id="mc-auth-login" novalidate>' +
+          '<div class="mc-auth-field"><label for="mc-auth-login-email">Adresse e-mail</label><input class="mc-auth-input" id="mc-auth-login-email" type="email" autocomplete="email" placeholder="ton@email.com" required></div>' +
+          '<div class="mc-auth-field"><label for="mc-auth-login-pass">Mot de passe</label><input class="mc-auth-input" id="mc-auth-login-pass" type="password" autocomplete="current-password" placeholder="••••••••" required></div>' +
+          '<button class="mc-auth-cta" type="submit">Se connecter</button>' +
+          '<p class="mc-auth-hint" id="mc-auth-hint-login"></p>' +
+        '</form>' +
+        '<form id="mc-auth-signup" novalidate hidden>' +
+          '<div class="mc-auth-field"><label for="mc-auth-sig-first">Prénom</label><input class="mc-auth-input" id="mc-auth-sig-first" type="text" autocomplete="given-name" placeholder="Ton prénom" required></div>' +
+          '<div class="mc-auth-field"><label for="mc-auth-sig-email">Adresse e-mail</label><input class="mc-auth-input" id="mc-auth-sig-email" type="email" autocomplete="email" placeholder="ton@email.com" required></div>' +
+          '<div class="mc-auth-field"><label for="mc-auth-sig-pass">Mot de passe</label><input class="mc-auth-input" id="mc-auth-sig-pass" type="password" autocomplete="new-password" placeholder="8 caractères minimum" required minlength="8"></div>' +
+          '<button class="mc-auth-cta" type="submit">Créer mon compte</button>' +
+          '<p class="mc-auth-hint" id="mc-auth-hint-signup"></p>' +
+        '</form>' +
+        '<p class="mc-auth-switch" id="mc-auth-switch">Pas encore de compte ? <button type="button" data-mode="signup">Créer mon compte</button></p>' +
+        '<div class="mc-auth-secure"><span>🔒</span> Connexion sécurisée · tes données restent privées</div>' +
+      '</div>' +
+      '<div id="mc-auth-me" hidden>' +
+        '<div class="mc-authme-head"><div class="mc-authme-av" id="mc-authme-av">🍬</div><div style="min-width:0"><div class="mc-authme-hi" id="mc-authme-hi">Salut !</div><div class="mc-authme-mail" id="mc-authme-mail"></div></div></div>' +
+        '<div class="mc-authme-stats"><div class="mc-authme-stat"><b id="mc-authme-pts">0</b><span>Points</span></div><div class="mc-authme-stat"><b id="mc-authme-ord">0</b><span>Commandes</span></div><div class="mc-authme-stat"><b id="mc-authme-wish">0</b><span>Favoris</span></div></div>' +
+        '<div class="mc-authme-links"><a href="favoris.html"><span>🤍</span> Mes favoris <span>→</span></a><a href="infos.html?p=livraison"><span>📦</span> Suivi de commande <span>→</span></a><a href="boutique.html?c=bestsellers"><span>🛍️</span> Continuer mes achats <span>→</span></a><button class="mc-auth-logout" id="mc-auth-logout" type="button">Se déconnecter</button></div>' +
+      '</div>' +
+    '</div>' +
+  '</div>' +
   '<div id="mc-toast" class="mc-toast"></div>';
 
   document.body.insertAdjacentHTML('afterbegin', TOP);
@@ -151,4 +184,88 @@
     _cf.setAttribute('data-cf-beacon', JSON.stringify({ token: CF_TOKEN }));
     document.head.appendChild(_cf);
   }
+
+  /* ---------- Modale « Mon compte » (connexion / inscription, partagée) ---------- */
+  (function () {
+    var UKEY = 'mcUserV1';
+    var byId = function (i) { return document.getElementById(i); };
+    var ov = byId('mc-auth'); if (!ov) return;
+    var forms = byId('mc-auth-forms'), me = byId('mc-auth-me');
+    var fLogin = byId('mc-auth-login'), fSignup = byId('mc-auth-signup');
+    var title = byId('mc-auth-title'), sub = byId('mc-auth-sub'), sw = byId('mc-auth-switch');
+    function readU() { try { return JSON.parse(localStorage.getItem(UKEY)); } catch (e) { return null; } }
+    function writeU(u) { try { localStorage.setItem(UKEY, JSON.stringify(u)); } catch (e) {} }
+    function clearU() { try { localStorage.removeItem(UKEY); } catch (e) {} }
+    function toast(m) { if (window.MCui && MCui.toast) MCui.toast(m); }
+
+    function renderMe(u) {
+      byId('mc-authme-hi').textContent = 'Salut, ' + (u.firstName || 'toi') + ' 👋';
+      byId('mc-authme-mail').textContent = u.provider ? ('Connecté via ' + u.provider) : (u.email || '');
+      byId('mc-authme-av').textContent = ((u.firstName || '').trim().charAt(0) || '🍬').toUpperCase();
+      byId('mc-authme-pts').textContent = (u.points != null ? u.points : 0);
+      byId('mc-authme-ord').textContent = (u.orders != null ? u.orders : 0);
+      byId('mc-authme-wish').textContent = (window.MCWish ? MCWish.count() : 0);
+      forms.hidden = true; me.hidden = false;
+    }
+    function showMode(mode) {
+      var login = mode === 'login';
+      fLogin.hidden = !login; fSignup.hidden = login;
+      title.textContent = login ? 'Bon retour ! 👋' : 'Rejoins le club 🎉';
+      sub.innerHTML = login ? "Connecte-toi pour accéder à ton espace My Candy's."
+                            : 'Crée ton compte et gagne <b style="color:#E01784">-10% sur ta 1ère commande</b>.';
+      sw.innerHTML = login ? 'Pas encore de compte ? <button type="button" data-mode="signup">Créer mon compte</button>'
+                           : 'Déjà membre ? <button type="button" data-mode="login">Se connecter</button>';
+    }
+    function showForms() { me.hidden = true; forms.hidden = false; showMode('login'); }
+    function refresh() { var u = readU(); if (u && (u.email || u.provider)) renderMe(u); else showForms(); }
+
+    function open() {
+      var mc = byId('mc-menu-close'); if (mc) mc.click(); // ferme le menu mobile s'il est ouvert
+      refresh();
+      ov.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function close() { ov.classList.remove('open'); document.body.style.overflow = ''; }
+    window.MCauth = { open: open, close: close };
+
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest('[data-account]');
+      if (a) { e.preventDefault(); open(); return; }
+      if (!ov.contains(e.target)) return;
+      var m = e.target.closest('[data-mode]'); if (m) { showMode(m.getAttribute('data-mode')); return; }
+      var s = e.target.closest('[data-social]');
+      if (s) {
+        var prov = s.getAttribute('data-social');
+        var u = readU() || {}; if (!u.firstName) u.firstName = 'toi';
+        u.provider = prov; if (u.points == null) u.points = 50; if (u.orders == null) u.orders = 0;
+        writeU(u); renderMe(u); toast('Connecté avec ' + prov + ' 🎉');
+      }
+    });
+    byId('mc-auth-x').addEventListener('click', close);
+    ov.addEventListener('click', function (e) { if (e.target === ov) close(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && ov.classList.contains('open')) close(); });
+    byId('mc-auth-logout').addEventListener('click', function () { clearU(); showForms(); toast('Tu es déconnecté'); });
+
+    fLogin.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var email = (byId('mc-auth-login-email').value || '').trim();
+      if (!email) { byId('mc-auth-login-email').focus(); return; }
+      var name = email.split('@')[0].replace(/[._-]+/g, ' ').trim(); name = name.charAt(0).toUpperCase() + name.slice(1);
+      var ex = readU();
+      var u = (ex && ex.email === email) ? ex : { firstName: name || 'toi', email: email, points: 0, orders: 0 };
+      writeU(u); renderMe(u); toast('Connexion réussie · content de te revoir !');
+    });
+    fSignup.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var first = (byId('mc-auth-sig-first').value || '').trim();
+      var email = (byId('mc-auth-sig-email').value || '').trim();
+      var pass = (byId('mc-auth-sig-pass').value || '');
+      if (!first) { byId('mc-auth-sig-first').focus(); return; }
+      if (!email) { byId('mc-auth-sig-email').focus(); return; }
+      if (pass.length < 8) { byId('mc-auth-hint-signup').textContent = "Choisis un mot de passe d'au moins 8 caractères."; byId('mc-auth-sig-pass').focus(); return; }
+      var u = { firstName: first, email: email, points: 50, orders: 0 };
+      writeU(u); renderMe(u); toast('Bienvenue ' + first + ' ! +50 points offerts 🎉');
+    });
+    window.addEventListener('mc-wish-change', function () { if (!me.hidden) byId('mc-authme-wish').textContent = (window.MCWish ? MCWish.count() : 0); });
+  })();
 })();
