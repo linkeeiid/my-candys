@@ -130,7 +130,7 @@ h1,h2,h3{font-weight:800;letter-spacing:-.5px;margin:0}
 .mc-cart-secure{text-align:center;font-size:12.5px;color:#8A6076;margin-top:10px}
 
 /* ---------- Carte produit ---------- */
-.mc-stripes{position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.24) 0 9px,transparent 9px 20px)}
+.mc-stripes{display:none}
 .mc-prod{flex:none;background:#FFF7EE;border-radius:24px;padding:0 0 14px;position:relative;box-shadow:0 10px 24px rgba(122,14,74,.12)}
 .mc-prod-imglink{display:block}
 .mc-prod-img{position:relative;height:158px;border-radius:24px 24px 22px 22px;overflow:hidden;margin-bottom:8px}

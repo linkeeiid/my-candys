@@ -156,9 +156,6 @@
     <h1 class="pd-title" id="pd-title"></h1>
 
     <div class="pd-rating">
-      <span class="pd-stars">★★★★★</span>
-      <span class="pd-note" id="pd-note">4,9</span>
-      <a href="#avis" class="pd-revlink" id="pd-revlink">0 avis</a>
       <span class="pd-stock" id="pd-stock">● En stock</span>
     </div>
 
@@ -187,18 +184,6 @@
 
     <div class="pd-acc" id="pd-acc"></div>
   </div>
-</section>
-
-<section id="avis" class="pd-reviews">
-  <h2>Avis clients</h2>
-  <div class="pd-rev-top">
-    <span class="pd-rev-big" id="pd-rev-big">4,9</span>
-    <div>
-      <div class="pd-stars">★★★★★</div>
-      <div style="font-size:13px;color:#8A6076" id="pd-rev-count">sur 0 avis vérifiés</div>
-    </div>
-  </div>
-  <div class="pd-rev-grid" id="pd-rev-grid"></div>
 </section>
 
 <section class="pd-related">
@@ -289,8 +274,6 @@
   /* --- Infos --- */
   $('pd-eyebrow').textContent = (p.brand ? p.brand + ' · ' : '') + CAT;
   $('pd-title').textContent = p.name;
-  $('pd-note').textContent = rating;
-  $('pd-revlink').textContent = p.reviews + ' avis';
 
   var badge = MC.badge(p);
   $('pd-price').innerHTML =
@@ -387,26 +370,6 @@
     open = (open === k ? null : k);
     renderAcc();
   });
-
-  /* --- Avis --- */
-  $('pd-rev-big').textContent = rating;
-  $('pd-rev-count').textContent = 'sur ' + p.reviews + ' avis vérifiés';
-  var REVIEWS = [
-    { text: "« Introuvable en supermarché ici, et je l'ai reçu en 2 jours. Conforme aux vidéos TikTok 🔥 »", name: 'Yanis R.', initial: 'Y', tint: '#FF2E9A' },
-    { text: "« Exactement ce que je cherchais. Emballage nickel, produit frais, je recommande direct. »", name: 'Sarah L.', initial: 'S', tint: '#22D3E4' },
-    { text: "« My Candy's est devenu mon repaire à snacks du monde. Le " + p.name + ", validé par toute la coloc ! »", name: 'Théo B.', initial: 'T', tint: '#8B3FD1' }
-  ];
-  $('pd-rev-grid').innerHTML = REVIEWS.map(function (r) {
-    return '<div class="pd-rev">' +
-             '<div class="pd-rev-head"><span class="pd-stars" style="font-size:15px">★★★★★</span>' +
-               '<span class="pd-rev-verified">✓ Vérifié</span></div>' +
-             '<p>' + MC.esc(r.text) + '</p>' +
-             '<div class="pd-rev-who">' +
-               '<div class="pd-rev-av" style="background:' + r.tint + '">' + r.initial + '</div>' +
-               '<div class="pd-rev-name">' + MC.esc(r.name) + '</div>' +
-             '</div>' +
-           '</div>';
-  }).join('');
 
   /* --- Tu aimeras aussi : même catégorie ou même marque (4-5) --- */
   var rel = MC.PRODUCTS.filter(function (x) {
