@@ -14,3 +14,11 @@ desktop.ini
 
 # Sauvegarde locale (non publiée)
 _gestion-*.html
+
+# Catalogue fournisseur (lourd, ne pas publier)
+*.pdf
+Rubik Bubbles.pdf
+
+# Catalogue fournisseur extrait (travail, non publié)
+_rubik-*.tsv
+_rubik-*.txt
