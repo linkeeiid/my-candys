@@ -253,7 +253,7 @@
     'Épicé':     ['🌶️ Piquant élevé', '🧪 Kit complet', '🔥 Défi TikTok'],
     'Desserts':  ['🍨 Ultra gourmand', '📸 Instagrammable', "✈️ Venu d'ailleurs"]
   };
-  var descText = DESC[CAT] || "Une pépite chinée aux quatre coins du monde, rien que pour toi. Vue sur TikTok, dispo chez My Candy's — à croquer sans attendre. ✨";
+  var descText = p.desc || DESC[CAT] || "Une pépite chinée aux quatre coins du monde, rien que pour toi. Vue sur TikTok, dispo chez My Candy's — à croquer sans attendre. ✨";
   var compoText = COMPO[CAT] || "Voir la composition complète et les allergènes sur l'emballage d'origine du produit.";
   var tags = TAGS[CAT] || ['🔥 Viral', '✈️ Import', '🎁 À partager'];
   var rating = p.best ? '4,9' : (p.nouveau ? '4,7' : '4,8');
@@ -267,17 +267,23 @@
 
   /* --- Média : image principale + vignettes --- */
   var hero = $('pd-hero');
-  hero.style.background = p.tint;
   $('pd-hero-badge').textContent = p.best ? '🔥 VIRAL TIKTOK' : (p.nouveau ? '⭐ NOUVEAU' : '🩷 Coup de cœur');
-  $('pd-hero-label').textContent = 'photo · ' + p.name;
-
-  var alt = [MC.T.pink, MC.T.cyan, MC.T.yellow, MC.T.green, MC.T.purple, MC.T.orange, MC.T.blue]
-    .filter(function (t) { return t !== p.tint; });
-  var thumbTints = [p.tint, alt[0], alt[1], alt[2]];
-  $('pd-thumbs').innerHTML = thumbTints.map(function (t, i) {
-    return '<div class="pd-thumb' + (i === 0 ? ' on' : '') + '" style="background:' + t + '">' +
-             '<div class="mc-stripes"></div></div>';
-  }).join('');
+  if (p.img) {
+    hero.style.background = '#fff';
+    hero.insertAdjacentHTML('afterbegin', '<img class="pd-photo" src="' + p.img + '" alt="' + MC.esc(p.name) + '">');
+    var lbl = $('pd-hero-label'); if (lbl) lbl.style.display = 'none';
+    $('pd-thumbs').innerHTML = '<div class="pd-thumb on" style="background:#fff"><img class="pd-photo" src="' + p.img + '" alt=""></div>';
+  } else {
+    hero.style.background = p.tint;
+    $('pd-hero-label').textContent = 'photo · ' + p.name;
+    var alt = [MC.T.pink, MC.T.cyan, MC.T.yellow, MC.T.green, MC.T.purple, MC.T.orange, MC.T.blue]
+      .filter(function (t) { return t !== p.tint; });
+    var thumbTints = [p.tint, alt[0], alt[1], alt[2]];
+    $('pd-thumbs').innerHTML = thumbTints.map(function (t, i) {
+      return '<div class="pd-thumb' + (i === 0 ? ' on' : '') + '" style="background:' + t + '">' +
+               '<div class="mc-stripes"></div></div>';
+    }).join('');
+  }
 
   /* --- Infos --- */
   $('pd-eyebrow').textContent = (p.brand ? p.brand + ' · ' : '') + CAT;

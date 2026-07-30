@@ -269,3 +269,8 @@ h1,h2,h3{font-weight:800;letter-spacing:-.5px;margin:0}
 .mc-auth-logout{display:flex;align-items:center;justify-content:center;width:100%;padding:13px;border-radius:13px;font-weight:600;font-size:14px;font-family:inherit;background:none;border:1.5px solid #F3C6DE;color:#B0146A;cursor:pointer;margin-top:4px;transition:background .15s}
 .mc-auth-logout:hover{background:#FFF4F9}
 @media (max-width:480px){.mc-authbox{padding:26px 20px 22px;border-radius:20px}}
+
+/* ---------- Vraies photos produit (fond blanc, contenu) ---------- */
+.mc-prod-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:16px;mix-blend-mode:normal}
+.pd-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:22px}
+.pd-thumb .pd-photo{padding:6px}

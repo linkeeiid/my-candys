@@ -78,8 +78,8 @@ window.MC = window.MC || {};
     return '' +
       '<article class="mc-prod" data-id="' + esc(p.id) + '">' +
         '<a href="produit.html?id=' + encodeURIComponent(p.id) + '" class="mc-prod-imglink" aria-label="' + esc(p.name) + '">' +
-          '<div class="mc-prod-img" style="background:' + p.tint + '">' +
-            '<div class="mc-stripes"></div>' +
+          '<div class="mc-prod-img" style="background:' + (p.img ? '#fff' : p.tint) + '">' +
+            (p.img ? '<img class="mc-prod-photo" src="' + esc(p.img) + '" alt="' + esc(p.name) + '" loading="lazy" decoding="async">' : '<div class="mc-stripes"></div>') +
             '<div class="mc-price">' + MC.money(p.price) + '</div>' +
             (b ? '<span class="mc-badge" style="background:' + b.bg + ';color:' + b.color + '">' + b.text + '</span>' : '') +
           '</div>' +
