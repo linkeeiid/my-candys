@@ -2,6 +2,7 @@
   "rules": {
     ".read": false,
     ".write": false,
-    "stock": { ".read": true }
+    "stock": { ".read": true },
+    "catalog": { ".read": true }
   }
 }

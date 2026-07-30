@@ -123,6 +123,12 @@ export default {
       return json({ ok: true, newsletter: parts[0], messages: parts[1], orders: parts[2] }, 200, allow);
     }
 
+    // --- Catalogue : lecture publique des surcharges (catégorie/marque) éditées depuis l'admin ---
+    if (path === '/catalog' && request.method === 'GET') {
+      const cat = await fbGet(env, 'catalog');
+      return json({ ok: true, overrides: cat || {} }, 200, allow);
+    }
+
     if (request.method !== 'POST') return json({ ok: false, error: 'method_not_allowed' }, 405, allow);
 
     let body = {};
@@ -170,6 +176,24 @@ export default {
           });
         }
         return json({ ok: true, orderId: res && res.name }, 200, allow);
+      }
+
+      if (path === '/catalog') {
+        // écriture protégée : recatégoriser un produit (id, cat, brand) depuis l'admin
+        const auth = request.headers.get('Authorization') || '';
+        if (!env.ADMIN_KEY || auth !== ('Bearer ' + env.ADMIN_KEY)) return json({ ok: false, error: 'unauthorized' }, 401, allow);
+        const id = (body.id || '').trim();
+        if (!id) return json({ ok: false, error: 'id_manquant' }, 400, allow);
+        const patch = {};
+        if (body.cat !== undefined) patch.cat = String(body.cat).slice(0, 40);
+        if (body.brand !== undefined) patch.brand = (body.brand === null || body.brand === '') ? null : String(body.brand).slice(0, 40);
+        if (body.price !== undefined) { const pr = Number(body.price); if (!isNaN(pr) && pr >= 0 && pr < 10000) patch.price = Math.round(pr * 100) / 100; }
+        if (body.desc !== undefined) patch.desc = String(body.desc).slice(0, 600);
+        if (body.stock !== undefined) { const st = parseInt(body.stock, 10); patch.stock = isNaN(st) ? null : Math.max(0, Math.min(999999, st)); }
+        if (body.available !== undefined) patch.available = !!body.available;
+        if (body.img !== undefined) { const im = String(body.img || ''); if (im === '') patch.img = null; else if (im.length < 900000) patch.img = im; }
+        await fetch(fbUrl(env, 'catalog/' + encodeURIComponent(id)), { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(patch) });
+        return json({ ok: true }, 200, allow);
       }
 
       return json({ ok: false, error: 'not_found' }, 404, allow);

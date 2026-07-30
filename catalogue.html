@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gestion du catalogue — My Candy's</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#2A0A1C;background:#F4F1F5;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;border:none}
+h1,h2{margin:0;letter-spacing:-.4px}
+.g-top{background:#2A0A1C;color:#fff;position:sticky;top:0;z-index:20}
+.g-top-in{max-width:1240px;margin:0 auto;padding:14px 18px;display:flex;align-items:center;gap:14px}
+.g-top img{height:32px;background:#fff;border-radius:9px;padding:5px 7px}
+.g-top .t{font-weight:800;font-size:16px}
+.g-top .badge{font-size:11px;font-weight:700;background:#E01784;padding:4px 10px;border-radius:999px}
+.g-top .sp{margin-left:auto}
+.g-logout{background:#3D1329;color:#fff;font-weight:600;font-size:13px;padding:8px 13px;border-radius:10px}
+.wrap{max-width:1240px;margin:0 auto;padding:20px 18px 90px}
+.login{max-width:380px;margin:60px auto;background:#fff;border:1px solid #EADBE4;border-radius:20px;padding:30px;box-shadow:0 16px 40px rgba(122,14,74,.1)}
+.login h2{font-size:22px}.login p{color:#7A5468;font-size:14px;margin:6px 0 20px}
+.login label{display:block;font-weight:700;font-size:13px;margin-bottom:7px}
+.login input{width:100%;border:1.5px solid #E7C9DA;border-radius:12px;padding:13px 15px;font-size:15px;font-family:inherit;outline:none}
+.login input:focus{border-color:#FF2E9A;box-shadow:0 0 0 4px rgba(255,46,154,.12)}
+.login button{width:100%;margin-top:16px;background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;font-weight:800;font-size:15px;padding:14px;border-radius:13px}
+.login .err{color:#E23A2E;font-size:13px;font-weight:600;margin-top:12px;min-height:16px}
+.hint{background:#FFF7EE;border:1px dashed #E7C9DA;border-radius:12px;padding:12px 15px;font-size:13.5px;color:#7A5468;line-height:1.5;margin-bottom:14px}
+.tb{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.tb input[type=search]{flex:1;min-width:220px;border:1.5px solid #E7C9DA;border-radius:12px;padding:11px 15px;font-size:15px;font-family:inherit;outline:none;background:#fff}
+.tb input[type=search]:focus{border-color:#FF2E9A}
+.tb select{border:1.5px solid #E7C9DA;border-radius:12px;padding:11px 13px;font-size:14px;font-family:inherit;background:#fff}
+.count{font-size:13px;color:#8A6076;font-weight:600}
+.card{background:#fff;border:1px solid #EADBE4;border-radius:16px;overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#B06089;padding:11px 10px;border-bottom:1px solid #F0E4EC;background:#fff;position:sticky;top:60px;z-index:5}
+td{padding:8px 10px;border-bottom:1px solid #F6EEF3;vertical-align:middle}
+tr.row:hover td{background:#FFFBFD}
+.pname{display:flex;align-items:center;gap:11px;min-width:210px}
+.pthumb{width:40px;height:40px;border-radius:9px;background:#F4F1F5;flex:none;object-fit:contain;padding:3px;border:1px solid #F0E4EC}
+.pname b{font-weight:700;font-size:13.5px;line-height:1.15}
+.pname small{display:block;font-size:10.5px;color:#B7A0AC}
+td select,td input.f{border:1.5px solid #E7C9DA;border-radius:9px;padding:7px 9px;font-size:13px;font-family:inherit;outline:none;background:#fff;width:100%}
+td select:focus,td input.f:focus{border-color:#FF2E9A}
+input.price{width:76px}input.stock{width:66px;text-align:center}
+.sw{position:relative;width:44px;height:24px;flex:none}
+.sw input{opacity:0;width:0;height:0;position:absolute}
+.sw span{position:absolute;inset:0;background:#E2C9D6;border-radius:999px;transition:.2s;cursor:pointer}
+.sw span::before{content:"";position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.sw input:checked+span{background:#22C267}.sw input:checked+span::before{transform:translateX(20px)}
+.exp{background:#FFF1F8;color:#E01784;font-weight:800;font-size:14px;width:30px;height:30px;border-radius:9px}
+.st{width:16px;text-align:center;font-size:14px}.st.ok{color:#1B8A57}.st.load{color:#B7A0AC}
+.panel{background:#FCF5F9}
+.panel td{padding:16px 18px}
+.panel-in{display:grid;grid-template-columns:1fr 260px;gap:22px;align-items:start}
+.panel label{font-weight:700;font-size:12px;color:#8A6076;display:block;margin-bottom:6px}
+.panel textarea{width:100%;min-height:96px;border:1.5px solid #E7C9DA;border-radius:11px;padding:11px 13px;font-size:14px;font-family:inherit;outline:none;resize:vertical}
+.panel textarea:focus{border-color:#FF2E9A}
+.imgbox{text-align:center}
+.imgprev{width:150px;height:150px;border-radius:14px;border:1px solid #EADBE4;background:#fff;object-fit:contain;padding:6px;margin:0 auto 10px;display:block}
+.imgprev.empty{display:flex;align-items:center;justify-content:center;color:#C7A8B8;font-size:12px}
+.panel .urlin{width:100%;border:1.5px solid #E7C9DA;border-radius:10px;padding:9px 11px;font-size:12.5px;font-family:inherit;outline:none;margin-bottom:8px}
+.btn{background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;font-weight:700;font-size:13px;padding:10px 14px;border-radius:11px}
+.btn.sec{background:#fff;border:1.5px solid #F3C6DE;color:#E01784}
+.pactions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.more{display:block;width:100%;margin-top:16px;background:#FFF1F8;color:#E01784;font-weight:700;font-size:14px;padding:13px;border-radius:12px}
+@media(max-width:820px){.panel-in{grid-template-columns:1fr}.pname small{display:none}th{top:58px}}
+</style>
+</head>
+<body>
+<div class="g-top"><div class="g-top-in">
+  <img src="assets/logo.png" alt="My Candy's"><span class="t">Catalogue</span><span class="badge">GESTION</span>
+  <span class="sp"></span>
+  <a href="gestion.html" style="color:#D9AEC4;font-size:13px;text-decoration:none;margin-right:6px">← Back-office</a>
+  <button class="g-logout" id="logout" style="display:none">Déconnexion</button>
+</div></div>
+
+<div class="login" id="login">
+  <h2>Gestion du catalogue 🔒</h2>
+  <p>Mot de passe administrateur pour gérer les produits (catégorie, marque, prix, stock, dispo, description, photo).</p>
+  <form id="login-form">
+    <label for="pw">Mot de passe</label>
+    <input id="pw" type="password" autocomplete="current-password" placeholder="••••••••" required>
+    <button type="submit" id="login-btn">Se connecter</button>
+    <div class="err" id="login-err"></div>
+  </form>
+</div>
+
+<div class="wrap" id="app" style="display:none">
+  <div class="hint">🛠️ Modifie un produit directement dans le tableau : <b>catégorie</b>, <b>marque</b> (= la page où il apparaît), <b>prix</b>, <b>stock</b>, <b>dispo</b> (bouton vert/gris). Clique sur <b>✎</b> pour éditer la <b>description</b> et la <b>photo</b> (colle une URL ou choisis un fichier). Tout est enregistré automatiquement et appliqué sur la boutique. 💡 Astuce : tape « monster » dans la recherche pour vérifier une page.</div>
+  <div class="tb">
+    <input type="search" id="q" placeholder="Rechercher un produit, une marque…">
+    <select id="fcat"><option value="">Toutes catégories</option></select>
+    <span class="count" id="count"></span>
+  </div>
+  <div class="card"><table>
+    <thead><tr>
+      <th>Produit</th><th style="width:150px">Catégorie</th><th style="width:160px">Marque</th>
+      <th style="width:90px">Prix €</th><th style="width:78px">Stock</th><th style="width:60px">Dispo</th><th style="width:36px"></th><th style="width:16px"></th>
+    </tr></thead>
+    <tbody id="rows"></tbody>
+  </table></div>
+  <button class="more" id="more" style="display:none">Afficher plus…</button>
+</div>
+
+<script src="cart-store.js"></script>
+<script src="products.js"></script>
+<script>
+(function () {
+  'use strict';
+  var API = 'https://my-candys-api.halimjeremy.workers.dev';
+  var CATS = ['Bonbons', 'Snacks', 'Sodas', 'Chocolats', 'Desserts', 'Épicé'];
+  var KEY_STORE = 'mcAdminKey';
+  var $ = function (s) { return document.querySelector(s); };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
+  var overrides = {}, PAGE = 50, shown = 0, filtered = [];
+
+  function show(on) { $('#login').style.display = on ? 'none' : 'block'; $('#app').style.display = on ? 'block' : 'none'; $('#logout').style.display = on ? 'inline-block' : 'none'; }
+  function applyOv() { MC.PRODUCTS.forEach(function (p) { var o = overrides[p.id]; if (!o) return;
+    if (o.cat) p.cat = o.cat; if (o.brand !== undefined) p.brand = (o.brand === null ? null : o.brand);
+    if (o.price != null && !isNaN(o.price)) p.price = o.price; if (o.desc) p.desc = o.desc;
+    if (o.img !== undefined) p.img = (o.img === null ? null : o.img);
+    if (o.stock !== undefined) p.stock = o.stock; if (o.available !== undefined) p.available = o.available; }); }
+
+  function rowHtml(p) {
+    var opts = CATS.map(function (c) { return '<option' + (p.cat === c ? ' selected' : '') + '>' + c + '</option>'; }).join('');
+    var thumb = p.img ? '<img class="pthumb" src="' + esc(p.img) + '" alt="">' : '<div class="pthumb"></div>';
+    var avail = (p.available !== false); var stock = (p.stock == null ? '' : p.stock);
+    return '<tr class="row" data-id="' + esc(p.id) + '">' +
+      '<td><div class="pname">' + thumb + '<div><b>' + esc(p.name) + '</b><small>' + esc(p.id) + '</small></div></div></td>' +
+      '<td><select class="e-cat">' + opts + '</select></td>' +
+      '<td><input class="f e-brand" value="' + esc(p.brand || '') + '" placeholder="(aucune)"></td>' +
+      '<td><input class="f price e-price" type="number" step="0.01" min="0" value="' + (p.price != null ? p.price : '') + '"></td>' +
+      '<td><input class="f stock e-stock" type="number" min="0" value="' + esc(stock) + '" placeholder="∞"></td>' +
+      '<td><label class="sw"><input type="checkbox" class="e-avail"' + (avail ? ' checked' : '') + '><span></span></label></td>' +
+      '<td><button class="exp" title="Description + photo">✎</button></td>' +
+      '<td class="st" data-st></td></tr>';
+  }
+  function panelHtml(p) {
+    var prev = p.img ? '<img class="imgprev" src="' + esc(p.img) + '">' : '<div class="imgprev empty">Aucune photo</div>';
+    return '<tr class="panel" data-panel="' + esc(p.id) + '"><td colspan="8"><div class="panel-in">' +
+      '<div><label>Description</label><textarea class="e-desc">' + esc(p.desc || '') + '</textarea>' +
+        '<div class="pactions"><button class="btn save-desc">Enregistrer la description</button></div></div>' +
+      '<div class="imgbox"><label>Photo</label>' + prev +
+        '<input class="urlin e-imgurl" placeholder="Coller une URL d\'image…">' +
+        '<div class="pactions"><button class="btn sec pick-img">📷 Choisir un fichier</button><button class="btn save-img">Enregistrer la photo</button></div>' +
+        '<input type="file" accept="image/*" class="file-img" style="display:none"></div>' +
+      '</div></td></tr>';
+  }
+
+  function refilter() {
+    var q = ($('#q').value || '').toLowerCase().trim(), fc = $('#fcat').value;
+    filtered = MC.PRODUCTS.filter(function (p) {
+      if (fc && p.cat !== fc) return false;
+      if (q && (p.name + ' ' + (p.brand || '')).toLowerCase().indexOf(q) < 0) return false;
+      return true;
+    });
+    shown = 0; $('#rows').innerHTML = ''; more();
+    $('#count').textContent = filtered.length + ' produit' + (filtered.length > 1 ? 's' : '');
+  }
+  function more() { var slice = filtered.slice(shown, shown + PAGE); $('#rows').insertAdjacentHTML('beforeend', slice.map(rowHtml).join('')); shown += slice.length; $('#more').style.display = shown < filtered.length ? 'block' : 'none'; }
+
+  function save(id, patch, stEl) {
+    var key = sessionStorage.getItem(KEY_STORE); if (!key) return;
+    if (stEl) { stEl.className = 'st load'; stEl.textContent = '…'; }
+    return fetch(API + '/catalog', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key }, body: JSON.stringify(Object.assign({ id: id }, patch)) })
+      .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+      .then(function () { if (stEl) { stEl.className = 'st ok'; stEl.textContent = '✓'; } var p = MC.byId(id); if (p) Object.keys(patch).forEach(function (k) { p[k] = (patch[k] === '' ? null : patch[k]); }); overrides[id] = Object.assign(overrides[id] || {}, patch); return true; })
+      .catch(function () { if (stEl) { stEl.className = 'st'; stEl.textContent = '✕'; } });
+  }
+  function rowSt(tr) { return tr.querySelector('[data-st]'); }
+
+  // redimensionne un fichier image -> data URL légère (max 620px, JPEG)
+  function resizeFile(file, cb) {
+    var r = new FileReader();
+    r.onload = function () { var im = new Image(); im.onload = function () {
+      var M = 620, w = im.width, h = im.height, s = Math.min(1, M / Math.max(w, h));
+      var cv = document.createElement('canvas'); cv.width = Math.round(w * s); cv.height = Math.round(h * s);
+      var cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(im, 0, 0, cv.width, cv.height);
+      cb(cv.toDataURL('image/jpeg', 0.82));
+    }; im.onerror = function () { cb(null); }; im.src = r.result; };
+    r.readAsDataURL(file);
+  }
+
+  var tI;
+  $('#rows').addEventListener('change', function (e) {
+    var tr = e.target.closest('tr'); if (!tr) return; var id = tr.getAttribute('data-id'); if (!id) return;
+    if (e.target.classList.contains('e-cat')) save(id, { cat: e.target.value }, rowSt(tr));
+    else if (e.target.classList.contains('e-avail')) save(id, { available: e.target.checked }, rowSt(tr));
+  });
+  $('#rows').addEventListener('input', function (e) {
+    var tr = e.target.closest('tr'); if (!tr) return; var id = tr.getAttribute('data-id'); if (!id) return; var st = rowSt(tr);
+    if (e.target.classList.contains('e-brand')) { clearTimeout(tI); var v = e.target.value.trim(); tI = setTimeout(function () { save(id, { brand: v === '' ? null : v }, st); }, 700); }
+    else if (e.target.classList.contains('e-price')) { clearTimeout(tI); var pv = e.target.value; tI = setTimeout(function () { if (pv !== '' && !isNaN(pv)) save(id, { price: Number(pv) }, st); }, 700); }
+    else if (e.target.classList.contains('e-stock')) { clearTimeout(tI); var sv = e.target.value; tI = setTimeout(function () { save(id, { stock: sv === '' ? null : parseInt(sv, 10) }, st); }, 700); }
+  });
+  // ouvrir/fermer le panneau desc+photo
+  $('#rows').addEventListener('click', function (e) {
+    var b = e.target.closest('.exp'); if (b) {
+      var tr = b.closest('tr'); var id = tr.getAttribute('data-id');
+      var ex = document.querySelector('[data-panel="' + id + '"]'); if (ex) { ex.remove(); return; }
+      tr.insertAdjacentHTML('afterend', panelHtml(MC.byId(id))); return;
+    }
+    var sd = e.target.closest('.save-desc'); if (sd) { var tr2 = sd.closest('[data-panel]'); var id2 = tr2.getAttribute('data-panel'); save(id2, { desc: tr2.querySelector('.e-desc').value.trim() }, null); sd.textContent = '✓ Enregistré'; setTimeout(function () { sd.textContent = 'Enregistrer la description'; }, 1500); return; }
+    var pk = e.target.closest('.pick-img'); if (pk) { pk.closest('[data-panel]').querySelector('.file-img').click(); return; }
+    var si = e.target.closest('.save-img'); if (si) {
+      var tr3 = si.closest('[data-panel]'); var id3 = tr3.getAttribute('data-panel'); var url = tr3.querySelector('.e-imgurl').value.trim();
+      if (!url) { alert('Colle une URL ou choisis un fichier.'); return; }
+      save(id3, { img: url }, null).then(function () { tr3.querySelector('.imgprev').outerHTML = '<img class="imgprev" src="' + esc(url) + '">'; var th = document.querySelector('tr[data-id="' + id3 + '"] .pthumb'); if (th) th.outerHTML = '<img class="pthumb" src="' + esc(url) + '">'; si.textContent = '✓'; setTimeout(function () { si.textContent = 'Enregistrer la photo'; }, 1500); });
+    }
+  });
+  $('#rows').addEventListener('change', function (e) {
+    if (!e.target.classList.contains('file-img')) return; var file = e.target.files[0]; if (!file) return;
+    var tr = e.target.closest('[data-panel]'); var id = tr.getAttribute('data-panel'); var si = tr.querySelector('.save-img'); si.textContent = 'Compression…';
+    resizeFile(file, function (data) { if (!data) { si.textContent = 'Enregistrer la photo'; alert('Image illisible.'); return; }
+      save(id, { img: data }, null).then(function () { tr.querySelector('.imgprev').outerHTML = '<img class="imgprev" src="' + data + '">'; var th = document.querySelector('tr[data-id="' + id + '"] .pthumb'); if (th) th.outerHTML = '<img class="pthumb" src="' + data + '">'; si.textContent = '✓ Enregistré'; setTimeout(function () { si.textContent = 'Enregistrer la photo'; }, 1500); }); });
+  });
+  $('#q').addEventListener('input', refilter); $('#fcat').addEventListener('change', refilter); $('#more').addEventListener('click', more);
+
+  function boot() {
+    $('#fcat').innerHTML = '<option value="">Toutes catégories</option>' + CATS.map(function (c) { return '<option>' + c + '</option>'; }).join('');
+    fetch(API + '/catalog').then(function (r) { return r.json(); }).then(function (d) { if (d && d.ok && d.overrides) { overrides = d.overrides; applyOv(); } show(true); refilter(); }).catch(function () { show(true); refilter(); });
+  }
+  $('#login-form').addEventListener('submit', function (e) {
+    e.preventDefault(); var key = $('#pw').value; $('#login-err').textContent = ''; $('#login-btn').textContent = 'Connexion…';
+    fetch(API + '/admin/data', { headers: { 'Authorization': 'Bearer ' + key } }).then(function (r) { if (r.status === 401) throw 401; if (!r.ok) throw 0; sessionStorage.setItem(KEY_STORE, key); boot(); }).catch(function (err) { $('#login-btn').textContent = 'Se connecter'; $('#login-err').textContent = err === 401 ? 'Mot de passe incorrect.' : 'Erreur de connexion.'; });
+  });
+  $('#logout').addEventListener('click', function () { sessionStorage.removeItem(KEY_STORE); show(false); });
+  if (sessionStorage.getItem(KEY_STORE)) boot();
+})();
+</script>
+</body>
+</html>

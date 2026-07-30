@@ -748,6 +748,7 @@ window.MC = window.MC || {};
   // Carte produit (HTML) — utilisée par les carrousels Accueil et la grille Boutique.
   MC.card = function (p) {
     var b = MC.badge(p);
+    var out = (p.available === false) || (p.stock === 0);
     var wished = (window.MCWish && MCWish.has(p.id));
     return '' +
       '<article class="mc-prod" data-id="' + esc(p.id) + '">' +
@@ -755,7 +756,7 @@ window.MC = window.MC || {};
           '<div class="mc-prod-img" style="background:' + (p.img ? '#fff' : p.tint) + '">' +
             (p.img ? '<img class="mc-prod-photo" src="' + esc(p.img) + '" alt="' + esc(p.name) + '" loading="lazy" decoding="async">' : '<div class="mc-stripes"></div>') +
             '<div class="mc-price">' + MC.money(p.price) + '</div>' +
-            (b ? '<span class="mc-badge" style="background:' + b.bg + ';color:' + b.color + '">' + b.text + '</span>' : '') +
+            (out ? '<span class="mc-badge" style="background:#5a5a5a;color:#fff">Épuisé</span>' : (b ? '<span class="mc-badge" style="background:' + b.bg + ';color:' + b.color + '">' + b.text + '</span>' : '')) +
           '</div>' +
         '</a>' +
         '<button class="mc-heart' + (wished ? ' is-on' : '') + '" data-wish="' + esc(p.id) + '" title="Ajouter aux favoris" aria-label="Ajouter aux favoris">' + (wished ? '❤️' : '🤍') + '</button>' +
@@ -764,7 +765,7 @@ window.MC = window.MC || {};
           '<div class="mc-stars"><span>★★★★★</span><span>(' + p.reviews + ')</span></div>' +
           (p.old ? '<div class="mc-old">' + MC.money(p.old) + '</div>' : '') +
         '</div>' +
-        '<button class="mc-add" data-add="' + esc(p.id) + '" title="Ajouter au panier" aria-label="Ajouter au panier">+</button>' +
+        '<button class="mc-add" data-add="' + esc(p.id) + '"' + (out ? ' disabled style="filter:grayscale(1);opacity:.45;cursor:not-allowed"' : '') + ' title="Ajouter au panier" aria-label="Ajouter au panier">+</button>' +
       '</article>';
   };
 

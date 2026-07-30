@@ -122,6 +122,7 @@
 <script src="stock-store.js"></script>
 <script src="chrome.js"></script>
 <script src="app.js"></script>
+<script src="catalog-overrides.js"></script>
 <script>
 (function () {
   var CATS = ['Bonbons', 'Snacks', 'Sodas', 'Chocolats', 'Épicé', 'Desserts'];
@@ -225,6 +226,7 @@
 
   // Interactions
   document.getElementById('shop-cats').addEventListener('click', function (e) { var t = e.target.closest('[data-cat]'); if (!t) return; var cat = t.getAttribute('data-cat'); st.cat = (st.cat === cat ? 'all' : cat); st.sweet = false; render(); });
+  window.addEventListener('mc-catalog-updated', function () { if (typeof renderSidebar === 'function') renderSidebar(); render(); });
   document.getElementById('shop-brands').addEventListener('click', function (e) { var t = e.target.closest('[data-brand]'); if (!t) return; var br = t.getAttribute('data-brand'); st.brand = (st.brand === br ? 'all' : br); render(); });
   document.getElementById('shop-promo').addEventListener('change', function (e) { st.promo = e.target.checked; render(); });
   document.getElementById('shop-new').addEventListener('change', function (e) { st.nouv = e.target.checked; render(); });
