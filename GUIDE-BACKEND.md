@@ -62,7 +62,7 @@ On a durci le backend — il faut re-appliquer 2 choses :
 4. Pousse le site. Les visites apparaîtront dans Cloudflare → Web Analytics (aucun bandeau cookies nécessaire, c'est sans traceur).
 
 ## 8) Réseaux sociaux (footer)
-Le footer pointe vers `tiktok.com/@my.candys.lyon`, `instagram.com/my.candys.lyon`, `snapchat.com/add/my.candys.lyon`. **Vérifie que ces @ sont les bons** (surtout Instagram/Snapchat, je les ai déduits du TikTok) et dis-moi si à corriger.
+Le footer pointe vers `tiktok.com/@my.candys.raphael`, `instagram.com/my.candys.lyon`, `snapchat.com/add/candy83700`. **Vérifie que ces @ sont les bons** (surtout Instagram/Snapchat, je les ai déduits du TikTok) et dis-moi si à corriger.
 
 ---
 **Note** : `BREVO_API_KEY` ne doit jamais être partagée dans le chat — elle vit uniquement dans Cloudflare. La newsletter n'envoie aucun email en ton nom → aucun souci de délivrabilité (le sujet DMARC ne concernera que le formulaire contact + les emails de commande, qu'on réglera avec un vrai domaine).

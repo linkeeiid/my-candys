@@ -192,6 +192,9 @@ export default {
         if (body.stock !== undefined) { const st = parseInt(body.stock, 10); patch.stock = isNaN(st) ? null : Math.max(0, Math.min(999999, st)); }
         if (body.available !== undefined) patch.available = !!body.available;
         if (body.img !== undefined) { const im = String(body.img || ''); if (im === '') patch.img = null; else if (im.length < 900000) patch.img = im; }
+        if (body.old !== undefined) { if (body.old === null || body.old === '') patch.old = null; else { const od = Number(body.old); if (!isNaN(od) && od >= 0 && od < 10000) patch.old = Math.round(od * 100) / 100; } }
+        if (body.sub !== undefined) patch.sub = (body.sub === null || body.sub === '') ? null : String(body.sub).slice(0, 40);
+        if (body.deleted !== undefined) patch.deleted = !!body.deleted;
         await fetch(fbUrl(env, 'catalog/' + encodeURIComponent(id)), { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(patch) });
         return json({ ok: true }, 200, allow);
       }

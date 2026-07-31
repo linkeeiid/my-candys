@@ -15,11 +15,22 @@
       if (o.cat) p.cat = o.cat;
       if (o.brand !== undefined) p.brand = (o.brand === null ? null : o.brand);
       if (o.price != null && !isNaN(o.price)) p.price = o.price;
+      if (o.old !== undefined) p.old = (o.old === null ? null : o.old);
+      if (o.sub !== undefined) p.sub = (o.sub === null ? null : o.sub);
       if (o.desc) p.desc = o.desc;
       if (o.img !== undefined) p.img = (o.img === null ? null : o.img);
       if (o.stock !== undefined) p.stock = o.stock;
       if (o.available !== undefined) p.available = o.available;
     });
+    // suppressions : retire complètement les produits marqués supprimés
+    var hasDel = false, id;
+    for (id in ov) { if (ov[id] && ov[id].deleted) { hasDel = true; break; } }
+    if (hasDel) {
+      for (var i = MC.PRODUCTS.length - 1; i >= 0; i--) {
+        var od = ov[MC.PRODUCTS[i].id];
+        if (od && od.deleted) MC.PRODUCTS.splice(i, 1);
+      }
+    }
   }
 
   // 1) cache immédiat (synchrone)

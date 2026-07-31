@@ -790,6 +790,9 @@
   var MCAPI='https://my-candys-api.halimjeremy.workers.dev';
   var CATMETA={Bonbons:{e:'🍬',c:'#FF2E9A'},Snacks:{e:'🍿',c:'#F59E0B'},Sodas:{e:'🥤',c:'#2AA7E0'},Chocolats:{e:'🍫',c:'#9B5B3A'},Desserts:{e:'🧁',c:'#A855C7'},'Épicé':{e:'🌶️',c:'#EF4444'}};
   var PCATS=['Bonbons','Snacks','Sodas','Chocolats','Desserts','Épicé'];
+  /* sous-catégories — identiques à la boutique (clé => libellé) ; l'affectation manuelle prime sur les mots-clés */
+  var SUBLABELS={gum:'Chewing-gum & sucettes',chamallow:'Chamallow',barbeapapa:'Barbe à papa',popcorn:'Pop-corn',biscuit:'Biscuits',jelly:'Gelées & gummies',mochi:'Mochi',barres:'Barres chocolatées',peanut:'Beurre de cacahuète',dubai:'Chocolat de Dubaï',chips:'Chips & crackers',takis:'Takis & snacks épicés',jerky:'Beef jerky',ramen:'Ramen & nouilles',americaine:'Cuisine américaine',sauce:'Sauces & dips',salsa:'Salsa',chamoy:'Chamoy',energy:'Énergisantes',sodas:'Sodas viraux',the:'Thé glacé',slush:'Slushies',eau:'Eaux aromatisées',jus:'Jus de fruits',bubbletea:'Bubble tea',mogu:'Mogu Mogu'};
+  var SUBKEYS=['gum','chamallow','barbeapapa','popcorn','biscuit','jelly','mochi','barres','peanut','dubai','chips','takis','jerky','ramen','americaine','sauce','salsa','chamoy','energy','sodas','the','slush','eau','jus','bubbletea','mogu'];
   var cmeta=function(c){return CATMETA[c]||{e:'📦',c:'#8A6076'};};
   var hasMC=(typeof MC!=='undefined'&&MC&&MC.PRODUCTS);
   var ADMINKEY=null;try{ADMINKEY=sessionStorage.getItem('mcAdminKey')||null;}catch(e){}
@@ -799,8 +802,11 @@
   function pApplyOv(){if(!hasMC)return;MC.PRODUCTS.forEach(function(p){var o=pOverrides[p.id];if(!o)return;
     if(o.cat)p.cat=o.cat;if(o.brand!==undefined)p.brand=(o.brand===null?null:o.brand);
     if(o.price!=null&&!isNaN(o.price))p.price=o.price;if(o.desc)p.desc=o.desc;
+    if(o.old!==undefined)p.old=(o.old===null?null:o.old);
+    if(o.sub!==undefined)p.sub=(o.sub===null?null:o.sub);
     if(o.img!==undefined)p.img=(o.img===null?null:o.img);
-    if(o.stock!==undefined)p.stock=o.stock;if(o.available!==undefined)p.available=o.available;});}
+    if(o.stock!==undefined)p.stock=o.stock;if(o.available!==undefined)p.available=o.available;});
+    for(var i=MC.PRODUCTS.length-1;i>=0;i--){var od=pOverrides[MC.PRODUCTS[i].id];if(od&&od.deleted)MC.PRODUCTS.splice(i,1);}}
   function pLoadOverrides(){fetch(MCAPI+'/catalog').then(function(r){return r.json();}).then(function(d){if(d&&d.ok&&d.overrides){pOverrides=d.overrides;pApplyOv();}if(curView==='products')renderProducts();}).catch(function(){});}
   function pResize(file,cb){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var M=620,w=im.width,h=im.height,s=Math.min(1,M/Math.max(w,h));var cv=document.createElement('canvas');cv.width=Math.round(w*s);cv.height=Math.round(h*s);var cx=cv.getContext('2d');cx.fillStyle='#fff';cx.fillRect(0,0,cv.width,cv.height);cx.drawImage(im,0,0,cv.width,cv.height);cb(cv.toDataURL('image/jpeg',0.82));};im.onerror=function(){cb(null);};im.src=r.result;};r.readAsDataURL(file);}
   function pSave(id,patch,cb){if(!ADMINKEY){toast('Active l\'édition d\'abord','warn');return;}
@@ -842,10 +848,10 @@
         '<td><div class="prod">'+thumb+'<div><div class="n">'+esc(p.name)+'</div><div class="sku">#'+esc(p.id)+'</div></div></div></td>'+
         '<td><select class="pin pe-cat"'+lock+'>'+opts+'</select></td>'+
         '<td><input class="pin pe-brand" value="'+esc(p.brand||'')+'" placeholder="—"'+lock+'></td>'+
-        '<td class="r"><input class="pin pe-price" type="number" step="0.01" min="0" value="'+(p.price!=null?p.price:'')+'"'+lock+' style="width:76px;text-align:right"></td>'+
+        '<td class="r">'+(p.old?'<span title="En promo" style="color:var(--pink);font-weight:800;font-size:.72rem;margin-right:.2rem">🔥</span>':'')+'<input class="pin pe-price" type="number" step="0.01" min="0" value="'+(p.price!=null?p.price:'')+'"'+lock+' style="width:72px;text-align:right"></td>'+
         '<td class="r"><input class="pin pe-stock" type="number" min="0" value="'+esc(stock)+'" placeholder="∞"'+lock+' style="width:60px;text-align:right"></td>'+
         '<td><span class="switch sm'+(avail?'':' off')+(ADMINKEY?'':' locked')+'" data-pavail="'+esc(p.id)+'" role="switch"></span></td>'+
-        '<td class="r"><button class="mini" data-pedit="'+esc(p.id)+'">✎ Fiche</button></td></tr>';
+        '<td class="r"><div class="rowact" style="justify-content:flex-end;gap:.35rem"><button class="mini" data-pedit="'+esc(p.id)+'">✎ Fiche</button>'+(ADMINKEY?'<button class="mini pdel" data-pdel="'+esc(p.id)+'" title="Supprimer ce produit">🗑</button>':'')+'</div></td></tr>';
     });
     $('prodBody').insertAdjacentHTML('beforeend',h);pShown+=slice.length;
     if($('prodMore'))$('prodMore').style.display=pShown<pFiltered.length?'':'none';
@@ -859,15 +865,36 @@
   function pFicheModal(id){
     var p=MC.byId?MC.byId(id):null;if(!p)return;var canEdit=!!ADMINKEY,lock=canEdit?'':' disabled';
     var prev=p.img?'<img src="'+esc(p.img)+'" style="width:132px;height:132px;object-fit:contain;border:1px solid var(--line);border-radius:12px;background:#fff;padding:6px">':'<div style="width:132px;height:132px;border:1px dashed var(--line);border-radius:12px;display:grid;place-items:center;font-size:1.7rem">🍬</div>';
+    var inPromo=(p.old!=null&&!isNaN(p.old)),pct=(inPromo&&p.old>0&&p.price!=null)?Math.round((p.old-p.price)/p.old*100):0;
+    var promoState=inPromo
+      ? '🔥 En promo : <s>'+money(p.old)+'</s> → <b style="color:var(--pink)">'+(p.price!=null?money(p.price):'—')+'</b> (-'+pct+' %). Visible dans le rayon « Promos ⚡ ».'
+      : (p.price!=null?'Pas de promo. Prix actuel : '+money(p.price)+'.':'Renseigne d\'abord un prix pour ce produit.');
+    var subOpts='<option value="">— Automatique (mots-clés) —</option>'+SUBKEYS.map(function(k){return '<option value="'+k+'"'+(p.sub===k?' selected':'')+'>'+esc(SUBLABELS[k])+'</option>';}).join('');
     openModal('Fiche — '+p.name,
       '<form><div style="display:flex;gap:1.1rem;flex-wrap:wrap;align-items:flex-start"><div style="text-align:center">'+prev+(canEdit?'<div style="margin-top:.5rem"><button type="button" class="btn btn-ghost pFile" style="font-size:.74rem;padding:.35rem .6rem">📷 Choisir un fichier</button></div><input type="file" accept="image/*" class="pFileIn" style="display:none">':'')+'</div>'+
       '<div style="flex:1;min-width:210px"><div class="form-row"><label>Description</label><textarea name="desc" rows="4"'+lock+' style="width:100%;resize:vertical;font-family:inherit;border:1px solid var(--line);border-radius:9px;padding:.55rem .7rem;font-size:.85rem" placeholder="Décris le produit en une ou deux phrases…">'+esc(p.desc||'')+'</textarea></div>'+
-      '<div class="form-row"><label>URL de la photo</label><input name="img" value="'+esc(p.img||'')+'"'+lock+' placeholder="Coller une URL d\'image…"></div></div></div>'+
-      (canEdit?'<button class="btn btn-primary" type="submit" style="width:100%;justify-content:center;margin-top:.6rem">Enregistrer la fiche</button>':'<p style="font-size:.8rem;color:var(--muted);margin:.7rem 0 0">🔒 Active l\'édition pour modifier la fiche.</p>')+'</form>',
+      '<div class="form-row"><label>URL de la photo</label><input name="img" value="'+esc(p.img||'')+'"'+lock+' placeholder="Coller une URL d\'image…"></div>'+
+      '<div class="form-row"><label>Sous-catégorie (rayon boutique)</label><select class="pin pSubSel"'+lock+'>'+subOpts+'</select><div style="font-size:.72rem;color:var(--muted);margin-top:.25rem">Forcer un rayon précis (prime sur la détection automatique).</div></div></div></div>'+
+      '<div style="border:1px solid var(--line);border-radius:11px;padding:.7rem .8rem;margin-top:.7rem;background:var(--bg)">'+
+        '<div style="font-weight:800;font-size:.82rem">🔥 Promotion</div>'+
+        '<div class="pPromoState" style="font-size:.79rem;color:var(--muted);margin:.35rem 0 .55rem">'+promoState+'</div>'+
+        (canEdit?'<div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:flex-end"><div class="form-row" style="margin:0"><label>Prix promo (€)</label><input class="pin pPromoIn" type="number" step="0.01" min="0" value="'+(inPromo&&p.price!=null?p.price:'')+'" placeholder="ex. 1.99" style="width:120px"></div><button type="button" class="btn btn-primary pPromoApply" style="padding:.5rem .85rem;font-size:.8rem">'+(inPromo?'Mettre à jour':'Mettre en promo')+'</button>'+(inPromo?'<button type="button" class="btn btn-ghost pPromoRemove" style="padding:.5rem .85rem;font-size:.8rem">Retirer la promo</button>':'')+'</div>':'')+
+      '</div>'+
+      (canEdit?'<button class="btn btn-primary" type="submit" style="width:100%;justify-content:center;margin-top:.7rem">Enregistrer la fiche</button>':'<p style="font-size:.8rem;color:var(--muted);margin:.7rem 0 0">🔒 Active l\'édition pour modifier la fiche.</p>')+'</form>',
       function(f){if(!canEdit)return;pSave(id,{desc:f.desc.value.trim(),img:f.img.value.trim()},function(ok){if(ok){closeModal();renderProducts();toast('Fiche enregistrée ✓','good');}});});
     if(canEdit){var fb=$('modalBody').querySelector('.pFile'),fin=$('modalBody').querySelector('.pFileIn');
       if(fb)fb.addEventListener('click',function(){fin.click();});
-      if(fin)fin.addEventListener('change',function(){var file=fin.files[0];if(!file)return;fb.textContent='Compression…';pResize(file,function(data){fb.textContent='📷 Choisir un fichier';if(!data){toast('Image illisible','warn');return;}var im=$('modalBody').querySelector('[name=img]');if(im)im.value=data;var pv=$('modalBody').querySelector('img');if(pv)pv.src=data;toast('Photo prête — clique Enregistrer');});});}
+      if(fin)fin.addEventListener('change',function(){var file=fin.files[0];if(!file)return;fb.textContent='Compression…';pResize(file,function(data){fb.textContent='📷 Choisir un fichier';if(!data){toast('Image illisible','warn');return;}var im=$('modalBody').querySelector('[name=img]');if(im)im.value=data;var pv=$('modalBody').querySelector('img');if(pv)pv.src=data;toast('Photo prête — clique Enregistrer');});});
+      var subSel=$('modalBody').querySelector('.pSubSel');
+      if(subSel)subSel.addEventListener('change',function(){var v=subSel.value;pSave(id,{sub:v===''?null:v},function(ok){if(ok){renderProducts();toast(v?'Rayon : '+SUBLABELS[v]+' ✓':'Rayon automatique ✓','good');}});});
+      var pApply=$('modalBody').querySelector('.pPromoApply');
+      if(pApply)pApply.addEventListener('click',function(){var inp=$('modalBody').querySelector('.pPromoIn'),np=parseFloat(inp.value),ref=(p.old!=null?p.old:p.price);
+        if(isNaN(np)||np<=0){toast('Entre un prix promo valide','warn');return;}
+        if(ref==null||isNaN(ref)){toast('Renseigne d\'abord un prix normal','warn');return;}
+        if(np>=ref){toast('Le prix promo doit être inférieur à '+money(ref),'warn');return;}
+        pSave(id,{old:ref,price:np},function(ok){if(ok){closeModal();renderProducts();toast('Promo appliquée ✓ — dans « Promos »','good');}});});
+      var pRem=$('modalBody').querySelector('.pPromoRemove');
+      if(pRem)pRem.addEventListener('click',function(){pSave(id,{price:(p.old!=null?p.old:p.price),old:null},function(ok){if(ok){closeModal();renderProducts();toast('Promo retirée','good');}});});}
   }
   /* ---------- STATISTIQUES ---------- */
   function renderStats(){
@@ -1053,6 +1080,7 @@
     else if(e.target.classList.contains('pe-stock')){clearTimeout(pTimer);var sv=e.target.value;pTimer=setTimeout(function(){pSave(id,{stock:sv===''?null:parseInt(sv,10)});},700);}});
   $('prodBody').addEventListener('click',function(e){
     var ed=e.target.closest('[data-pedit]');if(ed){pFicheModal(ed.getAttribute('data-pedit'));return;}
+    var dl=e.target.closest('[data-pdel]');if(dl){if(!ADMINKEY){toast('Active l\'édition d\'abord','warn');return;}var did=dl.getAttribute('data-pdel'),dp=MC.byId?MC.byId(did):null;if(!confirm('Supprimer « '+(dp?dp.name:did)+' » du catalogue ?\n\nLe produit disparaîtra de la boutique.'))return;pSave(did,{deleted:true},function(ok){if(ok){for(var di=MC.PRODUCTS.length-1;di>=0;di--){if(MC.PRODUCTS[di].id===did){MC.PRODUCTS.splice(di,1);break;}}renderProducts();toast('Produit supprimé ✓','good');}});return;}
     var sw=e.target.closest('[data-pavail]');if(sw){if(!ADMINKEY){toast('Active l\'édition d\'abord','warn');return;}var id=sw.getAttribute('data-pavail'),willBe=sw.classList.contains('off');sw.classList.toggle('off');pSave(id,{available:willBe},function(ok){if(ok)toast(willBe?'Marqué disponible':'Marqué épuisé');else sw.classList.toggle('off');});return;}});
   // promos
   $('addPromo').addEventListener('click',openPromoModal);

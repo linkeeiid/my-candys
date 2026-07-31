@@ -51,6 +51,9 @@
 .shop-chip{display:flex;align-items:center;gap:7px;background:#fff;border:1px solid #F3C6DE;color:#E01784;font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:999px}
 .shop-chip:hover{background:#FFEBF5}
 .shop-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.shop-main{min-width:0}
+.shop-grid,.shop-grid>*{min-width:0}
+.shop-band{overflow-x:clip}
 .shop-pager{display:flex;justify-content:center;align-items:center;gap:6px;flex-wrap:wrap;margin:36px 0 6px}
 .shop-page,.shop-page-nav{border:1.5px solid #E7C9DA;background:#fff;color:#2A0A1C;font-family:inherit;font-weight:700;font-size:14px;min-width:40px;height:40px;padding:0 13px;border-radius:11px;cursor:pointer;transition:border-color .12s,color .12s,background .12s}
 .shop-page:hover,.shop-page-nav:hover{border-color:#FF2E9A;color:#E01784}
@@ -159,9 +162,9 @@
     sodas: ['fanta', 'coca', 'pepsi', 'sprite', 'mountaindew', 'mtndew', 'drpepper', 'schweppes', 'selecto', 'hamoud', 'lorina', 'poms'],
     the: ['estathe', 'fusetea', 'lipton', 'oolong', 'kombucha', 'icetea', 'starbucks'],
     slush: ['slush', 'icetalk'],
-    eau: ['blue', 'pellegrino', 'mizone', 'vitamin'],
+    eau: ['pellegrino', 'mizone', 'vitaminwater', 'vitamin water'],
     jus: ['ifruit', 'hawai', 'caribos', 'calypso', 'lemonade', 'apla', 'caprisun', 'koolaid'],
-    bubbletea: ['bubble', 'boba', 'mogu'],
+    bubbletea: ['bubbletea', 'boba'],
     mogu: ['mogu']
   };
   var SUBLABELS = { gum: 'Chewing-gum & sucettes', chamallow: 'Chamallow', barbeapapa: 'Barbe à papa', popcorn: 'Pop-corn', biscuit: 'Biscuits', jelly: 'Gelées & gummies', mochi: 'Mochi', barres: 'Barres chocolatées', peanut: 'Beurre de cacahuète', dubai: 'Chocolat de Dubaï', chips: 'Chips & crackers', takis: 'Takis & snacks épicés', jerky: 'Beef jerky', ramen: 'Ramen & nouilles', americaine: 'Cuisine américaine', sauce: 'Sauces & dips', salsa: 'Salsa', chamoy: 'Chamoy', energy: 'Énergisantes', sodas: 'Sodas viraux', the: 'Thé glacé', slush: 'Slushies', eau: 'Eaux aromatisées', jus: 'Jus de fruits', bubbletea: 'Bubble tea', mogu: 'Mogu Mogu' };
@@ -227,7 +230,7 @@
     if (st.best) L = L.filter(function (p) { return p.best; });
     if (st.asie) L = L.filter(function (p) { return p.asie; });
     if (st.sweet) L = L.filter(function (p) { return ['Bonbons', 'Chocolats', 'Desserts'].indexOf(p.cat) >= 0; });
-    if (st.sub && SUBS[st.sub]) { var kws = SUBS[st.sub]; L = L.filter(function (p) { var hh = norm(p.name + ' ' + (p.brand || '')); return kws.some(function (k) { return hh.indexOf(k) >= 0; }); }); }
+    if (st.sub && SUBS[st.sub]) { var kws = SUBS[st.sub]; L = L.filter(function (p) { if (p.sub) return p.sub === st.sub; var hh = norm(p.name + ' ' + (p.brand || '')); return kws.some(function (k) { return hh.indexOf(k) >= 0; }); }); }
     if (st.q) { var toks = st.q.split(/\s+/).map(norm).filter(Boolean); if (toks.length) L = L.filter(function (p) { var h = norm(p.name + ' ' + (p.brand || '')); return toks.every(function (t) { return h.indexOf(t) >= 0; }); }); }
     if (st.sort === 'priceUp') L.sort(function (a, b) { return a.price - b.price; });
     else if (st.sort === 'priceDown') L.sort(function (a, b) { return b.price - a.price; });
