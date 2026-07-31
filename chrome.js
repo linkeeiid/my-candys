@@ -79,9 +79,10 @@
         '<div class="mc-dropmenu mc-dropmenu--right" style="min-width:420px;display:block">' +
           '<div style="font-weight:700;font-size:14px;color:#E01784;margin-bottom:14px">🏆 Vos marques préférées</div>' +
           '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px 26px;font-size:13.5px">' +
-            '<a href="boutique.html?b=Prime" style="color:#4A2A3A">Prime</a><a href="boutique.html?b=Takis" style="color:#4A2A3A">Takis</a><a href="boutique.html?b=Monster" style="color:#4A2A3A">Monster</a>' +
-            '<a href="boutique.html?b=Fanta" style="color:#4A2A3A">Fanta</a><a href="boutique.html?b=Kinder" style="color:#4A2A3A">Kinder</a><a href="boutique.html?b=Samyang" style="color:#4A2A3A">Samyang</a>' +
-            '<a href="marques.html" style="color:#4A2A3A">Oreo</a><a href="marques.html" style="color:#4A2A3A">Reese\'s</a><a href="marques.html" style="color:#4A2A3A">Pop-Tarts</a>' +
+            '<a href="boutique.html?b=Red%20Bull" style="color:#4A2A3A">Red Bull</a><a href="boutique.html?b=Kinder" style="color:#4A2A3A">Kinder</a><a href="boutique.html?b=Fanta" style="color:#4A2A3A">Fanta</a>' +
+            '<a href="boutique.html?b=Pringles" style="color:#4A2A3A">Pringles</a><a href="boutique.html?b=Snickers" style="color:#4A2A3A">Snickers</a><a href="boutique.html?b=Coca-Cola" style="color:#4A2A3A">Coca-Cola</a>' +
+            '<a href="boutique.html?b=Nerds" style="color:#4A2A3A">Nerds</a><a href="boutique.html?b=Twix" style="color:#4A2A3A">Twix</a><a href="boutique.html?b=KitKat" style="color:#4A2A3A">KitKat</a>' +
+            '<a href="boutique.html?b=Cheetos" style="color:#4A2A3A">Cheetos</a><a href="boutique.html?b=Takis" style="color:#4A2A3A">Takis</a><a href="boutique.html?b=Oreo" style="color:#4A2A3A">Oreo</a>' +
           '</div>' +
           '<a href="marques.html" style="display:inline-block;margin-top:14px;color:#E01784;font-weight:600;font-size:13.5px">Toutes nos marques →</a>' +
         '</div>' +
@@ -117,7 +118,7 @@
       '<div class="mc-menu-div"></div>' +
       '<div class="mc-menu-sec"><div class="mc-menu-sectitle">🎁 Exclus</div><a href="mystery-box.html" class="mc-menu-link">Mystery Box</a><a href="boutique.html?c=squishy" class="mc-menu-link">Squishy</a><a href="boutique.html?c=anti-gaspi" class="mc-menu-link">Anti-Gaspi</a><a href="index.html#tiktok" class="mc-menu-link">TikTok</a></div>' +
       '<div class="mc-menu-div"></div>' +
-      '<div class="mc-menu-sec"><div class="mc-menu-sectitle">🏆 Marques</div><a href="boutique.html?b=Prime" class="mc-menu-link">Prime</a><a href="boutique.html?b=Takis" class="mc-menu-link">Takis</a><a href="boutique.html?b=Monster" class="mc-menu-link">Monster</a><a href="marques.html" class="mc-menu-link mc-menu-link--all">Toutes les marques →</a></div>' +
+      '<div class="mc-menu-sec"><div class="mc-menu-sectitle">🏆 Marques</div><a href="boutique.html?b=Red%20Bull" class="mc-menu-link">Red Bull</a><a href="boutique.html?b=Kinder" class="mc-menu-link">Kinder</a><a href="boutique.html?b=Fanta" class="mc-menu-link">Fanta</a><a href="marques.html" class="mc-menu-link mc-menu-link--all">Toutes les marques →</a></div>' +
     '</div>' +
     '<div class="mc-menu-foot"><a href="compte.html" data-account><span>👤</span> Compte</a><a href="favoris.html"><span>🤍</span> Favoris</a></div>' +
   '</aside>' +
@@ -184,6 +185,32 @@
     _cf.setAttribute('data-cf-beacon', JSON.stringify({ token: CF_TOKEN }));
     document.head.appendChild(_cf);
   }
+
+  /* ---------- Méga-menus : sortis du header (sinon rognés/masqués par le contenu de page), positionnés en fixe sous leur déclencheur, ouverture au survol — fonctionne sur toutes les pages ---------- */
+  (function () {
+    // décos de hero (transform+filter → couche GPU qui passe par-dessus le menu) : on les masque via visibility pendant l'ouverture (l'animation floaty ne touche pas visibility)
+    var decos = document.querySelectorAll('[class*="decor"]');
+    function hideDecos(on) { Array.prototype.forEach.call(decos, function (d) { d.style.visibility = on ? 'hidden' : ''; }); }
+    Array.prototype.forEach.call(document.querySelectorAll('.mc-drop'), function (drop) {
+      var menu = drop.querySelector('.mc-dropmenu'), link = drop.querySelector('.mc-navlink');
+      if (!menu || !link) return;
+      document.body.appendChild(menu);            // sort du contexte d'empilement du header
+      var t;
+      function place() {
+        var r = link.getBoundingClientRect();
+        menu.style.top = r.bottom + 'px';
+        if (menu.classList.contains('mc-dropmenu--right')) { menu.style.right = Math.max(8, window.innerWidth - r.right) + 'px'; menu.style.left = 'auto'; }
+        else { menu.style.left = Math.max(8, Math.min(r.left, window.innerWidth - menu.offsetWidth - 8)) + 'px'; menu.style.right = 'auto'; }
+      }
+      function show() { clearTimeout(t); place(); hideDecos(true); menu.style.opacity = '1'; menu.style.visibility = 'visible'; menu.style.transform = 'translateY(0)'; }
+      function hide() { t = setTimeout(function () { menu.style.opacity = '0'; menu.style.visibility = 'hidden'; menu.style.transform = 'translateY(-6px)'; hideDecos(false); }, 140); }
+      drop.addEventListener('mouseenter', show);
+      drop.addEventListener('mouseleave', hide);
+      link.addEventListener('focus', show);
+      menu.addEventListener('mouseenter', function () { clearTimeout(t); });
+      menu.addEventListener('mouseleave', hide);
+    });
+  })();
 
   /* ---------- Modale « Mon compte » (connexion / inscription, partagée) ---------- */
   (function () {

@@ -126,7 +126,8 @@
 <script>
 (function () {
   var CATS = ['Bonbons', 'Snacks', 'Sodas', 'Chocolats', 'Épicé', 'Desserts'];
-  var BRANDS = ['Prime', 'Takis', 'Monster', 'Fanta', 'Kinder', 'Samyang'];
+  var BRANDS = (function () { var s = {}; MC.PRODUCTS.forEach(function (p) { if (p.brand) s[p.brand] = 1; }); return Object.keys(s).sort(function (a, b) { return a.localeCompare(b, 'fr'); }); })();
+  function norm(s) { return (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]/g, ''); }
   var params = new URLSearchParams(location.search);
   var st = { cat: 'all', brand: 'all', promo: false, nouv: false, best: false, asie: false, sweet: false, sort: 'pop', q: '' };
 
@@ -169,21 +170,23 @@
     document.getElementById('shop-cats').innerHTML = CATS.map(function (cat) {
       return '<button class="shop-cat' + (st.cat === cat ? ' on' : '') + '" data-cat="' + cat + '"><span>' + cat + '</span><span>' + count(cat) + '</span></button>';
     }).join('');
-    document.getElementById('shop-brands').innerHTML = BRANDS.map(function (br) {
-      return '<button class="shop-brand' + (st.brand === br ? ' on' : '') + '" data-brand="' + br + '">' + br + '</button>';
-    }).join('');
+    document.getElementById('shop-brands').innerHTML =
+      '<select id="shop-brand-sel" style="width:100%;padding:11px 12px;border:1.5px solid #E7C9DA;border-radius:11px;font-family:inherit;font-size:14px;background:#fff;color:#2A0A1C;cursor:pointer">' +
+      '<option value="all">Toutes les marques (' + BRANDS.length + ')</option>' +
+      BRANDS.map(function (br) { return '<option value="' + MC.esc(br) + '"' + (st.brand === br ? ' selected' : '') + '>' + MC.esc(br) + '</option>'; }).join('') +
+      '</select>';
   }
 
   function filtered() {
     var L = MC.PRODUCTS.slice();
     if (st.cat !== 'all') L = L.filter(function (p) { return p.cat === st.cat; });
-    if (st.brand !== 'all') L = L.filter(function (p) { return p.brand === st.brand; });
+    if (st.brand !== 'all') { var bn = norm(st.brand); L = L.filter(function (p) { return norm(p.brand || '') === bn || norm(p.name).indexOf(bn) >= 0; }); }
     if (st.promo) L = L.filter(function (p) { return p.old; });
     if (st.nouv) L = L.filter(function (p) { return p.nouveau; });
     if (st.best) L = L.filter(function (p) { return p.best; });
     if (st.asie) L = L.filter(function (p) { return p.asie; });
     if (st.sweet) L = L.filter(function (p) { return ['Bonbons', 'Chocolats', 'Desserts'].indexOf(p.cat) >= 0; });
-    if (st.q) { var qq = st.q.toLowerCase(); L = L.filter(function (p) { return (p.name + ' ' + (p.brand || '')).toLowerCase().indexOf(qq) >= 0; }); }
+    if (st.q) { var toks = st.q.split(/\s+/).map(norm).filter(Boolean); if (toks.length) L = L.filter(function (p) { var h = norm(p.name + ' ' + (p.brand || '')); return toks.every(function (t) { return h.indexOf(t) >= 0; }); }); }
     if (st.sort === 'priceUp') L.sort(function (a, b) { return a.price - b.price; });
     else if (st.sort === 'priceDown') L.sort(function (a, b) { return b.price - a.price; });
     else if (st.sort === 'new') L.sort(function (a, b) { return (b.nouveau ? 1 : 0) - (a.nouveau ? 1 : 0); });
@@ -227,7 +230,7 @@
   // Interactions
   document.getElementById('shop-cats').addEventListener('click', function (e) { var t = e.target.closest('[data-cat]'); if (!t) return; var cat = t.getAttribute('data-cat'); st.cat = (st.cat === cat ? 'all' : cat); st.sweet = false; render(); });
   window.addEventListener('mc-catalog-updated', function () { if (typeof renderSidebar === 'function') renderSidebar(); render(); });
-  document.getElementById('shop-brands').addEventListener('click', function (e) { var t = e.target.closest('[data-brand]'); if (!t) return; var br = t.getAttribute('data-brand'); st.brand = (st.brand === br ? 'all' : br); render(); });
+  document.getElementById('shop-brands').addEventListener('change', function (e) { if (e.target.id !== 'shop-brand-sel') return; st.brand = e.target.value; render(); });
   document.getElementById('shop-promo').addEventListener('change', function (e) { st.promo = e.target.checked; render(); });
   document.getElementById('shop-new').addEventListener('change', function (e) { st.nouv = e.target.checked; render(); });
   document.getElementById('shop-sort').addEventListener('change', function (e) { st.sort = e.target.value; render(); });

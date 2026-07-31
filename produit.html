@@ -42,10 +42,13 @@
 /* ---------- Bloc produit (2 colonnes) ---------- */
 .pd{max-width:1220px;margin:0 auto;padding:20px 34px 10px;display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:start}
 .pd-media{position:sticky;top:150px}
-.pd-hero{position:relative;border-radius:26px;overflow:hidden;aspect-ratio:1/1;box-shadow:0 18px 40px rgba(122,14,74,.14)}
+.pd-hero{position:relative;border-radius:26px;overflow:hidden;aspect-ratio:1/1;box-shadow:0 18px 40px rgba(122,14,74,.14);cursor:zoom-in}
+.pd-hero .pd-photo{transition:transform .18s ease-out;will-change:transform;transform-origin:center center}
+.pd-hero:hover .pd-photo{transform:scale(2.6)}
+@media(hover:none){.pd-hero{cursor:default}.pd-hero:hover .pd-photo{transform:none}}
 .pd-hero-badge{position:absolute;top:16px;left:16px;background:#2A0A1C;color:#fff;font-weight:800;font-size:12px;padding:6px 12px;border-radius:999px;pointer-events:none;z-index:2}
 .pd-hero-label{position:absolute;bottom:14px;right:14px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;color:#2A0A1C;background:rgba(255,255,255,.66);padding:4px 10px;border-radius:999px;pointer-events:none;z-index:2;max-width:80%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pd-thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px}
+.pd-thumbs{display:none}
 .pd-thumb{position:relative;border-radius:16px;overflow:hidden;aspect-ratio:1/1;box-shadow:0 6px 16px rgba(122,14,74,.1)}
 .pd-thumb.on{outline:2px solid #E01784;outline-offset:-2px}
 
@@ -270,6 +273,13 @@
                '<div class="mc-stripes"></div></div>';
     }).join('');
   }
+  /* --- Zoom au survol : le point de zoom suit le curseur --- */
+  hero.addEventListener('mousemove', function (e) {
+    var im = hero.querySelector('.pd-photo'); if (!im) return;
+    var r = hero.getBoundingClientRect();
+    im.style.transformOrigin = ((e.clientX - r.left) / r.width * 100) + '% ' + ((e.clientY - r.top) / r.height * 100) + '%';
+  });
+  hero.addEventListener('mouseleave', function () { var im = hero.querySelector('.pd-photo'); if (im) im.style.transformOrigin = 'center center'; });
 
   /* --- Infos --- */
   $('pd-eyebrow').textContent = (p.brand ? p.brand + ' · ' : '') + CAT;

@@ -64,9 +64,10 @@ h1,h2,h3{font-weight:800;letter-spacing:-.5px;margin:0}
 .mc-navlink--green{color:#1B8A57}.mc-navlink--green:hover{border-color:#1B8A57;background:#EEFBF4}
 .mc-navlink--active{color:#E01784;font-weight:700;border-color:#E01784;background:#FFF1F8}
 .mc-drop{position:relative;display:flex}
-.mc-dropmenu{position:absolute;top:100%;left:0;z-index:70;background:#fff;border:1px solid #F1DAE7;border-radius:0 0 18px 18px;box-shadow:0 24px 44px rgba(122,14,74,.16);padding:22px 26px;display:flex;gap:38px;opacity:0;visibility:hidden;transform:translateY(-6px);transition:opacity .18s,transform .18s}
+.mc-dropmenu{position:fixed;top:0;left:0;z-index:75;background:#fff;border:1px solid #F1DAE7;border-radius:0 0 18px 18px;box-shadow:0 24px 44px rgba(122,14,74,.16);padding:22px 26px;display:flex;gap:38px;opacity:0;visibility:hidden;transform:translateY(-6px);transition:opacity .18s,transform .18s}
 .mc-dropmenu--right{left:auto;right:0}
 .mc-drop:hover .mc-dropmenu,.mc-drop:focus-within .mc-dropmenu{opacity:1;visibility:visible;transform:translateY(0)}
+html.mc-drop-open [class*="decor"]{opacity:0!important;transition:opacity .18s ease}
 .mc-dropcol > div:first-child{font-weight:700;font-size:14px;color:#E01784;margin-bottom:12px}
 .mc-dropcol a{display:block;color:#4A2A3A;font-size:13.5px;padding:4px 0}
 .mc-dropcol a:hover{color:#E01784}

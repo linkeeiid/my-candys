@@ -893,7 +893,7 @@ window.MC = window.MC || {};
         '<button class="mc-heart' + (wished ? ' is-on' : '') + '" data-wish="' + esc(p.id) + '" title="Ajouter aux favoris" aria-label="Ajouter aux favoris">' + (wished ? '❤️' : '🤍') + '</button>' +
         '<div class="mc-prod-body">' +
           '<a href="produit.html?id=' + encodeURIComponent(p.id) + '" class="mc-pname">' + esc(p.name) + '</a>' +
-          '<div class="mc-stars"><span>★★★★★</span><span>(' + p.reviews + ')</span></div>' +
+          '<div class="mc-stars"><span>★★★★★</span><span>' + (p.reviews ? '(' + p.reviews + ')' : '') + '</span></div>' +
           (p.old ? '<div class="mc-old">' + MC.money(p.old) + '</div>' : '') +
         '</div>' +
         '<button class="mc-add" data-add="' + esc(p.id) + '"' + (out ? ' disabled style="filter:grayscale(1);opacity:.45;cursor:not-allowed"' : '') + ' title="Ajouter au panier" aria-label="Ajouter au panier">+</button>' +
