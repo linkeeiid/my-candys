@@ -60,14 +60,14 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
 
 /* ---------- Modes de livraison ---------- */
 .co-modes{display:flex;flex-direction:column;gap:12px}
-.co-mode{display:flex;align-items:center;gap:14px;border:1.5px solid #F3C6DE;border-radius:14px;padding:14px 16px;cursor:pointer;transition:border-color .15s,background .15s,box-shadow .15s}
+.co-mode{display:flex;align-items:center;gap:12px;border:1.5px solid #F3C6DE;border-radius:14px;padding:12px 14px;cursor:pointer;transition:border-color .15s,background .15s,box-shadow .15s}
 .co-mode:hover{background:#FFF1F8}
 .co-mode input{flex:none;width:20px;height:20px;accent-color:#E01784}
 .co-mode.on{border-color:#FF2E9A;background:#FFF1F8;box-shadow:0 0 0 3px rgba(255,46,154,.1)}
-.co-mode-ico{font-size:26px;line-height:1}
+.co-mode-ico{font-size:22px;line-height:1;flex:none}
 .co-mode-main{flex:1;min-width:0}
-.co-mode-t{font-weight:700;font-size:15px}
-.co-mode-d{font-size:12.5px;color:#8A6076;margin-top:2px}
+.co-mode-t{display:block;font-weight:700;font-size:14px}
+.co-mode-d{display:block;font-size:11.5px;color:#8A6076;margin-top:1px;line-height:1.3}
 .co-mode-price{flex:none;font-weight:800;font-size:15px;color:#2A0A1C;white-space:nowrap}
 .co-mode-price.free{color:#1B8A57}
 
@@ -82,10 +82,12 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
 .co-paytrust-cards .c-visa{color:#1A1F71}
 .co-paytrust-cards .c-mc{color:#EB5B2A}
 .co-paytrust-cards .c-cb{color:#177A57}
-.co-paytrust-cards .c-apay{background:#000;color:#fff;border-color:#000}
-.co-paytrust-cards .c-gpay{background:#fff;color:#3C4043}
-/* Apple Pay / Google Pay ne sont utilisables que sur mobile compatible → logos affichés uniquement là, cachés sur ordinateur */
-@media (min-width:561px){.co-paytrust-cards .c-apay,.co-paytrust-cards .c-gpay{display:none}}
+/* Mobile : logos moyens de paiement sur leur propre ligne (sinon le texte est écrasé à un mot par ligne) */
+@media (max-width:560px){
+  .co-paytrust{flex-wrap:wrap}
+  .co-paytrust-lock{align-self:flex-start;margin-top:1px}
+  .co-paytrust-cards{flex-basis:100%;max-width:none;justify-content:flex-start;margin-top:2px}
+}
 .co-pay-hint{font-size:12.5px;color:#8A6076;margin:0 2px 2px}
 .co-pay-err{margin-top:12px;font-size:13.5px;color:#C62A22;background:#FDECEC;border:1px solid #F6C9C4;border-radius:12px;padding:11px 14px;font-weight:600}
 #sumup-card{margin-top:6px}
@@ -267,7 +269,7 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
         <div class="co-paytrust">
           <span class="co-paytrust-lock">🔒</span>
           <div class="co-paytrust-txt"><b>Paiement 100&nbsp;% sécurisé</b><span>Tes données bancaires sont chiffrées et ne transitent jamais par notre site.</span></div>
-          <div class="co-paytrust-cards"><span class="c-visa">VISA</span><span class="c-mc">Mastercard</span><span class="c-cb">CB</span><span class="c-apay"><svg viewBox="0 0 384 512" width="9" height="11" fill="#fff" aria-hidden="true"><path d="M318.7 268.7c-.2-36.71 16.41-64.39 50.01-84.78-18.83-26.91-47.26-41.72-84.72-44.6-35.5-2.79-74.32 20.69-88.51 20.69-14.99 0-49.4-19.68-76.44-19.68C36.5 141.09 0 184.66 0 273.65c0 26.35 4.81 53.57 14.44 81.63 12.83 36.9 59.06 127.3 107.3 125.79 25.21-.6 43.04-17.9 75.85-17.9 31.83 0 48.34 17.9 76.44 17.9 48.68-.71 90.51-82.86 102.71-119.87-65.24-30.76-61.61-90.11-61.61-91.6zm-56.51-164.19c27.25-32.35 24.77-61.82 23.96-72.42-23.06 1.35-49.75 15.74-64.96 33.44-16.75 18.95-26.6 42.39-24.48 71.83 24.93 1.9 47.7-10.9 65.48-32.85z"/></svg>Pay</span><span class="c-gpay"><svg viewBox="0 0 48 48" width="12" height="12" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Pay</span></div>
+          <div class="co-paytrust-cards"><span class="c-visa">VISA</span><span class="c-mc">Mastercard</span><span class="c-cb">CB</span></div>
         </div>
         <div id="co-pay-hint" class="co-pay-hint">Remplis tes infos ci-dessus, puis clique sur <b>« Payer »</b> — le paiement sécurisé s'affiche juste ici. 👇</div>
         <div id="sumup-card"></div>
