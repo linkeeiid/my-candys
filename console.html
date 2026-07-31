@@ -2,26 +2,23 @@
 <meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="assets/logo.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#241019;--ink-2:#5A3B4C;--muted:#8A6076;
-    --canvas:#FBF3F8;--card:#FFFFFF;--line:#F0E1EB;--line-soft:#F8EFF5;
-    --side:#1F0C16;--side-2:#3A1526;--side-line:rgba(255,255,255,.10);--side-txt:#E4CFDC;--side-muted:#A58597;
-    --pink:#E01784;--pink-2:#FF2E9A;--pink-tint:#FDEBF5;
-    --mint:#0FB488;--mint-tint:#E4F7F0;
-    --teal:#0E9AAC;--teal-tint:#E1F6F8;
-    --green:#137A4B;--green-tint:#E7F6EE;--amber:#9A5A08;--amber-tint:#FCF0DC;--red:#C42A20;--red-tint:#FBE7E4;
-    --shadow-sm:0 1px 2px rgba(120,20,80,.06);--shadow:0 2px 6px rgba(120,20,80,.05),0 16px 34px rgba(120,20,80,.09);
-    --sans:'Plus Jakarta Sans',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-    --disp:'Fredoka','Plus Jakarta Sans',system-ui,sans-serif;
-    --mono:ui-monospace,"Cascadia Code","Segoe UI Mono",Consolas,Menlo,monospace;
+    --ink:#241019;--ink-2:#5A3B4C;--muted:#8A7580;
+    --canvas:#ECE8EB;--card:#FBFAFB;--card-sunk:#E5DFE3;--line:#D7D0D5;--line-soft:#E6E0E4;--line-strong:#C7BFC5;
+    --side:#1C0D14;--side-2:#301724;--side-line:rgba(255,255,255,.09);--side-txt:#DCCBD4;--side-muted:#9C8592;
+    --pink:#E01784;--pink-2:#FF2E9A;--pink-tint:#F7E5EF;
+    --mint:#12876A;--mint-tint:#E3F1EB;
+    --teal:#0E7A88;--teal-tint:#E0F0F2;
+    --green:#1C7A4B;--green-tint:#E4F1EA;--amber:#8A5A12;--amber-tint:#F4EAD8;--red:#B02E2A;--red-tint:#F6E4E2;
+    --shadow-sm:0 1px 2px rgba(34,20,27,.06);--shadow:0 1px 2px rgba(34,20,27,.05),0 8px 20px -10px rgba(34,20,27,.20);
+    --sans:-apple-system,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --disp:"Palatino Linotype","Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+    --mono:ui-monospace,"Cascadia Mono","SF Mono","Segoe UI Mono",Menlo,Consolas,monospace;
   }
   *{box-sizing:border-box}
   html,body{margin:0}
-  body{background:var(--canvas);background-image:radial-gradient(120% 80% at 100% -10%,rgba(255,46,154,.10),transparent 55%),radial-gradient(90% 70% at -10% 0,rgba(15,180,136,.05),transparent 50%);background-attachment:fixed;color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.5}
+  body{background:var(--canvas);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.5}
   h1,h2,h3,h4{margin:0;font-weight:800;letter-spacing:-.35px}
   .tnum{font-variant-numeric:tabular-nums}
   button{font-family:inherit}
@@ -313,6 +310,54 @@
   .kpi.kpi-on{box-shadow:0 0 0 2px var(--pink) inset}
   #view-products .prod .thumb{border:1px solid var(--line)}
   #pCats{flex-wrap:wrap}
+
+  /* ============================================================
+     HABILLAGE PRO — inspiré du carnet de tournée
+     titres serif · chiffres & étiquettes mono · surfaces plates · angles nets
+     ============================================================ */
+  /* angles nets */
+  .kpi,.card,.tablecard,.logcard,.order,.rev,.followup,.empty,.autonote,.modal{border-radius:5px}
+  .btn,.mini,.chip,.badge-soft,.pin,.field input,.form-row input,.form-row select,.tag-cat,.code,.track{border-radius:3px}
+  .navlink{border-radius:4px}
+  .thumb{border-radius:4px}
+  .kpi{border-radius:5px}
+
+  /* typographie éditoriale : titres en serif */
+  .brand .bt .n{font-family:var(--disp);font-weight:600;font-size:1.18rem;letter-spacing:-.01em}
+  .topbar .tt h1{font-family:var(--disp);font-weight:600;font-size:1.46rem;letter-spacing:-.015em;line-height:1.05}
+  .secttl{font-family:var(--disp);font-weight:600;font-size:1.22rem;letter-spacing:-.01em}
+  .card-h h3,.panel h2,.followup h2,.modal-h h3{font-family:var(--disp);font-weight:600;letter-spacing:-.01em}
+  .card-h h3{font-size:1.04rem}
+  .modal-h h3{font-size:1.14rem}
+  .prod .n,.ocust,.arch__nom,.rev .rname{font-family:var(--disp);font-weight:600;letter-spacing:-.005em;font-size:1rem}
+
+  /* chiffres & étiquettes en mono tabulaire */
+  .kpi .num{font-family:var(--mono);font-weight:600;font-size:1.55rem;font-variant-numeric:tabular-nums;letter-spacing:-.02em;margin-top:.5rem}
+  .kpi .lbl{font-family:var(--mono);font-weight:600;font-size:.62rem;letter-spacing:.1em}
+  .kpi .unit{font-family:var(--sans);font-weight:600;font-size:.82rem}
+  .kpi .sub{font-size:.72rem}
+
+  /* KPI : accent latéral fin (au lieu de la barre bonbon) */
+  .kpi{padding:.85rem 1rem;box-shadow:var(--shadow-sm)}
+  .kpi::before{left:0;right:auto;top:0;bottom:0;width:2px;height:auto;background:var(--line-strong)}
+  .kpi.accent::before{background:var(--pink)}.kpi.warn::before{background:var(--amber)}.kpi.crit::before{background:var(--red)}.kpi.good::before{background:var(--mint)}
+
+  /* logo de marque : plat */
+  .brand .mark{border-radius:7px;background:var(--pink);box-shadow:none}
+
+  /* boutons plats */
+  .btn-primary{background:var(--pink);box-shadow:none}
+  .btn-primary:hover{filter:none;background:#C4136F}
+
+  /* puces & onglets sobres */
+  .chip.active{background:var(--ink);color:#fff;border-color:var(--ink);box-shadow:none}
+
+  /* barre latérale : actif sobre + filet rose */
+  .navlink.active{background:rgba(255,255,255,.08);color:#fff;box-shadow:none}
+  .navlink.active::before{background:var(--pink-2)}
+
+  /* encadré note à plat */
+  .autonote{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--pink)}
 </style>
 <script src="cart-store.js"></script>
 <script src="products.js"></script>
