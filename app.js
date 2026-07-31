@@ -312,3 +312,32 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 })();
+
+/* Carrousels (.mc-prow) : précharge les images ~1,6 écran en avance pour qu'elles soient
+   déjà présentes quand on slide (le loading="lazy" les faisait apparaître en retard). */
+(function () {
+  function warm(row) {
+    if (!row || !row.getBoundingClientRect) return;
+    var rr = row.getBoundingClientRect();
+    if (rr.width === 0) return;
+    var edge = rr.right + rr.width * 1.6;
+    var cards = row.children, i, r, img, pre;
+    for (i = 0; i < cards.length; i++) {
+      r = cards[i].getBoundingClientRect();
+      if (r.left > edge) break;                 // au-delà de la marge d'anticipation → stop
+      img = cards[i].querySelector ? cards[i].querySelector('img') : null;
+      if (img && !img.dataset.warm) {
+        img.dataset.warm = '1';
+        img.setAttribute('loading', 'eager');
+        pre = new Image(); pre.src = img.currentSrc || img.getAttribute('src') || '';
+      }
+    }
+  }
+  function scan() { var rows = document.querySelectorAll('.mc-prow'), i; for (i = 0; i < rows.length; i++) warm(rows[i]); }
+  document.addEventListener('scroll', function (e) {
+    var t = e.target; if (t && t.closest) { var row = t.closest('.mc-prow'); if (row) warm(row); }
+  }, true);
+  window.addEventListener('load', scan);
+  window.addEventListener('mc-catalog-updated', function () { setTimeout(scan, 60); });
+  setTimeout(scan, 400); setTimeout(scan, 1400);
+})();
