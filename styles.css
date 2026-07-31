@@ -288,9 +288,11 @@ h1,h2,h3{font-weight:800;letter-spacing:-.5px;margin:0}
 @media (max-width:480px){.mc-authbox{padding:26px 20px 22px;border-radius:20px}}
 /* bouton + panier plus petit sur mobile */
 @media (max-width:560px){
-  .mc-add{width:34px;height:34px;bottom:9px;right:9px;box-shadow:0 5px 12px rgba(255,46,154,.38)}
-  .mc-add::before{width:13px;height:2.4px}
-  .mc-add::after{width:2.4px;height:13px}
+  .mc-add{width:32px;height:32px;bottom:8px;right:8px;box-shadow:0 5px 12px rgba(255,46,154,.38)}
+  .mc-add::before{width:12px;height:2.3px}
+  .mc-add::after{width:2.3px;height:12px}
+  .mc-prod-body{padding:2px 44px 8px 14px}
+  .mc-pname{min-height:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 }
 
 /* ---------- Vraies photos produit (fond blanc, contenu) ---------- */

@@ -95,7 +95,32 @@
 .pd-acc-item{border-bottom:1px solid #F1DAE7}
 .pd-acc-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 2px;font-weight:700;font-size:15px;color:#2A0A1C;text-align:left}
 .pd-acc-head > span{color:#E01784;font-size:20px}
-.pd-acc-body{font-size:14px;line-height:1.6;color:#6A4A58;padding:0 2px 16px}
+.pd-acc-body{font-size:14px;line-height:1.6;color:#6A4A58;padding:0 2px 18px}
+.pd-acc-body .pd-lead{font-size:15px;line-height:1.65;color:#3A2230;font-weight:600;margin:2px 0 6px}
+.pd-acc-body h4{font-size:16px;font-weight:800;color:#2A0A1C;margin:18px 0 6px;letter-spacing:-.2px;line-height:1.25}
+.pd-acc-body p{margin:0 0 10px}
+.pd-specs{list-style:none;margin:8px 0 0;padding:0}
+.pd-specs li{position:relative;padding:7px 0 7px 18px;border-bottom:1px solid #F6E4EF;font-size:14px;color:#4A2A3A}
+.pd-specs li::before{content:"•";position:absolute;left:3px;color:#E01784;font-weight:800}
+.pd-specs b{color:#2A0A1C}
+.pd-note-soft{font-style:italic;color:#8A6076;font-size:13px;margin-top:10px}
+
+/* ---------- Détails (accordéons pleine largeur, comme My American Shop) ---------- */
+.pd-details{max-width:1220px;margin:0 auto;padding:14px 34px 0}
+.pd-details .pd-acc{margin-top:0}
+
+/* ---------- Barre d'achat flottante (mobile + desktop) ---------- */
+.pd-sticky{position:fixed;left:0;right:0;bottom:0;z-index:80;background:#fff;border-top:1px solid #F1DAE7;box-shadow:0 -8px 26px rgba(122,14,74,.13);transform:translateY(115%);transition:transform .28s cubic-bezier(.4,0,.2,1)}
+.pd-sticky.is-on{transform:translateY(0)}
+.pd-sticky-in{max-width:1220px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:14px}
+.pd-sticky-img{width:48px;height:48px;border-radius:12px;object-fit:contain;background:#fff;border:1px solid #F1DAE7;flex:none}
+.pd-sticky-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.pd-sticky-name{font-weight:800;font-size:15px;color:#2A0A1C;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pd-sticky-price{font-weight:800;font-size:15px;color:#E01784}
+.pd-sticky-add{flex:none;background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;font-weight:800;font-size:15px;padding:13px 24px;border-radius:14px;display:flex;align-items:center;gap:8px;box-shadow:0 8px 18px rgba(255,46,154,.32);transition:transform .15s,filter .15s;white-space:nowrap}
+.pd-sticky-add:hover{transform:translateY(-1px);filter:brightness(1.03)}
+.pd-sticky-x{flex:none;width:36px;height:36px;border-radius:10px;color:#B7A0AC;font-size:16px;display:none;align-items:center;justify-content:center}
+.pd-sticky-x:hover{background:#FFEBF5;color:#E01784}
 
 /* ---------- Avis ---------- */
 .pd-reviews{max-width:1220px;margin:0 auto;padding:40px 34px 10px}
@@ -133,6 +158,12 @@
   .pd-rev-grid{grid-template-columns:1fr}
   .pd-reviews h2,.pd-related-head h2{font-size:22px}
   .mc-prow .mc-prod{width:200px}
+  .pd-details{padding:12px 16px 0}
+  .pd-sticky-img{display:none}
+  .pd-sticky-in{padding:9px 14px;gap:10px}
+  .pd-sticky-add{padding:12px 18px;font-size:14px}
+  .pd-sticky-name{font-size:13.5px}
+  .pd-sticky-price{font-size:13px}
 }
 </style>
 </head>
@@ -185,8 +216,11 @@
       <div class="pd-reass"><span>🏬</span><div>Click &amp;<br>Collect Lyon</div></div>
     </div>
 
-    <div class="pd-acc" id="pd-acc"></div>
   </div>
+</section>
+
+<section class="pd-details">
+  <div class="pd-acc" id="pd-acc"></div>
 </section>
 
 <section class="pd-related">
@@ -196,6 +230,15 @@
   </div>
   <div class="mc-row mc-prow" id="pd-related"></div>
 </section>
+
+<div class="pd-sticky" id="pd-sticky">
+  <div class="pd-sticky-in">
+    <img class="pd-sticky-img" id="pd-sticky-img" alt="" loading="lazy">
+    <div class="pd-sticky-info"><div class="pd-sticky-name" id="pd-sticky-name"></div><div class="pd-sticky-price" id="pd-sticky-price"></div></div>
+    <button class="pd-sticky-add" id="pd-sticky-add">Ajouter au panier →</button>
+    <button class="pd-sticky-x" id="pd-sticky-x" aria-label="Masquer">✕</button>
+  </div>
+</div>
 
 <script src="cart-store.js"></script>
 <script src="products.js"></script>
@@ -246,6 +289,43 @@
   var compoText = COMPO[CAT] || "Voir la composition complète et les allergènes sur l'emballage d'origine du produit.";
   var tags = TAGS[CAT] || ['🔥 Viral', '✈️ Import', '🎁 À partager'];
   var rating = p.best ? '4,9' : (p.nouveau ? '4,7' : '4,8');
+
+  /* Valeurs nutritionnelles — note honnête (les valeurs exactes sont sur l'emballage, jamais inventées) */
+  var NUTRI = {
+    'Sodas':     "Les valeurs nutritionnelles détaillées (énergie, glucides dont sucres, sel…) figurent sur l'emballage d'origine. Boisson sucrée ou rafraîchissante, à consommer avec modération. Certaines références sont riches en caféine : déconseillées aux enfants, aux femmes enceintes ou allaitantes.",
+    'Snacks':    "Retrouve l'énergie, les matières grasses, les glucides et le sel exacts sur l'emballage d'origine. Snack à grignoter dans le cadre d'une alimentation variée et équilibrée et d'un mode de vie actif.",
+    'Bonbons':   "Les informations nutritionnelles précises (énergie, sucres…) sont indiquées sur l'emballage d'origine. Confiserie riche en sucres, à déguster avec modération.",
+    'Chocolats': "Énergie, matières grasses, sucres et sel exacts sur l'emballage d'origine. Produit gourmand à savourer avec modération dans le cadre d'une alimentation équilibrée.",
+    'Épicé':     "Valeurs nutritionnelles détaillées sur l'emballage d'origine. Produit relevé à consommer avec modération.",
+    'Desserts':  "Retrouve la déclaration nutritionnelle complète sur l'emballage d'origine. À déguster avec modération dans le cadre d'une alimentation équilibrée."
+  };
+  var nutriText = NUTRI[CAT] || "Les informations nutritionnelles détaillées (énergie, matières grasses, glucides dont sucres, protéines, sel) sont indiquées sur l'emballage d'origine du produit. À consommer avec modération.";
+
+  /* Description enrichie générée par catégorie (marketing — pas de données factuelles inventées) */
+  var RICH = {
+    'Sodas': { h1: 'Le soda viral que tout le monde s\'arrache', p1: "Oublie les sodas basiques du supermarché du coin. {name}, c'est une référence importée, de celles qu'on découvre sur TikTok et qu'on ne trouve pas partout. Même plaisir pétillant, mais avec un profil de goût qui sort vraiment de l'ordinaire.", h2: 'Pourquoi on l\'adore', p2: "Une recette qui claque, une couleur qui se remarque et cette sensation ultra-rafraîchissante qu'on recherche. Le genre de boisson qu'on partage, qu'on collectionne et qu'on recommande autour de soi.", use: "Sers-la bien fraîche, directement à la canette ou sur glace pour un maximum de fraîcheur. Parfaite pour une session gaming, une soirée qui démarre, une pause révisions ou juste pour te faire plaisir.", note: "À consommer avec modération. Certaines boissons énergisantes sont riches en caféine et déconseillées aux enfants et aux femmes enceintes ou allaitantes." },
+    'Snacks': { h1: 'Le snack qui cartonne sur TikTok', p1: "{name}, c'est le snack qu'on voit partout dans les vidéos et qu'on s'arrache. Importé pour de vrai, exactement comme dans les feeds — croquant addictif et assaisonnement qui envoie.", h2: 'Ce qui le rend addictif', p2: "Une texture ultra-croustillante, un goût qui reste en bouche et ce petit côté \"encore une poignée\" impossible à contrôler. À partager… ou pas.", use: "Parfait pour l'apéro, une soirée film, une pause entre potes ou un défi TikTok. Ouvre, partage (si tu veux bien) et profite.", note: "Peut contenir des allergènes (gluten, lait, soja, fruits à coque). Vérifie toujours l'emballage d'origine." },
+    'Bonbons': { h1: 'Les bonbons qui affolent les feeds', p1: "{name}, ce sont ces bonbons aux couleurs de folie et au goût explosif qu'on découvre sur TikTok. La confiserie version internationale, livrée directement chez toi.", h2: 'Pourquoi on craque', p2: "Texture parfaite, goût intense et format à partager (ou à garder pour soi). Impossible de s'arrêter à un seul.", use: "À grignoter devant une série, à partager entre amis ou à offrir. L'encas sucré parfait pour se faire plaisir.", note: "Confiserie riche en sucres. Peut contenir des traces d'allergènes — voir l'emballage d'origine." },
+    'Chocolats': { h1: 'Le chocolat qu\'on t\'a fait découvrir en story', p1: "{name}, c'est cette édition chocolatée internationale, fondante et ultra-régressive, qu'on ne trouve pas dans toutes les épiceries. Un vrai coup de cœur gourmand.", h2: 'Ce qui le rend spécial', p2: "Un chocolat généreux, une texture qui fond juste comme il faut et ce petit plaisir réconfortant à chaque bouchée.", use: "Idéal pour une pause douceur, à partager en soirée, à offrir ou à garder précieusement pour toi.", note: "Contient généralement lait et soja, peut contenir des fruits à coque. Voir l'emballage d'origine." },
+    'Épicé': { h1: 'Le kit épicé qui enflamme TikTok', p1: "{name}, c'est l'expérience sucré-acidulé-brûlant à tester entre potes. Le genre de produit qui fait le buzz et qui se partage en vidéo.", h2: 'L\'expérience', p2: "Un mélange de saveurs qui joue sur tous les tableaux : sucré, acide et piquant. Sensations garanties (et un peu de sueur).", use: "À tester entre amis pour le fun, en défi ou juste par curiosité. Prépare un verre d'eau à côté, on ne sait jamais.", note: "Produit relevé, peut contenir sulfites et colorants. Voir l'emballage d'origine." },
+    'Desserts': { h1: 'Le dessert viral venu d\'ailleurs', p1: "{name}, c'est cette gourmandise glacée ou lactée qu'on découvre sur les réseaux : texture unique, goût délicat et format parfait pour la photo.", h2: 'Pourquoi on l\'adore', p2: "Un petit voyage gourmand à chaque bouchée, avec ce côté original qu'on ne trouve pas au supermarché du coin.", use: "À déguster bien frais, en fin de repas ou en pause plaisir. Parfait pour épater sur une story.", note: "Peut contenir lait, gluten ou soja. Voir l'emballage d'origine." }
+  };
+  function fillTpl(s) { return String(s).replace(/\{name\}/g, MC.esc(p.name)).replace(/\{brand\}/g, MC.esc(p.brand || '')); }
+  function richDesc() {
+    var r = RICH[CAT] || RICH['Bonbons'];
+    var h = '<p class="pd-lead">' + MC.esc(descText) + '</p>';
+    h += '<h4>' + fillTpl(r.h1) + '</h4><p>' + fillTpl(r.p1) + '</p>';
+    h += '<h4>' + fillTpl(r.h2) + '</h4><p>' + fillTpl(r.p2) + '</p>';
+    h += '<h4>Comment en profiter</h4><p>' + fillTpl(r.use) + '</p>';
+    h += '<h4>Caractéristiques</h4><ul class="pd-specs">';
+    if (p.brand) h += '<li><b>Marque :</b> ' + MC.esc(p.brand) + '</li>';
+    h += '<li><b>Catégorie :</b> ' + MC.esc(CAT) + '</li>';
+    h += '<li><b>Sélection :</b> import international · vu sur TikTok</li>';
+    h += '<li><b>Disponibilité :</b> souvent en édition limitée</li>';
+    h += '</ul>';
+    h += '<p class="pd-note-soft">' + fillTpl(r.note) + '</p>';
+    return h;
+  }
 
   /* --- Titre & fil d'Ariane --- */
   document.title = p.name + " — My Candy's";
@@ -356,11 +436,27 @@
   wishBtn.classList.toggle('is-on', !!wished);
   wishBtn.textContent = wished ? '❤️' : '🤍';
 
+  /* --- Barre d'achat flottante (mobile + desktop) : apparaît quand le bouton principal sort de l'écran --- */
+  var sticky = $('pd-sticky');
+  if (sticky) {
+    var stName = $('pd-sticky-name'), stPrice = $('pd-sticky-price'), stImg = $('pd-sticky-img'), stAdd = $('pd-sticky-add'), stX = $('pd-sticky-x'), stDismissed = false;
+    if (stName) stName.textContent = p.name;
+    if (stPrice) stPrice.textContent = MC.money(p.price);
+    if (stImg) { if (p.img) { stImg.src = p.img; stImg.alt = p.name; } else { stImg.style.display = 'none'; } }
+    function showSticky(on) { sticky.classList.toggle('is-on', on && !stDismissed); }
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) { showSticky(!entries[0].isIntersecting); }, { rootMargin: '0px 0px -60px 0px' });
+      io.observe(addBtn);
+    }
+    if (stAdd) stAdd.addEventListener('click', function () { addBtn.click(); });
+    if (stX) stX.addEventListener('click', function () { stDismissed = true; showSticky(false); });
+  }
+
   /* --- Accordéons --- */
   var ACC = [
-    { k: 'desc',  title: 'Description',                body: descText },
-    { k: 'compo', title: 'Composition & allergènes',  body: compoText },
-    { k: 'livr',  title: 'Livraison & retours',       body: "Expédié en 24h, livraison offerte dès 39 € en point relais. Click & Collect en boutique à Lyon. Retour sous 14 jours sur les produits non ouverts." }
+    { k: 'desc',  title: 'Description',              body: richDesc() },
+    { k: 'compo', title: 'Composition',              body: '<p>' + MC.esc(compoText) + '</p>' },
+    { k: 'nutri', title: 'Valeurs nutritionnelles',  body: '<p>' + MC.esc(nutriText) + '</p>' }
   ];
   var open = 'desc', accWrap = $('pd-acc');
   function renderAcc() {
@@ -369,7 +465,7 @@
       return '<div class="pd-acc-item">' +
                '<button class="pd-acc-head" data-acc="' + a.k + '">' + MC.esc(a.title) +
                  '<span>' + (on ? '−' : '+') + '</span></button>' +
-               (on ? '<div class="pd-acc-body">' + MC.esc(a.body) + '</div>' : '') +
+               (on ? '<div class="pd-acc-body">' + a.body + '</div>' : '') +
              '</div>';
     }).join('');
   }
