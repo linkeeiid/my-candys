@@ -94,6 +94,11 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
 .co-sum{background:#FFF6FB;border:1px solid #F3D9E9;border-radius:20px;padding:20px 22px;box-shadow:0 10px 26px rgba(122,14,74,.1)}
 .co-sum-title{font-weight:800;font-size:19px}
 .co-sum-count{font-size:13px;color:#8A6076;margin:2px 0 16px}
+.co-sum-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;background:none;border:0;padding:0;margin-bottom:2px;font-family:inherit;font-weight:800;font-size:19px;color:#2A0A1C;text-align:left}
+.co-sum-head-l{display:flex;align-items:center;gap:8px}
+.co-sum-chev{display:none;font-size:13px;color:#E01784;transition:transform .2s}
+.co-sum-head > b{display:none}
+.co-action{display:flex;flex-direction:column;margin-top:2px}
 .co-lines{display:flex;flex-direction:column;gap:12px}
 .co-line{display:flex;gap:12px;align-items:center}
 .co-line-img{flex:none;width:52px;height:52px;border-radius:12px;position:relative;overflow:hidden}
@@ -151,6 +156,14 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
   .co-card{padding:18px 18px}
   .co-done{padding:40px 22px}
   .co-done h2{font-size:26px}
+  /* Résumé repliable en haut (façon Shopify) */
+  .co-sum{padding:15px 16px}
+  .co-sum-head{cursor:pointer;font-size:15.5px}
+  .co-sum-head-l{color:#E01784;font-weight:700}
+  .co-sum-head > b{display:block;color:#2A0A1C;font-size:16px}
+  .co-sum-chev{display:inline-block}
+  .co-sum.is-collapsed .co-sum-body{display:none}
+  .co-sum.is-collapsed .co-sum-chev{transform:rotate(-90deg)}
 }
 </style>
 </head>
@@ -261,31 +274,40 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
         <div id="co-pay-err" class="co-pay-err" hidden></div>
       </section>
 
-    </div>
-
-    <!-- Récapitulatif -->
-    <aside class="co-aside">
-      <div class="co-sum">
-        <div class="co-sum-title">Ta commande</div>
-        <div class="co-sum-count" id="co-count">0 article</div>
-        <div class="co-lines" id="co-lines"></div>
-        <div class="co-sum-div"></div>
-        <div class="co-promo" style="display:flex;gap:8px;margin-bottom:8px">
-          <input id="co-promo-in" placeholder="Code promo fidélité" aria-label="Code promo" autocomplete="off" spellcheck="false" style="flex:1;min-width:0;border:1.5px solid #F1DAE7;border-radius:11px;padding:11px 12px;font-size:14px;font-family:inherit;text-transform:uppercase">
-          <button type="button" id="co-promo-btn" style="flex:none;background:#2A0A1C;color:#fff;font-weight:700;font-size:13.5px;padding:0 16px;border-radius:11px;cursor:pointer">Appliquer</button>
-        </div>
-        <div id="co-promo-msg" style="font-size:12.5px;margin:0 0 12px;min-height:0"></div>
-        <div class="co-sum-row"><span>Sous-total</span><b id="co-sub">0,00 €</b></div>
-        <div class="co-sum-row" id="co-remrow" hidden><span>Remise <span id="co-remlbl" style="color:#1B8A57;font-weight:700"></span></span><b id="co-rem" style="color:#1B8A57">—</b></div>
-        <div class="co-sum-row"><span>Livraison <span id="co-shipmode" style="color:#8A6076"></span></span><b id="co-ship">—</b></div>
-        <div class="co-sum-div"></div>
-        <div class="co-sum-total"><span>Total</span><b id="co-total">0,00 €</b></div>
+      <!-- Action de paiement (bas du formulaire desktop / bas de page mobile) -->
+      <div class="co-action">
         <button type="submit" class="co-pay" id="co-pay"><span>Payer</span> <span>🔒</span></button>
         <div class="co-secure">Paiement chiffré · Tu peux payer en toute confiance</div>
         <div class="co-reassure">
           <div><span>🚚</span> Expédié sous 24h ouvrées</div>
           <div><span>↩️</span> Retours &amp; SAV sous 30 jours</div>
           <div><span>🎁</span> Une surprise glissée dans chaque colis</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Récapitulatif (repliable) -->
+    <aside class="co-aside">
+      <div class="co-sum is-collapsed">
+        <button type="button" class="co-sum-head" id="co-sum-toggle" aria-expanded="false">
+          <span class="co-sum-head-l">Résumé de la commande <span class="co-sum-chev">▾</span></span>
+          <b id="co-toggle-total">0,00 €</b>
+        </button>
+        <div class="co-sum-body" id="co-sum-body">
+          <div class="co-sum-count" id="co-count">0 article</div>
+          <div class="co-lines" id="co-lines"></div>
+          <div class="co-sum-div"></div>
+          <div class="co-promo" style="display:flex;gap:8px;margin-bottom:8px">
+            <input id="co-promo-in" placeholder="Code promo fidélité" aria-label="Code promo" autocomplete="off" spellcheck="false" style="flex:1;min-width:0;border:1.5px solid #F1DAE7;border-radius:11px;padding:11px 12px;font-size:14px;font-family:inherit;text-transform:uppercase">
+            <button type="button" id="co-promo-btn" style="flex:none;background:#2A0A1C;color:#fff;font-weight:700;font-size:13.5px;padding:0 16px;border-radius:11px;cursor:pointer">Appliquer</button>
+          </div>
+          <div id="co-promo-msg" style="font-size:12.5px;margin:0 0 12px;min-height:0"></div>
+          <div class="co-sum-row"><span>Sous-total</span><b id="co-sub">0,00 €</b></div>
+          <div class="co-sum-row" id="co-remrow" hidden><span>Remise <span id="co-remlbl" style="color:#1B8A57;font-weight:700"></span></span><b id="co-rem" style="color:#1B8A57">—</b></div>
+          <div class="co-sum-row"><span>Livraison <span id="co-shipmode" style="color:#8A6076"></span></span><b id="co-ship">—</b></div>
+          <div class="co-sum-div"></div>
+          <div class="co-sum-total"><span>Total</span><b id="co-total">0,00 €</b></div>
         </div>
       </div>
     </aside>
@@ -384,6 +406,7 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
     if (ship === 0) { shipEl.textContent = 'Offerte'; shipEl.className = 'free'; }
     else { shipEl.textContent = money(ship); shipEl.className = ''; }
     $('#co-total').textContent = money(total);
+    var _tt = $('#co-toggle-total'); if (_tt) _tt.textContent = money(total);
     $('#co-pay').firstElementChild.textContent = 'Payer ' + money(total);
 
     // Prix affichés sur chaque mode (offert si seuil atteint pour ce mode)
@@ -422,6 +445,14 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
   }
   $('#co-promo-btn').addEventListener('click', applyPromo);
   $('#co-promo-in').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); applyPromo(); } });
+
+  // Résumé de commande repliable (barre en haut sur mobile)
+  var sumToggle = $('#co-sum-toggle');
+  if (sumToggle) sumToggle.addEventListener('click', function () {
+    var box = sumToggle.closest('.co-sum'); if (!box) return;
+    var collapsed = box.classList.toggle('is-collapsed');
+    sumToggle.setAttribute('aria-expanded', String(!collapsed));
+  });
 
   /* ---------- Paiement SumUp (widget sécurisé) ---------- */
   var payBtn = $('#co-pay');
