@@ -226,7 +226,7 @@
         '</div>' +
         '<div class="pan-line-total">' +
           '<div class="pan-line-t">' + MC.money(l.price * l.qty) + '</div>' +
-          (l.qty > 1 ? '<div class="pan-line-each">' + l.qty + ' × ' + MC.money(l.price) + '</div>' : '') +
+          '<div class="pan-line-each"' + (l.qty > 1 ? '' : ' style="display:none"') + '>' + l.qty + ' × ' + MC.money(l.price) + '</div>' +
         '</div>' +
       '</div>';
   }
@@ -253,8 +253,21 @@
     if (emptyEl) emptyEl.style.display = 'none';
     if (recoSec) recoSec.style.display = 'block';
 
-    // lignes
-    if (linesEl) linesEl.innerHTML = items.map(lineHTML).join('');
+    // lignes — maj EN PLACE si mêmes produits (évite de recharger les images = flash blanc)
+    if (linesEl) {
+      var kids = linesEl.children, same = (kids.length === items.length), i;
+      if (same) { for (i = 0; i < items.length; i++) { if (!kids[i] || kids[i].getAttribute('data-id') !== items[i].id) { same = false; break; } } }
+      if (same && items.length) {
+        items.forEach(function (l, idx) {
+          var el = kids[idx];
+          var q = el.querySelector('.mc-step span'); if (q) q.textContent = l.qty;
+          var t = el.querySelector('.pan-line-t'); if (t) t.textContent = MC.money(l.price * l.qty);
+          var ea = el.querySelector('.pan-line-each'); if (ea) { ea.textContent = l.qty + ' × ' + MC.money(l.price); ea.style.display = l.qty > 1 ? '' : 'none'; }
+        });
+      } else {
+        linesEl.innerHTML = items.map(lineHTML).join('');
+      }
+    }
 
     // récap
     var subEl = $('#pan-sub'); if (subEl) subEl.textContent = MC.money(sub);

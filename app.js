@@ -121,24 +121,36 @@
       if (empty) empty.style.display = count === 0 ? 'block' : 'none';
       if (foot) foot.style.display = count > 0 ? 'block' : 'none';
       if (lines) {
-        lines.innerHTML = items.map(function (l) {
-          var _p = (window.MC && MC.byId) ? MC.byId(l.id) : null, _img = (_p && _p.img) || l.img;
-          return '' +
-            '<div class="mc-cline">' +
-              (_img
-                ? '<div class="mc-cline-img" style="background:#fff"><img src="' + MC.esc(_img) + '" alt="" loading="lazy" style="width:100%;height:100%;object-fit:contain;padding:4px"></div>'
-                : '<div class="mc-cline-img" style="background:' + (l.tint || '#FFE3F1') + '"><div class="mc-stripes"></div></div>') +
-              '<div class="mc-cline-mid">' +
-                '<div class="mc-cline-name">' + MC.esc(l.name) + '</div>' +
-                '<div class="mc-cline-price">' + money(l.price) + '</div>' +
-                '<div class="mc-cline-ctrls">' +
-                  '<div class="mc-step"><button data-dec="' + MC.esc(l.id) + '" aria-label="Moins">−</button><span>' + l.qty + '</span><button data-inc="' + MC.esc(l.id) + '" aria-label="Plus">+</button></div>' +
-                  '<button class="mc-cline-rm" data-rm="' + MC.esc(l.id) + '">Retirer</button>' +
+        // Même liste de produits (seules les quantités changent) → maj EN PLACE,
+        // sans reconstruire le HTML, pour ne PAS recharger les images (évite le flash blanc).
+        var kids = lines.children, same = (kids.length === items.length), i;
+        if (same) { for (i = 0; i < items.length; i++) { if (!kids[i] || kids[i].getAttribute('data-cid') !== items[i].id) { same = false; break; } } }
+        if (same && items.length) {
+          items.forEach(function (l, idx) {
+            var el = kids[idx];
+            var q = el.querySelector('.mc-step span'); if (q) q.textContent = l.qty;
+            var tt = el.querySelector('.mc-cline-total'); if (tt) tt.textContent = money(l.price * l.qty);
+          });
+        } else {
+          lines.innerHTML = items.map(function (l) {
+            var _p = (window.MC && MC.byId) ? MC.byId(l.id) : null, _img = (_p && _p.img) || l.img;
+            return '' +
+              '<div class="mc-cline" data-cid="' + MC.esc(l.id) + '">' +
+                (_img
+                  ? '<div class="mc-cline-img" style="background:#fff"><img src="' + MC.esc(_img) + '" alt="" loading="lazy" style="width:100%;height:100%;object-fit:contain;padding:4px"></div>'
+                  : '<div class="mc-cline-img" style="background:' + (l.tint || '#FFE3F1') + '"><div class="mc-stripes"></div></div>') +
+                '<div class="mc-cline-mid">' +
+                  '<div class="mc-cline-name">' + MC.esc(l.name) + '</div>' +
+                  '<div class="mc-cline-price">' + money(l.price) + '</div>' +
+                  '<div class="mc-cline-ctrls">' +
+                    '<div class="mc-step"><button data-dec="' + MC.esc(l.id) + '" aria-label="Moins">−</button><span>' + l.qty + '</span><button data-inc="' + MC.esc(l.id) + '" aria-label="Plus">+</button></div>' +
+                    '<button class="mc-cline-rm" data-rm="' + MC.esc(l.id) + '">Retirer</button>' +
+                  '</div>' +
                 '</div>' +
-              '</div>' +
-              '<div class="mc-cline-total">' + money(l.price * l.qty) + '</div>' +
-            '</div>';
-        }).join('');
+                '<div class="mc-cline-total">' + money(l.price * l.qty) + '</div>' +
+              '</div>';
+          }).join('');
+        }
       }
       var subEl = $('#mc-cart-sub'); if (subEl) subEl.textContent = money(sub);
       var remaining = Math.max(0, FREE - sub);
