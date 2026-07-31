@@ -408,6 +408,15 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
       '<div class="co-recap-row co-recap-tot"><span>Total payé</span><b>' + money(total) + '</b></div>';
     elForm.hidden = true; elEmpty.hidden = true; elDone.hidden = false;
     MCCart.clear();
+    // Fidélité : 1 € dépensé = 1 point (+1 commande). Le palier atteint déclenche le code + l'email à la prochaine ouverture de « Mon compte ».
+    try {
+      var _u = JSON.parse(localStorage.getItem('mcUserV1') || 'null');
+      if (_u && (_u.email || _u.provider)) {
+        _u.points = (_u.points || 0) + Math.max(0, Math.round(total));
+        _u.orders = (_u.orders || 0) + 1;
+        localStorage.setItem('mcUserV1', JSON.stringify(_u));
+      }
+    } catch (e) {}
     try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (err) { window.scrollTo(0, 0); }
   }
 

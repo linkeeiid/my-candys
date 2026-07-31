@@ -279,6 +279,24 @@ h1,h2,h3{font-weight:800;letter-spacing:-.5px;margin:0}
 .mc-authme-stat{background:#FFF7EE;border:1px solid #F1DAE7;border-radius:14px;padding:14px 8px;text-align:center}
 .mc-authme-stat b{display:block;font-size:23px;font-weight:800;color:#E01784;line-height:1}
 .mc-authme-stat span{display:block;font-size:11px;font-weight:600;color:#8A6076;margin-top:5px}
+.mc-authme-stat--link{cursor:pointer;transition:background .15s,border-color .15s}
+.mc-authme-stat--link:hover{background:#FFEBF5;border-color:#F3A9D0}
+.mc-authme-stat--link span{color:#E01784}
+/* Bloc fidélité (espace compte) */
+.mc-loy{margin:0 0 16px}
+.mc-loy-won{background:linear-gradient(135deg,#FFEFF8,#FFF7FB);border:1.5px solid #F3A9D0;border-radius:16px;padding:14px 15px;margin-bottom:12px}
+.mc-loy-won-t{font-size:14px;font-weight:700;color:#2A0A1C}
+.mc-loy-code{display:flex;align-items:center;gap:8px;margin:9px 0 4px}
+.mc-loy-code code{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:15px;font-weight:800;letter-spacing:1px;color:#E01784;background:#fff;border:1px dashed #F3A9D0;border-radius:10px;padding:9px 12px;text-align:center}
+.mc-loy-copy{flex:none;background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;font-weight:700;font-size:13px;padding:9px 14px;border-radius:10px;cursor:pointer;transition:transform .15s}
+.mc-loy-copy:hover{transform:translateY(-1px)}
+.mc-loy-hint{font-size:12px;color:#8A6076}
+.mc-loy-prog{margin-bottom:10px}
+.mc-loy-prog-top{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:#6A4A58;margin-bottom:6px}
+.mc-loy-prog-top b{color:#E01784}
+.mc-loy-bar{height:9px;border-radius:999px;background:#F6E4EF;overflow:hidden}
+.mc-loy-bar > span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#FF2E9A,#E01784);transition:width .4s}
+.mc-loy-more{display:inline-block;font-size:12.5px;font-weight:700;color:#E01784;margin-top:2px}
 .mc-authme-links{display:flex;flex-direction:column;gap:9px}
 .mc-authme-links a{display:flex;align-items:center;gap:11px;padding:13px 15px;border-radius:13px;font-size:14px;font-weight:600;background:#FFF1F8;color:#2A0A1C;transition:background .15s,color .15s}
 .mc-authme-links a:hover{background:#FFEBF5;color:#E01784}

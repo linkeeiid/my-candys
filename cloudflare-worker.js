@@ -254,6 +254,30 @@ export default {
         return json({ ok: true }, 200, allow);
       }
 
+      // Fidélité : le client atteint un palier → e-mail avec son code de réduction unique
+      if (path === '/loyalty') {
+        const email = (body.email || '').trim();
+        const pct = parseInt(body.pct, 10);
+        const code = String(body.code || '').slice(0, 32);
+        const first = str(body.firstName, 40);
+        const pts = parseInt(body.pts, 10) || 0;
+        if (!isEmail(email) || email.length > 254 || [5, 10, 15].indexOf(pct) < 0) return json({ ok: false, error: 'champs_invalides' }, 400, allow);
+        // garde anti-spam : le code doit correspondre au calcul serveur (même hash que le site)
+        let h = 2166136261; const s = email + '|' + pct;
+        for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = (h * 16777619) >>> 0; }
+        const expected = 'MCFID' + pct + '-' + ('000' + h.toString(36).toUpperCase()).slice(-4);
+        if (code !== expected) return json({ ok: false, error: 'code_invalide' }, 400, allow);
+        const html = '<div style="font-family:Arial,sans-serif;color:#2A0A1C;max-width:520px;margin:auto">' +
+          '<h2 style="color:#E01784;margin:0 0 6px">Bravo ' + esc(first || '') + ' ! 🎉</h2>' +
+          '<p style="font-size:15px;line-height:1.6">Tu viens d\'atteindre <b>' + pts + ' points</b> de fidélité My Candy\'s — tu débloques <b>-' + pct + '% sur ta prochaine commande.</b></p>' +
+          '<p style="font-size:14px;margin:18px 0 8px">Ton code de réduction personnel :</p>' +
+          '<div style="font-family:monospace;font-size:22px;font-weight:800;letter-spacing:2px;color:#E01784;background:#FFF1F8;border:2px dashed #F3A9D0;border-radius:12px;padding:14px;text-align:center">' + esc(code) + '</div>' +
+          '<p style="font-size:13px;color:#8A6076;margin-top:14px">À saisir dans le champ « Code promo » au moment du paiement. Un seul code par commande. Merci de faire partie du club ! 🍬</p></div>';
+        await brevoSendEmail(env, { toEmail: email, toName: first, subject: 'Ta récompense fidélité : -' + pct + '% 🎁', html: html });
+        await fbPush(env, 'loyalty', { email: email, pct: pct, pts: pts, code: code, ts: Date.now() });
+        return json({ ok: true }, 200, allow);
+      }
+
       // ------------------------- PAIEMENT SUMUP -------------------------
 
       if (path === '/create-checkout') {
