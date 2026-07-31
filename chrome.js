@@ -27,7 +27,6 @@
       '<a href="index.html" class="mc-logo"><img src="assets/logo.png" alt="My Candy\'s" width="160" height="54"></a>' +
       '<div class="mc-actions">' +
         '<button id="mc-search-btn" class="mc-act" title="Recherche"><span>🔍</span><span class="mc-lbl">Recherche</span></button>' +
-        '<span class="mc-fr">🇫🇷 FR</span>' +
         '<a href="compte.html" class="mc-act" data-account title="Mon compte"><span>👤</span><span class="mc-lbl">Compte</span></a>' +
         '<a href="favoris.html" class="mc-act" title="Favoris"><span>🤍</span><span class="mc-lbl">Favoris</span><span id="wish-badge" class="mc-wbadge">0</span></a>' +
         '<button id="mc-cart-btn" class="mc-cartbtn" title="Panier"><span>🛒</span><span class="mc-lbl">Panier</span><span id="cart-badge" class="mc-cbadge">0</span></button>' +
@@ -47,30 +46,30 @@
       '<div class="mc-drop">' +
         '<a href="boutique.html?c=sucres" class="mc-navlink' + act('sucres') + '">Sucrés ▾</a>' +
         '<div class="mc-dropmenu" style="min-width:640px">' +
-          '<div class="mc-dropcol"><div>🍬 Bonbons</div><a href="boutique.html?c=sucres">Bonbons US</a><a href="boutique.html?c=sucres">Chewing-gum &amp; sucettes</a><a href="boutique.html?c=sucres">Chamallow</a><a href="boutique.html?c=sucres">Barbe à papa</a><a href="boutique.html?c=sucres" class="mc-seeall">Voir tout →</a></div>' +
-          '<div class="mc-dropcol"><div>🍿 Snacks sucrés</div><a href="boutique.html?c=sucres">Pop-corn</a><a href="boutique.html?c=sucres">Biscuits</a><a href="boutique.html?c=sucres">Gelées</a><a href="boutique.html?c=sucres">Mochi</a><a href="boutique.html?c=sucres" class="mc-seeall">Voir tout →</a></div>' +
-          '<div class="mc-dropcol"><div>🍫 Chocolats</div><a href="boutique.html?c=sucres">Chocolats intl</a><a href="boutique.html?c=sucres">Barres chocolatées</a><a href="boutique.html?c=sucres">Beurre de cacahuète</a><a href="boutique.html?c=sucres">Chocolat de Dubaï ✨</a><a href="boutique.html?c=sucres" class="mc-seeall">Voir tout →</a></div>' +
+          '<div class="mc-dropcol"><div>🍬 Bonbons</div><a href="boutique.html?c=Bonbons">Bonbons US</a><a href="boutique.html?sub=gum">Chewing-gum &amp; sucettes</a><a href="boutique.html?sub=chamallow">Chamallow</a><a href="boutique.html?sub=barbeapapa">Barbe à papa</a><a href="boutique.html?c=sucres" class="mc-seeall">Voir tout →</a></div>' +
+          '<div class="mc-dropcol"><div>🍿 Snacks sucrés</div><a href="boutique.html?sub=popcorn">Pop-corn</a><a href="boutique.html?sub=biscuit">Biscuits</a><a href="boutique.html?sub=jelly">Gelées</a><a href="boutique.html?sub=mochi">Mochi</a><a href="boutique.html?c=sucres" class="mc-seeall">Voir tout →</a></div>' +
+          '<div class="mc-dropcol"><div>🍫 Chocolats</div><a href="boutique.html?c=Chocolats">Chocolats intl</a><a href="boutique.html?sub=barres">Barres chocolatées</a><a href="boutique.html?sub=peanut">Beurre de cacahuète</a><a href="boutique.html?sub=dubai">Chocolat de Dubaï ✨</a><a href="boutique.html?c=sucres" class="mc-seeall">Voir tout →</a></div>' +
         '</div>' +
       '</div>' +
       '<div class="mc-drop">' +
         '<a href="boutique.html?c=sales" class="mc-navlink' + act('sales') + '">Salés ▾</a>' +
         '<div class="mc-dropmenu" style="min-width:560px">' +
-          '<div class="mc-dropcol"><div>🌶️ Snacks salés</div><a href="boutique.html?c=sales">Chips &amp; crackers</a><a href="boutique.html?c=sales">Takis &amp; snacks épicés</a><a href="boutique.html?c=sales">Beef jerky</a><a href="boutique.html?c=sales" class="mc-seeall">Voir tout →</a></div>' +
-          '<div class="mc-dropcol"><div>🍜 Cuisine</div><a href="boutique.html?c=sales">Ramen &amp; nouilles</a><a href="boutique.html?c=sales">Cuisine américaine</a></div>' +
-          '<div class="mc-dropcol"><div>🥫 Sauces</div><a href="boutique.html?c=sales">Sauces &amp; dips</a><a href="boutique.html?c=sales">Salsa</a><a href="boutique.html?c=sales">Chamoy</a></div>' +
+          '<div class="mc-dropcol"><div>🌶️ Snacks salés</div><a href="boutique.html?sub=chips">Chips &amp; crackers</a><a href="boutique.html?sub=takis">Takis &amp; snacks épicés</a><a href="boutique.html?sub=jerky">Beef jerky</a><a href="boutique.html?c=sales" class="mc-seeall">Voir tout →</a></div>' +
+          '<div class="mc-dropcol"><div>🍜 Cuisine</div><a href="boutique.html?sub=ramen">Ramen &amp; nouilles</a><a href="boutique.html?sub=americaine">Cuisine américaine</a></div>' +
+          '<div class="mc-dropcol"><div>🥫 Sauces</div><a href="boutique.html?sub=sauce">Sauces &amp; dips</a><a href="boutique.html?sub=salsa">Salsa</a><a href="boutique.html?sub=chamoy">Chamoy</a></div>' +
         '</div>' +
       '</div>' +
       '<div class="mc-drop">' +
         '<a href="boutique.html?c=boissons" class="mc-navlink' + act('boissons') + '">Boissons ▾</a>' +
         '<div class="mc-dropmenu" style="min-width:520px">' +
-          '<div class="mc-dropcol"><div>🥤 Boissons</div><a href="boutique.html?c=boissons">Énergisantes (Prime, Monster)</a><a href="boutique.html?c=boissons">Sodas viraux</a><a href="boutique.html?c=boissons">Boissons asiatiques</a><a href="boutique.html?c=boissons">Thé glacé</a></div>' +
-          '<div class="mc-dropcol"><div style="color:#0FA9B8">🧊 Frais</div><a href="boutique.html?c=boissons">Slushies</a><a href="boutique.html?c=boissons">Eaux aromatisées</a><a href="boutique.html?c=boissons">Jus de fruits</a><a href="boutique.html?c=boissons">Bubble tea</a></div>' +
+          '<div class="mc-dropcol"><div>🥤 Boissons</div><a href="boutique.html?sub=energy">Énergisantes (Prime, Monster)</a><a href="boutique.html?sub=sodas">Sodas viraux</a><a href="boutique.html?c=asie">Boissons asiatiques</a><a href="boutique.html?sub=the">Thé glacé</a></div>' +
+          '<div class="mc-dropcol"><div style="color:#0FA9B8">🧊 Frais</div><a href="boutique.html?sub=slush">Slushies</a><a href="boutique.html?sub=eau">Eaux aromatisées</a><a href="boutique.html?sub=jus">Jus de fruits</a><a href="boutique.html?sub=bubbletea">Bubble tea</a></div>' +
         '</div>' +
       '</div>' +
       '<div class="mc-drop">' +
         '<a href="boutique.html?c=asie" class="mc-navlink' + act('asie') + '">Asie ▾</a>' +
         '<div class="mc-dropmenu" style="min-width:340px">' +
-          '<div class="mc-dropcol"><div>🍡 Produits asiatiques</div><a href="boutique.html?c=asie">Ramen</a><a href="boutique.html?c=asie">Boissons asiatiques</a><a href="boutique.html?c=asie">Mochi</a><a href="boutique.html?c=asie">Mogu Mogu</a><a href="boutique.html?c=asie" class="mc-seeall">Voir tout →</a></div>' +
+          '<div class="mc-dropcol"><div>🍡 Produits asiatiques</div><a href="boutique.html?sub=ramen">Ramen</a><a href="boutique.html?c=asie">Boissons asiatiques</a><a href="boutique.html?sub=mochi">Mochi</a><a href="boutique.html?sub=mogu">Mogu Mogu</a><a href="boutique.html?c=asie" class="mc-seeall">Voir tout →</a></div>' +
         '</div>' +
       '</div>' +
       '<a href="boutique.html?c=anti-gaspi" class="mc-navlink mc-navlink--green' + act('anti-gaspi') + '">Anti-Gaspi ♻️</a>' +

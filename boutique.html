@@ -51,6 +51,12 @@
 .shop-chip{display:flex;align-items:center;gap:7px;background:#fff;border:1px solid #F3C6DE;color:#E01784;font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:999px}
 .shop-chip:hover{background:#FFEBF5}
 .shop-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.shop-pager{display:flex;justify-content:center;align-items:center;gap:6px;flex-wrap:wrap;margin:36px 0 6px}
+.shop-page,.shop-page-nav{border:1.5px solid #E7C9DA;background:#fff;color:#2A0A1C;font-family:inherit;font-weight:700;font-size:14px;min-width:40px;height:40px;padding:0 13px;border-radius:11px;cursor:pointer;transition:border-color .12s,color .12s,background .12s}
+.shop-page:hover,.shop-page-nav:hover{border-color:#FF2E9A;color:#E01784}
+.shop-page.on{background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;border-color:transparent;cursor:default}
+.shop-page-nav[disabled]{opacity:.4;cursor:not-allowed;pointer-events:none}
+.shop-page-dots{color:#B7A0AC;padding:0 2px;font-weight:700}
 .shop-empty{text-align:center;padding:70px 20px;color:#8A6076}
 .shop-empty .big{font-size:52px}
 .shop-empty .t{font-weight:700;font-size:18px;color:#2A0A1C;margin-top:10px}
@@ -112,6 +118,7 @@
       </div>
       <div class="shop-chips" id="shop-chips" style="display:none"></div>
       <div class="shop-grid" id="shop-grid"></div>
+      <div class="shop-pager" id="shop-pager" style="display:none"></div>
       <div class="shop-empty" id="shop-empty" style="display:none"><div class="big">🔎</div><div class="t" id="shop-empty-title">Aucun produit ne correspond</div><div id="shop-empty-sub" style="font-size:14px;margin-top:6px"></div><button id="shop-reset">Voir toute la boutique</button></div>
     </div>
   </div>
@@ -128,8 +135,41 @@
   var CATS = ['Bonbons', 'Snacks', 'Sodas', 'Chocolats', 'Épicé', 'Desserts'];
   var BRANDS = (function () { var s = {}; MC.PRODUCTS.forEach(function (p) { if (p.brand) s[p.brand] = 1; }); return Object.keys(s).sort(function (a, b) { return a.localeCompare(b, 'fr'); }); })();
   function norm(s) { return (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]/g, ''); }
+  // Sous-catégories : chaque onglet de menu = un jeu de mots-clés (cherchés dans nom+marque, normalisés)
+  var SUBS = {
+    gum: ['gum', 'chewing', 'sucette', 'lollipop', 'frizzy', 'popping', 'pushpop'],
+    chamallow: ['chamallow', 'marshmallow', 'guimauve'],
+    barbeapapa: ['barbeapapa', 'cottoncandy', 'popin'],
+    popcorn: ['popcorn', 'palomitas', 'candypop', 'cookiepop', 'netflix', 'werther'],
+    biscuit: ['biscuit', 'granola', 'cookie', 'oreo', 'lotus', 'biscoff'],
+    jelly: ['jelly', 'gelee', 'gummy', 'gummies', 'hitschies', 'hitchies', 'nerds', 'jarritos', 'fini', 'bazooka', 'swezzy', 'laffytaffy', 'cerdan', 'pappi'],
+    mochi: ['mochi'],
+    barres: ['snickers', 'twix', 'kitkat', 'mars', 'bounty', 'bueno', 'maltesers', 'milka', 'lion', 'feastables', 'mrbeast'],
+    peanut: ['reese', 'peanut', 'cacahuete', 'feastables'],
+    dubai: ['dubai', 'arabian', 'kadayif', 'pistache', 'trompe'],
+    chips: ['pringles', 'lays', 'cheetos', 'brets', 'chips', 'cracker', 'doritos', 'vico', 'monstermunch', 'flipz', 'pipas', 'nachos', 'buenosdias'],
+    takis: ['takis', 'cornchito', 'pilipili', 'samyang', 'buldak'],
+    jerky: ['jerky', 'jacklink', 'beef'],
+    ramen: ['ramen', 'nouille', 'samyang', 'buldak', 'noodle'],
+    americaine: ['poptarts', 'luckycharms', 'frosted', 'kellog', 'nesquik', 'marshmallow'],
+    sauce: ['sauce', 'guacamole', 'salsa', 'chamoy'],
+    salsa: ['salsa'],
+    chamoy: ['chamoy'],
+    energy: ['redbull', 'monster', 'prime', 'energy', 'kratingdaeng', 'gameon'],
+    sodas: ['fanta', 'coca', 'pepsi', 'sprite', 'mountaindew', 'mtndew', 'drpepper', 'schweppes', 'selecto', 'hamoud', 'lorina', 'poms'],
+    the: ['estathe', 'fusetea', 'lipton', 'oolong', 'kombucha', 'icetea', 'starbucks'],
+    slush: ['slush', 'icetalk'],
+    eau: ['blue', 'pellegrino', 'mizone', 'vitamin'],
+    jus: ['ifruit', 'hawai', 'caribos', 'calypso', 'lemonade', 'apla', 'caprisun', 'koolaid'],
+    bubbletea: ['bubble', 'boba', 'mogu'],
+    mogu: ['mogu']
+  };
+  var SUBLABELS = { gum: 'Chewing-gum & sucettes', chamallow: 'Chamallow', barbeapapa: 'Barbe à papa', popcorn: 'Pop-corn', biscuit: 'Biscuits', jelly: 'Gelées & gummies', mochi: 'Mochi', barres: 'Barres chocolatées', peanut: 'Beurre de cacahuète', dubai: 'Chocolat de Dubaï', chips: 'Chips & crackers', takis: 'Takis & snacks épicés', jerky: 'Beef jerky', ramen: 'Ramen & nouilles', americaine: 'Cuisine américaine', sauce: 'Sauces & dips', salsa: 'Salsa', chamoy: 'Chamoy', energy: 'Énergisantes', sodas: 'Sodas viraux', the: 'Thé glacé', slush: 'Slushies', eau: 'Eaux aromatisées', jus: 'Jus de fruits', bubbletea: 'Bubble tea', mogu: 'Mogu Mogu' };
   var params = new URLSearchParams(location.search);
-  var st = { cat: 'all', brand: 'all', promo: false, nouv: false, best: false, asie: false, sweet: false, sort: 'pop', q: '' };
+  var st = { cat: 'all', brand: 'all', promo: false, nouv: false, best: false, asie: false, sweet: false, sort: 'pop', q: '', sub: '' };
+  var subP = params.get('sub'); if (subP && SUBS[subP]) st.sub = subP;
+  var PAGE_SIZE = 30, page = 1;
+  var HERO_IMGS = ['kinder-creamy', 'monster-punch', 'nerds', 'pickle', 'reeses', 'samyang'];
 
   var b = params.get('b'); if (b) st.brand = b;
   var q = params.get('q'); if (q) st.q = q;
@@ -159,6 +199,7 @@
   if (st.brand !== 'all' && !c) { var d = document.getElementById('shop-title'); if (d) d.textContent = st.brand; }
   if (c && TITLES[c]) { document.getElementById('shop-title').textContent = TITLES[c][0]; document.getElementById('shop-sub').textContent = TITLES[c][1]; document.getElementById('shop-crumb').textContent = TITLES[c][0]; }
   if (st.brand !== 'all') { document.getElementById('shop-crumb').textContent = st.brand; }
+  if (st.sub) { var _sl = SUBLABELS[st.sub] || st.sub; document.getElementById('shop-title').textContent = _sl; document.getElementById('shop-crumb').textContent = _sl; }
 
   document.getElementById('shop-promo').checked = st.promo;
   document.getElementById('shop-new').checked = st.nouv;
@@ -186,6 +227,7 @@
     if (st.best) L = L.filter(function (p) { return p.best; });
     if (st.asie) L = L.filter(function (p) { return p.asie; });
     if (st.sweet) L = L.filter(function (p) { return ['Bonbons', 'Chocolats', 'Desserts'].indexOf(p.cat) >= 0; });
+    if (st.sub && SUBS[st.sub]) { var kws = SUBS[st.sub]; L = L.filter(function (p) { var hh = norm(p.name + ' ' + (p.brand || '')); return kws.some(function (k) { return hh.indexOf(k) >= 0; }); }); }
     if (st.q) { var toks = st.q.split(/\s+/).map(norm).filter(Boolean); if (toks.length) L = L.filter(function (p) { var h = norm(p.name + ' ' + (p.brand || '')); return toks.every(function (t) { return h.indexOf(t) >= 0; }); }); }
     if (st.sort === 'priceUp') L.sort(function (a, b) { return a.price - b.price; });
     else if (st.sort === 'priceDown') L.sort(function (a, b) { return b.price - a.price; });
@@ -202,15 +244,56 @@
     if (st.best) out.push({ k: 'best', label: 'Bestsellers' });
     if (st.asie) out.push({ k: 'asie', label: 'Asie' });
     if (st.sweet) out.push({ k: 'sweet', label: 'Sucré' });
+    if (st.sub) out.push({ k: 'sub', label: SUBLABELS[st.sub] || st.sub });
     if (st.q) out.push({ k: 'q', label: '“' + st.q + '”' });
     return out;
   }
+
+  // Articles flottants du hero : duo aléatoire (change à chaque navigation / page)
+  function rotateHero() {
+    var decos = document.querySelectorAll('.shop-hero-decor');
+    if (decos.length < 2) return;
+    var pool = HERO_IMGS.slice(), pick = [];
+    pick.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
+    pick.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
+    decos[0].src = 'assets/hero/' + pick[0] + '.png';
+    decos[1].src = 'assets/hero/' + pick[1] + '.png';
+  }
+  function pageList(cur, total) {
+    var out = [], i;
+    if (total <= 7) { for (i = 1; i <= total; i++) out.push(i); return out; }
+    out.push(1);
+    var start = Math.max(2, cur - 1), end = Math.min(total - 1, cur + 1);
+    if (start > 2) out.push('…');
+    for (i = start; i <= end; i++) out.push(i);
+    if (end < total - 1) out.push('…');
+    out.push(total);
+    return out;
+  }
+  function renderPager(pages) {
+    var el = document.getElementById('shop-pager');
+    if (!el) return;
+    if (pages <= 1) { el.style.display = 'none'; el.innerHTML = ''; return; }
+    el.style.display = 'flex';
+    var html = '<button class="shop-page-nav" data-page="' + (page - 1) + '"' + (page === 1 ? ' disabled' : '') + '>← Précédent</button>';
+    pageList(page, pages).forEach(function (n) {
+      html += (n === '…') ? '<span class="shop-page-dots">…</span>'
+        : '<button class="shop-page' + (n === page ? ' on' : '') + '" data-page="' + n + '">' + n + '</button>';
+    });
+    html += '<button class="shop-page-nav" data-page="' + (page + 1) + '"' + (page === pages ? ' disabled' : '') + '>Suivant →</button>';
+    el.innerHTML = html;
+  }
+  function apply() { page = 1; rotateHero(); render(); }
 
   function render() {
     renderSidebar();
     var L = filtered();
     document.getElementById('shop-count').textContent = L.length;
-    document.getElementById('shop-grid').innerHTML = L.map(MC.card).join('');
+    var pages = Math.max(1, Math.ceil(L.length / PAGE_SIZE));
+    if (page > pages) page = pages; if (page < 1) page = 1;
+    var slice = L.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+    document.getElementById('shop-grid').innerHTML = slice.map(MC.card).join('');
+    renderPager(pages);
     document.getElementById('shop-empty').style.display = L.length ? 'none' : 'block';
     if (!L.length) {
       var et = document.getElementById('shop-empty-title'), es = document.getElementById('shop-empty-sub');
@@ -228,27 +311,33 @@
   }
 
   // Interactions
-  document.getElementById('shop-cats').addEventListener('click', function (e) { var t = e.target.closest('[data-cat]'); if (!t) return; var cat = t.getAttribute('data-cat'); st.cat = (st.cat === cat ? 'all' : cat); st.sweet = false; render(); });
+  document.getElementById('shop-cats').addEventListener('click', function (e) { var t = e.target.closest('[data-cat]'); if (!t) return; var cat = t.getAttribute('data-cat'); st.cat = (st.cat === cat ? 'all' : cat); st.sweet = false; apply(); });
   window.addEventListener('mc-catalog-updated', function () { if (typeof renderSidebar === 'function') renderSidebar(); render(); });
-  document.getElementById('shop-brands').addEventListener('change', function (e) { if (e.target.id !== 'shop-brand-sel') return; st.brand = e.target.value; render(); });
-  document.getElementById('shop-promo').addEventListener('change', function (e) { st.promo = e.target.checked; render(); });
-  document.getElementById('shop-new').addEventListener('change', function (e) { st.nouv = e.target.checked; render(); });
-  document.getElementById('shop-sort').addEventListener('change', function (e) { st.sort = e.target.value; render(); });
+  document.getElementById('shop-brands').addEventListener('change', function (e) { if (e.target.id !== 'shop-brand-sel') return; st.brand = e.target.value; apply(); });
+  document.getElementById('shop-promo').addEventListener('change', function (e) { st.promo = e.target.checked; apply(); });
+  document.getElementById('shop-new').addEventListener('change', function (e) { st.nouv = e.target.checked; apply(); });
+  document.getElementById('shop-sort').addEventListener('change', function (e) { st.sort = e.target.value; apply(); });
   document.getElementById('shop-chips').addEventListener('click', function (e) {
     var t = e.target.closest('[data-clear]'); if (!t) return;
     var k = t.getAttribute('data-clear');
-    if (k === 'all') { st.cat = 'all'; st.brand = 'all'; st.promo = st.nouv = st.best = st.asie = st.sweet = false; st.q = ''; }
+    if (k === 'all') { st.cat = 'all'; st.brand = 'all'; st.promo = st.nouv = st.best = st.asie = st.sweet = false; st.q = ''; st.sub = ''; }
     else if (k === 'cat') st.cat = 'all';
     else if (k === 'brand') st.brand = 'all';
-    else st[k] = (k === 'q' ? '' : false);
+    else st[k] = (k === 'q' || k === 'sub' ? '' : false);
     document.getElementById('shop-promo').checked = st.promo;
     document.getElementById('shop-new').checked = st.nouv;
-    render();
+    apply();
   });
-  document.getElementById('shop-reset').addEventListener('click', function () { st.cat = 'all'; st.brand = 'all'; st.promo = st.nouv = st.best = st.asie = st.sweet = false; st.q = ''; document.getElementById('shop-promo').checked = false; document.getElementById('shop-new').checked = false; render(); });
+  document.getElementById('shop-reset').addEventListener('click', function () { st.cat = 'all'; st.brand = 'all'; st.promo = st.nouv = st.best = st.asie = st.sweet = false; st.q = ''; st.sub = ''; document.getElementById('shop-promo').checked = false; document.getElementById('shop-new').checked = false; apply(); });
   document.getElementById('shop-mobfilter').addEventListener('click', function () { document.getElementById('shop-aside').classList.toggle('open'); });
+  document.getElementById('shop-pager').addEventListener('click', function (e) {
+    var t = e.target.closest('[data-page]'); if (!t || t.disabled) return;
+    var n = parseInt(t.getAttribute('data-page'), 10); if (isNaN(n)) return;
+    page = n; rotateHero(); render();
+    var g = document.getElementById('shop-grid'); if (g) window.scrollTo({ top: g.getBoundingClientRect().top + window.pageYOffset - 140, behavior: 'smooth' });
+  });
 
-  render();
+  apply();
 })();
 </script>
 </body>
