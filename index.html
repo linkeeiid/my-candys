@@ -163,9 +163,7 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .mc-news-ok{margin:22px auto 0;background:#22D3E4;color:#053b40;font-weight:700;padding:14px 24px;border-radius:14px;display:inline-block}
 @media (max-width:768px){
   .mc-decor{display:none}
-  /* Mobile : la déco flottante a un drop-shadow ANIMÉ (repeint chaque frame = coûteux).
-     On garde l'animation mais on la rasterise UNE fois sur sa propre couche (will-change) → déplacée, pas repeinte. */
-  .mc-mdecor{display:block;position:absolute;z-index:0;pointer-events:none;animation:floaty 8s ease-in-out infinite;filter:drop-shadow(0 18px 14px rgba(0,0,0,.24));will-change:transform}
+  .mc-mdecor{display:block;position:absolute;z-index:0;pointer-events:none;animation:floaty 8s ease-in-out infinite;filter:drop-shadow(0 18px 14px rgba(0,0,0,.24))}
   .mc-hero{aspect-ratio:1.27/1;max-height:none}
   .mc-wave svg{height:52px!important}
   .mc-wave{margin-top:-30px!important}
@@ -216,6 +214,14 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
   <img src="assets/hero/reeses.png" alt="" aria-hidden="true" loading="lazy" decoding="async" class="mc-decor" style="width:500px;left:-150px;top:1120px;--r:-9deg">
   <img src="assets/hero/samyang.png" alt="" aria-hidden="true" loading="lazy" decoding="async" class="mc-decor" style="width:580px;right:-170px;top:1300px;--r:12deg">
   <img src="assets/hero/kinder-creamy.png" alt="" aria-hidden="true" loading="lazy" decoding="async" class="mc-decor" style="width:500px;left:-150px;top:1720px;z-index:5;--r:-12deg">
+
+  <!-- Version MOBILE des produits flottants (plus petits, dépassent des bords, en fond derrière le contenu) -->
+  <img src="assets/hero/monster-punch.png" alt="" aria-hidden="true" loading="lazy" decoding="async" class="mc-mdecor" style="width:150px;right:-55px;top:40px;--r:8deg">
+  <img src="assets/hero/nerds.png" alt="" aria-hidden="true" loading="lazy" decoding="async" class="mc-mdecor" style="width:165px;left:-60px;top:360px;--r:-10deg">
+  <img src="assets/hero/pickle.png" alt="" aria-hidden="true" loading="lazy" decoding="async" class="mc-mdecor" style="width:135px;right:-45px;top:760px;--r:12deg">
+  <img src="assets/hero/reeses.png" alt="" aria-hidden="true" loading="lazy" decoding="async" class="mc-mdecor" style="width:150px;left:-55px;top:1120px;--r:-9deg">
+  <img src="assets/hero/samyang.png" alt="" aria-hidden="true" loading="lazy" decoding="async" class="mc-mdecor" style="width:165px;right:-60px;top:1470px;--r:12deg">
+  <img src="assets/hero/kinder-creamy.png" alt="" aria-hidden="true" loading="lazy" decoding="async" class="mc-mdecor" style="width:150px;left:-55px;top:1780px;--r:-12deg">
 
   <div class="mc-catwrap">
     <div class="mc-cat4">
