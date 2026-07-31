@@ -64,5 +64,16 @@ On a durci le backend — il faut re-appliquer 2 choses :
 ## 8) Réseaux sociaux (footer)
 Le footer pointe vers `tiktok.com/@my.candys.raphael`, `instagram.com/my.candys.lyon`, `snapchat.com/add/candy83700`. **Vérifie que ces @ sont les bons** (surtout Instagram/Snapchat, je les ai déduits du TikTok) et dis-moi si à corriger.
 
+## 9) Connexion Google (bouton « Continuer avec Google »)
+Le code est déjà en place (`chrome.js`). Il reste à créer un **ID client OAuth** (gratuit) et à le coller :
+1. Va sur **https://console.cloud.google.com** → crée un projet (ex. « My Candy's »).
+2. **APIs et services → Écran de consentement OAuth** → type **Externe** → renseigne le nom de l'app (« My Candy's »), ton e-mail d'assistance et de contact → les portées `email`, `profile`, `openid` sont **non sensibles** (aucune validation Google requise) → **Publier en production**.
+3. **APIs et services → Identifiants → Créer des identifiants → ID client OAuth** → type **Application Web**.
+4. Dans **Origines JavaScript autorisées**, ajoute : `https://linkeeiid.github.io` (mets aussi ton futur domaine perso si tu en as un). *(Pas besoin d'URI de redirection : le flux est un popup côté navigateur.)*
+5. Copie l'**ID client** (finit par `.apps.googleusercontent.com`).
+6. Dans **`chrome.js`**, colle-le : `var GOOGLE_CLIENT_ID = 'xxxx.apps.googleusercontent.com';` → pousse le fichier.
+
+Tant que `GOOGLE_CLIENT_ID` est vide, le bouton reste en **mode démo**. Ça ne marche que sur le **site en ligne** (HTTPS + origine autorisée), pas en local `file://`. Apple reste en démo (Sign in with Apple = compte développeur Apple payant). La connexion Google enregistre nom + e-mail + photo dans le profil local `mcUserV1` (pas de compte serveur — cohérent avec la vitrine actuelle).
+
 ---
 **Note** : `BREVO_API_KEY` ne doit jamais être partagée dans le chat — elle vit uniquement dans Cloudflare. La newsletter n'envoie aucun email en ton nom → aucun souci de délivrabilité (le sujet DMARC ne concernera que le formulaire contact + les emails de commande, qu'on réglera avec un vrai domaine).

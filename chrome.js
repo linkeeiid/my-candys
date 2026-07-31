@@ -259,6 +259,55 @@
     function close() { ov.classList.remove('open'); document.body.style.overflow = ''; }
     window.MCauth = { open: open, close: close };
 
+    /* ---------- Connexion Google RÉELLE (Google Identity Services) ----------
+       1) Crée un « ID client OAuth » sur https://console.cloud.google.com (type: Web).
+       2) Ajoute l'origine autorisée : https://linkeeiid.github.io
+       3) Colle l'ID client ci-dessous entre les guillemets.
+       Tant que c'est vide → mode démo (comme avant). Détails dans GUIDE-BACKEND.md. */
+    var GOOGLE_CLIENT_ID = '346821256442-gqno84hri1octoqhkdnbftad24aqi5e7.apps.googleusercontent.com';
+    var gTokenClient = null;
+    function loadGSI(cb) {
+      if (window.google && google.accounts && google.accounts.oauth2) { cb(); return; }
+      if (!document.getElementById('gsi-client')) {
+        var s = document.createElement('script');
+        s.src = 'https://accounts.google.com/gsi/client'; s.async = true; s.defer = true; s.id = 'gsi-client';
+        document.head.appendChild(s);
+      }
+      var tries = 0, t = setInterval(function () {
+        if (window.google && google.accounts && google.accounts.oauth2) { clearInterval(t); cb(); }
+        else if (++tries > 40) { clearInterval(t); toast('Google indisponible, réessaie'); }
+      }, 150);
+    }
+    function fakeSocial(prov) {
+      var u = readU() || {}; if (!u.firstName) u.firstName = 'toi';
+      u.provider = prov; if (u.points == null) u.points = 50; if (u.orders == null) u.orders = 0;
+      writeU(u); renderMe(u); toast('Connecté avec ' + prov + ' 🎉');
+    }
+    function googleSignIn() {
+      if (!GOOGLE_CLIENT_ID) { fakeSocial('Google'); return; } // pas encore configuré → démo
+      loadGSI(function () {
+        if (!gTokenClient) {
+          gTokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: GOOGLE_CLIENT_ID,
+            scope: 'openid email profile',
+            callback: function (resp) {
+              if (!resp || !resp.access_token) { toast('Connexion Google annulée'); return; }
+              fetch('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { Authorization: 'Bearer ' + resp.access_token } })
+                .then(function (r) { return r.json(); })
+                .then(function (info) {
+                  var first = info.given_name || String(info.name || '').split(' ')[0] || 'toi';
+                  var u = { firstName: first, email: info.email || '', provider: 'Google', picture: info.picture || '', points: 50, orders: 0 };
+                  var ex = readU(); if (ex && ex.email && ex.email === u.email) { u.points = ex.points; u.orders = ex.orders; }
+                  writeU(u); renderMe(u); toast('Connecté avec Google 🎉');
+                })
+                .catch(function () { toast('Erreur de connexion Google'); });
+            }
+          });
+        }
+        gTokenClient.requestAccessToken();
+      });
+    }
+
     document.addEventListener('click', function (e) {
       var a = e.target.closest('[data-account]');
       if (a) { e.preventDefault(); open(); return; }
@@ -267,9 +316,8 @@
       var s = e.target.closest('[data-social]');
       if (s) {
         var prov = s.getAttribute('data-social');
-        var u = readU() || {}; if (!u.firstName) u.firstName = 'toi';
-        u.provider = prov; if (u.points == null) u.points = 50; if (u.orders == null) u.orders = 0;
-        writeU(u); renderMe(u); toast('Connecté avec ' + prov + ' 🎉');
+        if (prov === 'Google') { googleSignIn(); return; }
+        fakeSocial(prov); // Apple : reste en démo (Sign in with Apple = compte développeur payant)
       }
     });
     byId('mc-auth-x').addEventListener('click', close);
