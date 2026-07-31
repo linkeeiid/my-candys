@@ -142,7 +142,7 @@
       '<div class="mc-fcol"><div class="mc-fcol-title">La marque</div><div class="mc-fcol-links"><a href="infos.html?p=about">Qui sommes-nous ?</a><a href="infos.html?p=boutiques">Nos boutiques</a><a href="infos.html?p=franchise">Devenir franchisé</a><a href="marques.html">Nos marques</a></div></div>' +
       '<div class="mc-fcol"><div class="mc-fcol-title">Boutique</div><div class="mc-fcol-links"><a href="boutique.html?c=bestsellers">Bestsellers</a><a href="boutique.html?c=nouveautes">Nouveautés</a><a href="boutique.html?c=promos">Promos</a><a href="mystery-box.html">Mystery Box</a></div></div>' +
     '</div>' +
-    '<div class="mc-fbarwrap"><div class="mc-fbar"><div>© 2026 My Candy\'s — Tous droits réservés. · <a href="infos.html?p=mentions" style="color:#D9AEC4;text-decoration:underline">Mentions légales</a> · <a href="infos.html?p=cgv" style="color:#D9AEC4;text-decoration:underline">CGV</a> · <a href="infos.html?p=confidentialite" style="color:#D9AEC4;text-decoration:underline">Confidentialité</a></div><div class="mc-fpay"><span>VISA</span><span>Mastercard</span><span> Pay</span><span>G Pay</span><span>PayPal</span></div></div></div>' +
+    '<div class="mc-fbarwrap"><div class="mc-fbar"><div>© 2026 My Candy\'s — Tous droits réservés. · <a href="infos.html?p=mentions" style="color:#D9AEC4;text-decoration:underline">Mentions légales</a> · <a href="infos.html?p=cgv" style="color:#D9AEC4;text-decoration:underline">CGV</a> · <a href="infos.html?p=confidentialite" style="color:#D9AEC4;text-decoration:underline">Confidentialité</a></div><div class="mc-fpay"><span>VISA</span><span>Mastercard</span><span> Pay</span><span>G Pay</span></div></div></div>' +
   '</footer>' +
   '<div id="mc-menu-ov" class="mc-ov"></div>' +
   '<aside id="mc-menu" class="mc-drawer">' +
@@ -162,7 +162,7 @@
       '<div class="mc-cart-promo"><input placeholder="Code promo" aria-label="Code promo"><button>OK</button></div>' +
       '<div class="mc-cart-subrow"><span>Sous-total</span><span id="mc-cart-sub">0,00 €</span></div>' +
       '<a href="checkout.html" class="mc-cart-pay">Passer au paiement →</a>' +
-      '<div class="mc-cart-secure">🔒 Paiement sécurisé · CB, Apple Pay, PayPal</div>' +
+      '<div class="mc-cart-secure">🔒 Paiement sécurisé · CB, Apple Pay, Google Pay</div>' +
     '</div>' +
   '</aside>' +
   '<div id="mc-auth" class="mc-authov" role="dialog" aria-modal="true" aria-label="Mon compte">' +
