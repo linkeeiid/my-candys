@@ -75,6 +75,9 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
 .co-paynote{display:flex;align-items:center;gap:10px;background:#FFF7EE;border:1px dashed #F1C7A8;border-radius:12px;padding:11px 14px;font-size:12.5px;color:#8A5A2A;margin-bottom:16px}
 .co-cards{display:flex;gap:6px;margin-left:auto}
 .co-cards span{background:#fff;border:1px solid #EEDDCB;color:#4A2A3A;font-weight:800;font-size:10px;padding:4px 7px;border-radius:6px}
+.co-pay-hint{font-size:13px;color:#8A6076;background:#FFF7EE;border:1px dashed #F1C7A8;border-radius:12px;padding:12px 14px}
+.co-pay-err{margin-top:12px;font-size:13.5px;color:#C62A22;background:#FDECEC;border:1px solid #F6C9C4;border-radius:12px;padding:11px 14px;font-weight:600}
+#sumup-card{margin-top:6px}
 
 /* ---------- Récapitulatif ---------- */
 .co-sum{background:#FFF6FB;border:1px solid #F3D9E9;border-radius:20px;padding:20px 22px;box-shadow:0 10px 26px rgba(122,14,74,.1)}
@@ -236,26 +239,11 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
 
       <!-- 4. Paiement -->
       <section class="co-card">
-        <div class="co-sec-head"><div class="co-sec-num">4</div><div class="co-sec-title">Paiement</div></div>
-        <div class="co-paynote">🔒 Démo — paiement 100% factice, aucune vraie transaction. <span class="co-cards"><span>VISA</span><span>MC</span><span>CB</span></span></div>
-        <div class="co-fields">
-          <div class="co-field full">
-            <label for="f-cc">Numéro de carte <span class="req">*</span></label>
-            <input class="co-input" id="f-cc" name="cc" type="text" required autocomplete="cc-number" inputmode="numeric" maxlength="19" placeholder="4242 4242 4242 4242">
-          </div>
-          <div class="co-field full">
-            <label for="f-ccname">Titulaire de la carte <span class="req">*</span></label>
-            <input class="co-input" id="f-ccname" name="ccname" type="text" required autocomplete="cc-name" placeholder="LÉA MARTIN">
-          </div>
-          <div class="co-field">
-            <label for="f-exp">Expiration <span class="req">*</span></label>
-            <input class="co-input" id="f-exp" name="exp" type="text" required autocomplete="cc-exp" inputmode="numeric" maxlength="5" placeholder="MM/AA">
-          </div>
-          <div class="co-field">
-            <label for="f-cvc">CVC <span class="req">*</span></label>
-            <input class="co-input" id="f-cvc" name="cvc" type="text" required autocomplete="cc-csc" inputmode="numeric" maxlength="4" placeholder="123">
-          </div>
-        </div>
+        <div class="co-sec-head"><div class="co-sec-num">4</div><div class="co-sec-title">Paiement sécurisé</div></div>
+        <div class="co-paynote">🔒 Paiement sécurisé par <b>SumUp</b> — CB, Apple&nbsp;Pay &amp; Google&nbsp;Pay. Tes données de carte ne transitent jamais par le site. <span class="co-cards"><span>VISA</span><span>MC</span><span>CB</span></span></div>
+        <div id="co-pay-hint" class="co-pay-hint">Renseigne tes infos ci-dessus, puis clique sur <b>« Payer »</b> pour afficher le paiement sécurisé. 👇</div>
+        <div id="sumup-card"></div>
+        <div id="co-pay-err" class="co-pay-err" hidden></div>
       </section>
 
     </div>
@@ -302,6 +290,7 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
 <script src="chrome.js"></script>
 <script src="app.js"></script>
 <script src="catalog-overrides.js"></script>
+<script src="https://gateway.sumup.com/gateway/ecom/card/v2/sdk.js"></script>
 <script>
 (function () {
   'use strict';
@@ -382,35 +371,109 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
     render();
   });
 
-  // Soumission : AUCUN réseau, confirmation on-brand puis vidage du panier
+  /* ---------- Paiement SumUp (widget sécurisé) ---------- */
+  var payBtn = $('#co-pay');
+  var checkout = null; // { reference, checkoutId, total } une fois le checkout créé
+
+  function payErr(msg) {
+    var e = $('#co-pay-err'); if (!e) return;
+    if (!msg) { e.hidden = true; e.textContent = ''; return; }
+    e.hidden = false; e.textContent = '⚠️ ' + msg;
+    try { e.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (x) {}
+  }
+  function errMsg(code) {
+    var M = {
+      panier_vide: 'ton panier est vide', email_invalide: 'email invalide',
+      produit_indisponible: "un produit n'est plus disponible", produit_inconnu: 'un produit est introuvable',
+      sumup_non_configure: 'paiement non configuré', sumup_checkout_failed: "le paiement n'a pas pu être créé",
+      montant_invalide: 'montant invalide'
+    };
+    return M[code] || 'paiement indisponible';
+  }
+  function collectCustomer() {
+    return {
+      email: ($('#f-email').value || '').trim(), first: ($('#f-first').value || '').trim(),
+      last: ($('#f-last').value || '').trim(), tel: ($('#f-tel').value || '').trim(),
+      addr: ($('#f-addr').value || '').trim(), addr2: ($('#f-addr2').value || '').trim(),
+      zip: ($('#f-zip').value || '').trim(), city: ($('#f-city').value || '').trim(),
+      country: $('#f-country').value
+    };
+  }
+
+  function showDone(total) {
+    $('#co-num').textContent = checkout ? checkout.reference : 'MC';
+    $('#co-done-recap').innerHTML = '' +
+      '<div class="co-recap-row"><span>Email</span><span>' + MC.esc(collectCustomer().email) + '</span></div>' +
+      '<div class="co-recap-row"><span>Livraison</span><span>' + MC.esc(MODES[mode].label) + '</span></div>' +
+      '<div class="co-recap-row co-recap-tot"><span>Total payé</span><b>' + money(total) + '</b></div>';
+    elForm.hidden = true; elEmpty.hidden = true; elDone.hidden = false;
+    MCCart.clear();
+    try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (err) { window.scrollTo(0, 0); }
+  }
+
+  // Après un "success" du widget : on revérifie côté serveur (source de vérité).
+  function verifyAndFinish() {
+    var api = (window.MC_API || '').replace(/\/$/, '');
+    fetch(api + '/confirm', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reference: checkout.reference, checkoutId: checkout.checkoutId })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      if (d && d.ok) showDone(checkout.total);
+      else payErr('Paiement reçu, confirmation en cours. Tu recevras un email — réf ' + checkout.reference + '.');
+    }).catch(function () {
+      // Paiement validé par le widget ; le webhook serveur finalisera même si /confirm échoue.
+      showDone(checkout.total);
+    });
+  }
+
+  function mountWidget(checkoutId) {
+    var hint = $('#co-pay-hint'); if (hint) hint.hidden = true;
+    payBtn.style.display = 'none';
+    var host = document.getElementById('sumup-card');
+    try { host.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+    if (typeof SumUpCard === 'undefined') {
+      payErr("Le module de paiement n'a pas pu se charger. Recharge la page et réessaie.");
+      payBtn.style.display = ''; if (hint) hint.hidden = false; checkout = null; return;
+    }
+    SumUpCard.mount({
+      id: 'sumup-card',
+      checkoutId: checkoutId,
+      locale: 'fr-FR',
+      onResponse: function (type) {
+        if (type === 'success') verifyAndFinish();
+        else if (type === 'error') payErr('Le paiement a échoué. Vérifie ta carte et réessaie.');
+      }
+    });
+  }
+
+  // Soumission : crée le checkout côté Worker (montant recalculé serveur) → affiche le widget
   elForm.addEventListener('submit', function (e) {
     e.preventDefault();
+    if (!elForm.reportValidity()) return;
+    if (checkout) return; // widget déjà monté
+    payErr('');
 
-    // Snapshot AVANT de vider le panier
-    var items = MCCart.items();
-    var sub = items.reduce(function (n, l) { return n + l.price * l.qty; }, 0);
-    var ship = shipCost(sub);
-    var total = sub + ship;
-    var email = ($('#f-email').value || '').trim();
-    var num = 'MC-' + new Date().getFullYear() + '-' +
-              String(Math.floor(100000 + Math.random() * 900000));
+    var items = MCCart.items().map(function (l) { return { id: l.id, qty: l.qty, name: l.name }; });
+    if (!items.length) return;
 
-    $('#co-num').textContent = num;
-    $('#co-done-recap').innerHTML = '' +
-      '<div class="co-recap-row"><span>Email</span><span>' + MC.esc(email) + '</span></div>' +
-      '<div class="co-recap-row"><span>Livraison</span><span>' + MC.esc(MODES[mode].label) + '</span></div>' +
-      '<div class="co-recap-row"><span>Sous-total</span><span>' + money(sub) + '</span></div>' +
-      '<div class="co-recap-row"><span>Frais de livraison</span><span>' + (ship === 0 ? 'Offerte' : money(ship)) + '</span></div>' +
-      '<div class="co-recap-row co-recap-tot"><span>Total payé</span><b>' + money(total) + '</b></div>';
+    var api = (window.MC_API || '').replace(/\/$/, '');
+    if (!api) { payErr('Paiement momentanément indisponible. Réessaie plus tard.'); return; }
 
-    elForm.hidden = true;
-    elEmpty.hidden = true;
-    elDone.hidden = false;
+    payBtn.disabled = true;
+    payBtn.firstElementChild.textContent = 'Préparation du paiement…';
 
-    // Vide le panier (persistant) — met à jour badge + drawer via l'événement
-    MCCart.clear();
-
-    try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (err) { window.scrollTo(0, 0); }
+    fetch(api + '/create-checkout', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items: items, shipping: mode, customer: collectCustomer() })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      if (!d || !d.ok || !d.checkoutId) throw new Error(d && d.error ? errMsg(d.error) : 'paiement indisponible');
+      checkout = { reference: d.reference, checkoutId: d.checkoutId, total: d.amount };
+      mountWidget(d.checkoutId);
+    }).catch(function (err) {
+      payBtn.disabled = false;
+      render(); // restaure le libellé "Payer X€"
+      payErr(err.message || 'Une erreur est survenue. Réessaie.');
+    });
   });
 
   // Re-render si le panier change ailleurs (autre onglet) — mais pas après confirmation

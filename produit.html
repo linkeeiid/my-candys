@@ -310,21 +310,77 @@
     'Épicé': { h1: 'Le kit épicé qui enflamme TikTok', p1: "{name}, c'est l'expérience sucré-acidulé-brûlant à tester entre potes. Le genre de produit qui fait le buzz et qui se partage en vidéo.", h2: 'L\'expérience', p2: "Un mélange de saveurs qui joue sur tous les tableaux : sucré, acide et piquant. Sensations garanties (et un peu de sueur).", use: "À tester entre amis pour le fun, en défi ou juste par curiosité. Prépare un verre d'eau à côté, on ne sait jamais.", note: "Produit relevé, peut contenir sulfites et colorants. Voir l'emballage d'origine." },
     'Desserts': { h1: 'Le dessert viral venu d\'ailleurs', p1: "{name}, c'est cette gourmandise glacée ou lactée qu'on découvre sur les réseaux : texture unique, goût délicat et format parfait pour la photo.", h2: 'Pourquoi on l\'adore', p2: "Un petit voyage gourmand à chaque bouchée, avec ce côté original qu'on ne trouve pas au supermarché du coin.", use: "À déguster bien frais, en fin de repas ou en pause plaisir. Parfait pour épater sur une story.", note: "Peut contenir lait, gluten ou soja. Voir l'emballage d'origine." }
   };
-  function fillTpl(s) { return String(s).replace(/\{name\}/g, MC.esc(p.name)).replace(/\{brand\}/g, MC.esc(p.brand || '')); }
+  /* --- Description narrative PERSONNALISÉE par produit ---
+     parfum/type détecté dans le nom + variations déterministes (chaque fiche a un texte différent) */
+  function normn(s) { return (s || '').toLowerCase().replace(/[àâä]/g, 'a').replace(/[éèêë]/g, 'e').replace(/[îï]/g, 'i').replace(/[ôö]/g, 'o').replace(/[ûü]/g, 'u').replace(/ç/g, 'c'); }
+  var FLAV = [
+    [['choco', 'chocolat', 'bueno', 'brownie', 'cookie', 'nutella', 'oreo', 'kinder', 'milka', 'twix', 'snicker', 'kitkat', 'bounty', 'lion', 'reese', 'feastable', 'hershey', 'cacao', 'praline', 'schoko', 'cioccolat', 'nachos'], "le chocolat fondant et ultra-gourmand"],
+    [['fraise', 'strawberry', 'red velvet'], "la fraise juteuse et acidulée"],
+    [['framboise', 'raspberry'], "la framboise pétillante et fruitée"],
+    [['mangue', 'mango'], "la mangue exotique et ensoleillée"],
+    [['cassis'], "le cassis profond et fruité"],
+    [['myrtille', 'blueberry'], "des notes de myrtille fraîches et sucrées"],
+    [['pasteque', 'watermelon'], "la pastèque juteuse et rafraîchissante"],
+    [['pomme', 'apple'], "la pomme croquante et acidulée"],
+    [['citron', 'lemon', 'lime', 'citrus', 'agrume'], "l'agrume vif et zesté"],
+    [['peche', 'peach', 'abricot'], "la pêche douce et veloutée"],
+    [['coco', 'coconut'], "la noix de coco crémeuse et exotique"],
+    [['vanille', 'vanilla'], "la vanille douce et réconfortante"],
+    [['caramel', 'toffee', 'fudge'], "le caramel fondant et beurré"],
+    [['peanut', 'cacahuete', 'arachide'], "le beurre de cacahuète crémeux et addictif"],
+    [['banane', 'banana'], "la banane douce et gourmande"],
+    [['raisin', 'grape'], "le raisin sucré et pétillant"],
+    [['ananas', 'pineapple'], "l'ananas juteux et ensoleillé"],
+    [['bubble', 'tutti', 'chewing'], "ce goût bubble-gum nostalgique"],
+    [['cola', 'coca', 'pepsi'], "le cola pétillant et culte"],
+    [['orange', 'fanta'], "l'orange pétillante et solaire"],
+    [['fuego', 'spicy', 'chili', 'piment', 'buldak', 'samyang', 'nitro', 'pili', 'sriracha', 'jalapeno', 'picante', 'habanero', 'hot '], "un piquant qui réveille les papilles"],
+    [['cheese', 'fromage', 'cheddar'], "ce goût fromage salé irrésistible"],
+    [['bbq', 'barbecue', 'smoke'], "un goût barbecue fumé et savoureux"],
+    [['sour', 'acide', 'pica', 'extreme'], "une acidité qui pique juste ce qu'il faut"],
+    [['salt', 'salee', 'salted'], "ce croustillant salé qu'on ne lâche plus"]
+  ];
+  function flavorOf(nm) {
+    var n = normn(nm), i;
+    for (i = 0; i < FLAV.length; i++) { if (FLAV[i][0].some(function (k) { return n.indexOf(k) >= 0; })) return FLAV[i][1]; }
+    return ({ 'Sodas': "un goût pétillant qui sort de l'ordinaire", 'Snacks': "un croquant assaisonné qui claque", 'Bonbons': "un goût sucré explosif", 'Chocolats': "un chocolat fondant et gourmand", 'Épicé': "un mélange sucré-épicé intense", 'Desserts': "une douceur délicate et originale" }[CAT] || "un goût unique qui fait le buzz");
+  }
+  var OPEN = [
+    "Il y a des produits qu'on repère au premier coup d'œil, et {name} en fait clairement partie.",
+    "Tu l'as sûrement vu passer sur TikTok : {name}, c'est LE genre de trouvaille qu'on s'arrache.",
+    "Laisse-moi te présenter {name} — une petite pépite qu'on ne croise pas au supermarché du coin.",
+    "{name}, c'est le genre de produit qui transforme une simple envie de grignoter en vrai petit moment.",
+    "Certains snacks se contentent d'être bons. {name}, lui, a carrément une personnalité.",
+    "On ne va pas se mentir : {name}, ça devient vite une petite obsession dès qu'on y a goûté une fois."
+  ];
+  var TASTE = [
+    "Dès la première bouchée, {flavor} prend le dessus — et on comprend tout de suite pourquoi ça fait autant parler.",
+    "Ce qui fait toute la différence ici, c'est {flavor} : franc, généreux, exactement comme on l'espérait.",
+    "En bouche, c'est {flavor} qui mène la danse. Simple, efficace, diablement satisfaisant.",
+    "Le secret ? {flavor}, dosé pile comme il faut pour qu'on y revienne encore et encore.",
+    "À la dégustation, {flavor} se déploie tranquillement et installe ce petit effet « j'en reprends »."
+  ];
+  var STORY = [
+    "Importé pour de vrai, {name} fait partie de ces références qu'on déniche aux quatre coins du monde et qu'on ramène rien que pour toi. Pas de version « supermarché » édulcorée : l'original, celui que les vrais fans s'échangent.",
+    "Chez My Candy's, on chasse ce genre de trouvailles introuvables ailleurs. {name} arrive tout droit de sa sélection d'origine, exactement comme dans les vidéos qui t'ont donné envie.",
+    "{name}, tu ne le croiseras pas entre deux packs d'eau au supermarché. C'est une trouvaille d'import, de celles qui rendent une commande un peu plus excitante à ouvrir.",
+    "On a flashé sur {name} pour une raison simple : c'est authentique, difficile à trouver, et ça a ce petit truc en plus que les versions locales n'ont pas."
+  ];
+  var MOMENT = [
+    "Le bon moment pour le sortir ? Une soirée qui démarre, une session gaming, une pause révisions, ou juste une envie de te faire plaisir sans te justifier.",
+    "À savourer devant une série, à partager entre potes (si tu es d'humeur généreuse) ou à garder précieusement pour toi. Aucun jugement ici.",
+    "Parfait pour une pause gourmande, un cadeau qui change de l'ordinaire, ou simplement pour t'offrir un petit shot de plaisir dans la journée.",
+    "Que ce soit pour une envie de dernière minute, un moment cocooning ou une soirée entre amis, {name} tombe toujours au bon moment."
+  ];
+  function pickV(arr, seed) { return arr[seed % arr.length]; }
   function richDesc() {
-    var r = RICH[CAT] || RICH['Bonbons'];
-    var h = '<p class="pd-lead">' + MC.esc(descText) + '</p>';
-    h += '<h4>' + fillTpl(r.h1) + '</h4><p>' + fillTpl(r.p1) + '</p>';
-    h += '<h4>' + fillTpl(r.h2) + '</h4><p>' + fillTpl(r.p2) + '</p>';
-    h += '<h4>Comment en profiter</h4><p>' + fillTpl(r.use) + '</p>';
-    h += '<h4>Caractéristiques</h4><ul class="pd-specs">';
-    if (p.brand) h += '<li><b>Marque :</b> ' + MC.esc(p.brand) + '</li>';
-    h += '<li><b>Catégorie :</b> ' + MC.esc(CAT) + '</li>';
-    h += '<li><b>Sélection :</b> import international · vu sur TikTok</li>';
-    h += '<li><b>Disponibilité :</b> souvent en édition limitée</li>';
-    h += '</ul>';
-    h += '<p class="pd-note-soft">' + fillTpl(r.note) + '</p>';
-    return h;
+    var seed = 0, i; for (i = 0; i < p.id.length; i++) seed += p.id.charCodeAt(i);
+    var nm = '<b>' + MC.esc(p.name) + '</b>', fl = flavorOf(p.name);
+    function F(s) { return s.replace(/\{name\}/g, nm).replace(/\{flavor\}/g, fl); }
+    return '<p>' + F(pickV(OPEN, seed)) + '</p>' +
+           '<p>' + F(pickV(TASTE, seed + 2)) + '</p>' +
+           '<p>' + F(pickV(STORY, seed + 1)) + '</p>' +
+           '<p>' + F(pickV(MOMENT, seed + 3)) + '</p>';
   }
 
   /* --- Titre & fil d'Ariane --- */
@@ -458,7 +514,7 @@
     { k: 'compo', title: 'Composition',              body: '<p>' + MC.esc(compoText) + '</p>' },
     { k: 'nutri', title: 'Valeurs nutritionnelles',  body: '<p>' + MC.esc(nutriText) + '</p>' }
   ];
-  var open = 'desc', accWrap = $('pd-acc');
+  var open = null, accWrap = $('pd-acc');
   function renderAcc() {
     accWrap.innerHTML = ACC.map(function (a) {
       var on = a.k === open;
