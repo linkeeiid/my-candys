@@ -76,14 +76,17 @@
 
 .pd-buy{display:flex;align-items:center;gap:14px;margin-top:26px;flex-wrap:wrap}
 .pd-step{display:flex;align-items:center;gap:2px;background:#fff;border:1.5px solid #F3C6DE;border-radius:14px;overflow:hidden}
-.pd-step button{width:46px;height:52px;color:#E01784;font-size:22px;font-weight:700;transition:background .12s}
-.pd-step button:hover{background:#FFF1F8}
+/* Symboles − et + DESSINÉS en CSS (barres) → toujours parfaitement centrés et alignés, jamais de glyphe qui saute */
+.pd-step button{position:relative;width:46px;height:52px;font-size:0;transition:background .12s}
+.pd-step button::before{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:15px;height:2.6px;background:#E01784;border-radius:2px}
+.pd-step button#pd-inc::after{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:2.6px;height:15px;background:#E01784;border-radius:2px}
+@media (hover:hover){.pd-step button:hover{background:#FFF1F8}}
 .pd-step span{min-width:36px;text-align:center;font-weight:800;font-size:17px}
 .pd-add{flex:1;min-width:220px;background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;font-weight:800;font-size:17px;padding:16px 26px;border-radius:16px;box-shadow:0 12px 26px rgba(255,46,154,.32);display:flex;align-items:center;justify-content:center;gap:10px;transition:transform .15s,filter .15s}
-.pd-add:hover{transform:translateY(-2px);filter:brightness(1.03)}
+@media (hover:hover){.pd-add:hover{transform:translateY(-2px);filter:brightness(1.03)}}
 .pd-add:active{transform:translateY(0)}
 .pd-wish{flex:none;width:52px;height:52px;border-radius:14px;border:1.5px solid #F3C6DE;background:#fff;font-size:22px;color:#B7A0AC;display:flex;align-items:center;justify-content:center;transition:background .15s}
-.pd-wish:hover{background:#FFEBF5}
+@media (hover:hover){.pd-wish:hover{background:#FFEBF5}}
 .pd-wish.is-on{color:#E01784;border-color:#F3A9D0;background:#FFF1F8}
 
 .pd-reassure{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px}
@@ -152,7 +155,12 @@
   .pd-media{position:static;top:auto}
   .pd-title{font-size:28px}
   .pd-now{font-size:32px}
-  .pd-add{min-width:0;font-size:16px;padding:15px 18px}
+  /* Barre d'achat mobile : [− qté +] ....... [♡] sur une ligne, puis le bouton Ajouter PLEINE LARGEUR en dessous
+     (fini le bouton étriqué où le texte s'entassait sur 3 lignes) */
+  .pd-buy{flex-wrap:wrap;gap:12px}
+  .pd-step{order:1}
+  .pd-wish{order:2;margin-left:auto}
+  .pd-add{order:3;flex:1 1 100%;width:100%;min-width:0;font-size:16px;padding:16px 18px;white-space:nowrap}
   .pd-reassure{grid-template-columns:repeat(3,1fr);gap:8px}
   .pd-reass{flex-direction:column;text-align:center;gap:5px;padding:11px 6px}
   .pd-reass > span{font-size:20px}
@@ -386,6 +394,37 @@
            '<p>' + F(pickV(MOMENT, seed + 3)) + '</p>';
   }
 
+  /* --- Accroche COURTE unique par produit (le paragraphe en haut de fiche) ---
+     2 phrases tirées de pools distincts (accroche + chute), personnalisées avec le nom réel
+     et le parfum détecté, sélection déterministe par id → chaque fiche a un texte différent. */
+  var LEAD = [
+    "{name}, c'est {flavor} version virale — le genre de trouvaille qu'on ne lâche plus une fois goûtée.",
+    "Avec {name}, tu retrouves {flavor} dans une édition importée qu'on ne croise pas au supermarché du coin.",
+    "{name} mise tout sur {flavor} : franc, généreux, exactement le petit plaisir qu'on cherchait.",
+    "Repéré sur TikTok, {name} t'offre {flavor} dans un format qui donne juste envie d'y revenir.",
+    "Si tu craques pour {name}, c'est normal : {flavor} y est dosé pile comme il faut pour que ça devienne une habitude.",
+    "{name}, c'est {flavor} sans compromis — une pépite d'import à s'offrir ou à s'échanger entre vrais fans.",
+    "On a flashé sur {name} pour {flavor} : original, difficile à trouver, et diablement satisfaisant.",
+    "{name} transforme une simple envie de grignoter en vrai petit moment, porté par {flavor}.",
+    "Dans {name}, {flavor} prend toute la place — et on comprend vite pourquoi ça fait autant parler.",
+    "{name} : {flavor}, un format qui claque et ce petit côté « encore une fois » impossible à contrôler."
+  ];
+  var CLOSE = [
+    "Bref, une valeur sûre à ajouter au panier avant qu'elle reparte en rupture.",
+    "Le genre de produit qu'on commande une fois… puis qu'on recommande direct.",
+    "À découvrir vite : ces éditions importées ne restent jamais très longtemps en stock.",
+    "Parfait à s'offrir, à partager (ou pas), ou à glisser dans une commande pour se faire plaisir.",
+    "Exactement ce qu'il te faut pour une pause gourmande qui sort de l'ordinaire.",
+    "Une raison de plus de te faire livrer un petit bout de la hype directement chez toi."
+  ];
+  var CATEMO = { 'Sodas': ' 🥤', 'Snacks': ' 🍿', 'Bonbons': ' 🍬', 'Chocolats': ' 🍫', 'Épicé': ' 🌶️', 'Desserts': ' 🍨' };
+  function shortDesc() {
+    var seed = 0, i; for (i = 0; i < p.id.length; i++) seed += p.id.charCodeAt(i);
+    var fl = flavorOf(p.name);
+    function F(s) { return s.replace(/\{name\}/g, p.name).replace(/\{flavor\}/g, fl); }
+    return F(pickV(LEAD, seed)) + ' ' + F(pickV(CLOSE, seed + 4)) + (CATEMO[CAT] || ' ✨');
+  }
+
   /* --- Titre & fil d'Ariane --- */
   document.title = p.name + " — My Candy's";
   $('pd-crumb').innerHTML =
@@ -433,7 +472,7 @@
     ? ('💸 Tu économises ' + MC.money(p.old - p.price) + ' · TVA incluse')
     : 'TVA incluse · Livraison offerte dès 39 €';
 
-  $('pd-desc').textContent = descText;
+  $('pd-desc').textContent = shortDesc();
   $('pd-tags').innerHTML = tags.map(function (t) { return '<div class="pd-tag">' + MC.esc(t) + '</div>'; }).join('');
 
   /* --- Sélecteur de quantité + Ajout au panier (stock temps réel Firebase) --- */
@@ -455,7 +494,8 @@
       if (stepEl) stepEl.classList.add('is-off');
     } else {
       addBtn.disabled = false;
-      addBtn.textContent = '🛒 Ajouter au panier — ' + MC.money(p.price * qty);
+      // Prix 0 / non renseigné → on n'affiche pas « — 0,00 € » (ce serait moche)
+      addBtn.textContent = p.price ? ('🛒 Ajouter au panier — ' + MC.money(p.price * qty)) : '🛒 Ajouter au panier';
       if (stepEl) stepEl.classList.remove('is-off');
     }
   }
@@ -500,7 +540,7 @@
   if (sticky) {
     var stName = $('pd-sticky-name'), stPrice = $('pd-sticky-price'), stImg = $('pd-sticky-img'), stAdd = $('pd-sticky-add'), stX = $('pd-sticky-x'), stDismissed = false;
     if (stName) stName.textContent = p.name;
-    if (stPrice) stPrice.textContent = MC.money(p.price);
+    if (stPrice) stPrice.textContent = p.price ? MC.money(p.price) : '';
     if (stImg) { if (p.img) { stImg.src = p.img; stImg.alt = p.name; } else { stImg.style.display = 'none'; } }
     function showSticky(on) { sticky.classList.toggle('is-on', on && !stDismissed); }
     if ('IntersectionObserver' in window) {

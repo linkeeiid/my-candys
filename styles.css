@@ -4,7 +4,13 @@ html{scroll-behavior:smooth;overflow-x:clip}
 body{margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#2A0A1C;background:#E9F5FB;-webkit-font-smoothing:antialiased;overflow-x:clip}
 a{color:#E01784;text-decoration:none}
 img{display:block;max-width:100%}
-button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;-webkit-tap-highlight-color:transparent}
+/* Sur écran tactile, l'état :hover reste "collé" après un tap (bouton qui reste rose/agrandi).
+   On neutralise donc tout :hover résiduel des boutons +/− et + sur les appareils sans vrai survol. */
+@media (hover:none){
+  .mc-step button:hover,.pd-step button:hover{background:transparent!important}
+  .mc-add:hover{transform:none!important}
+}
 h1,h2,h3{font-weight:800;letter-spacing:-.5px;margin:0}
 ::selection{background:#FF2E9A;color:#fff}
 .mc-row{scrollbar-width:none;-ms-overflow-style:none}
