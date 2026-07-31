@@ -127,7 +127,9 @@ h1,h2,h3{font-weight:800;letter-spacing:-.5px;margin:0}
 .mc-cline-price{font-size:13px;color:#8A6076;margin-top:2px}
 .mc-cline-ctrls{display:flex;align-items:center;gap:10px;margin-top:8px}
 .mc-step{display:flex;align-items:center;gap:2px;background:#fff;border:1px solid #F3C6DE;border-radius:10px;overflow:hidden}
-.mc-step button{width:30px;height:30px;color:#E01784;font-size:17px;font-weight:700}
+.mc-step button{position:relative;width:32px;height:32px;font-size:0;cursor:pointer}
+.mc-step button::before{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:11px;height:2.4px;background:#E01784;border-radius:2px}
+.mc-step button[data-inc]::after{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:2.4px;height:11px;background:#E01784;border-radius:2px}
 .mc-step span{min-width:22px;text-align:center;font-weight:600;font-size:14px}
 .mc-cline-rm{font-size:12.5px;color:#B7A0AC}
 .mc-cline-rm:hover{color:#E01784}
