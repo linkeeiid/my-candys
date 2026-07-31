@@ -163,16 +163,9 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .mc-news-ok{margin:22px auto 0;background:#22D3E4;color:#053b40;font-weight:700;padding:14px 24px;border-radius:14px;display:inline-block}
 @media (max-width:768px){
   .mc-decor{display:none}
-  /* Mobile : on GARDE toutes les animations, mais on les rend "composables" par le GPU
-     (will-change:transform) → la déco flottante et son drop-shadow ne sont plus repeints à
-     chaque frame, ils sont rasterisés une fois puis simplement déplacés. Scroll fluide. */
+  /* Mobile : la déco flottante a un drop-shadow ANIMÉ (repeint chaque frame = coûteux).
+     On garde l'animation mais on la rasterise UNE fois sur sa propre couche (will-change) → déplacée, pas repeinte. */
   .mc-mdecor{display:block;position:absolute;z-index:0;pointer-events:none;animation:floaty 8s ease-in-out infinite;filter:drop-shadow(0 18px 14px rgba(0,0,0,.24));will-change:transform}
-  .mc-myst-giftbox{will-change:transform}
-  .mc-marquee-track,.mc-press-track{will-change:transform}
-  /* Sections hors écran = NON peintes tant qu'on n'arrive pas dessus → le navigateur a beaucoup
-     moins à raster­iser pendant un slide rapide, fini l'"écran rose" qui apparaît le temps du rendu.
-     contain-intrinsic-size:auto = il mémorise la vraie hauteur après 1er rendu (pas de saut). */
-  .mc-cv{content-visibility:auto;contain-intrinsic-size:auto 640px}
   .mc-hero{aspect-ratio:1.27/1;max-height:none}
   .mc-wave svg{height:52px!important}
   .mc-wave{margin-top:-30px!important}
@@ -246,7 +239,7 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 
   <div class="mc-marquee"><div class="mc-marquee-track" id="mc-marquee"></div></div>
 
-  <section id="bestsellers" class="mc-sec mc-cv">
+  <section id="bestsellers" class="mc-sec">
     <div class="mc-sechead">
       <div><div class="mc-k" style="margin-left:22px">nos petits chouchous</div><h2 class="mc-h2">🩷 Nos bestsellers</h2></div>
       <a href="boutique.html?c=bestsellers" class="mc-seeall">Afficher tout →</a>
@@ -255,7 +248,7 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
     <div style="height:2px;background:#F1DAE7;border-radius:2px;margin-top:6px"></div>
   </section>
 
-  <section id="nouveautes" class="mc-sec mc-cv" style="padding-bottom:78px;z-index:6">
+  <section id="nouveautes" class="mc-sec" style="padding-bottom:78px;z-index:6">
     <div class="mc-sechead">
       <div><div class="mc-k" style="color:#0FA9B8">fraîchement débarqués</div><h2 class="mc-h2">⭐ Nos nouveautés</h2></div>
       <a href="boutique.html?c=nouveautes" class="mc-seeall">Afficher tout →</a>
@@ -267,7 +260,7 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 <div class="mc-wave" style="margin-top:-88px"><svg viewBox="0 0 1440 170" preserveAspectRatio="none"><path d="M0,60 C130,96 250,104 370,78 C500,50 600,22 720,40 C850,60 950,98 1080,92 C1210,86 1330,44 1440,64 L1440,170 L0,170 Z" fill="#FB2E9A"></path></svg></div>
 
 <!-- TikTok -->
-<section id="tiktok" class="mc-tt-sec mc-cv">
+<section id="tiktok" class="mc-tt-sec">
   <div style="text-align:center;margin-bottom:26px">
     <h2 class="mc-h2 mc-white-h" style="font-weight:800;font-size:34px;display:inline-flex;align-items:center;justify-content:center;gap:12px">Vu sur <a href="https://www.tiktok.com/@my.candys.raphael" target="_blank" rel="noopener" title="Suivre @my.candys.raphael" style="display:inline-flex"><img src="assets/tiktok-logo.png" alt="TikTok" style="height:52px;width:auto"></a></h2>
   </div>
@@ -275,7 +268,7 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 </section>
 
 <!-- Mystery Box -->
-<section id="mystery" class="mc-cv" style="max-width:1220px;margin:0 auto;padding:34px 22px 10px">
+<section id="mystery" style="max-width:1220px;margin:0 auto;padding:34px 22px 10px">
   <div class="mc-myst">
     <div class="mc-myst-gift"><div class="mc-myst-giftbox"><span>🎁</span><small>photo · Mystery Box</small></div></div>
     <div class="mc-myst-body">
@@ -287,7 +280,7 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 </section>
 
 <!-- Avis -->
-<section class="mc-cv" style="max-width:1220px;margin:0 auto;padding:34px 22px 10px">
+<section style="max-width:1220px;margin:0 auto;padding:34px 22px 10px">
   <div style="text-align:center">
     <div class="mc-k" style="color:#FFE08A">+8 400 gourmands ravis</div>
     <div class="mc-k mc-white-h" style="color:#fff">Vos avis parlent pour nous</div>
@@ -301,13 +294,13 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 </section>
 
 <!-- Presse -->
-<section class="mc-cv" style="max-width:1220px;margin:0 auto;padding:34px 22px 10px">
+<section style="max-width:1220px;margin:0 auto;padding:34px 22px 10px">
   <div style="font-weight:700;font-size:26px;color:#fff;text-align:center;margin-bottom:20px">Ils parlent de nous 📰</div>
   <div style="overflow:hidden;position:relative"><div class="mc-press-track" id="mc-press"></div></div>
 </section>
 
 <!-- Newsletter -->
-<section class="mc-cv" style="max-width:1220px;margin:0 auto;padding:30px 22px 30px">
+<section style="max-width:1220px;margin:0 auto;padding:30px 22px 30px">
   <div class="mc-news">
     <div style="position:absolute;width:200px;height:200px;border-radius:50%;background:rgba(255,46,154,.28);top:-70px;left:8%;filter:blur(12px)"></div>
     <div style="position:absolute;width:160px;height:160px;border-radius:50%;background:rgba(34,211,228,.24);bottom:-60px;right:10%;filter:blur(12px)"></div>
