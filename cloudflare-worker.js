@@ -303,8 +303,21 @@ export default {
           lines.push({ id: id, name: str(it.name, 80) || id, price: round2(price), qty: qty });
         }
         sub = round2(sub);
+        // Code promo fidélité : MCFIDxx-XXXX validé contre l'e-mail du client (recalcul serveur)
+        let discount = 0, promoCode = '';
+        const promo = str(body.promo, 32).toUpperCase();
+        if (promo) {
+          const m = promo.match(/^MCFID(5|10|15)-[A-Z0-9]{4}$/);
+          if (m) {
+            const pctP = parseInt(m[1], 10);
+            let h = 2166136261; const s = str(c.email, 254) + '|' + pctP;
+            for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = (h * 16777619) >>> 0; }
+            const expected = 'MCFID' + pctP + '-' + ('000' + h.toString(36).toUpperCase()).slice(-4);
+            if (promo === expected) { discount = round2(sub * pctP / 100); promoCode = promo; }
+          }
+        }
         const ship = shipCost(shipping, sub);
-        const total = round2(sub + ship);
+        const total = round2(sub - discount + ship);
         if (total <= 0) return json({ ok: false, error: 'montant_invalide' }, 400, allow);
 
         const reference = 'MC-' + new Date().getUTCFullYear() + '-' + rand6();
@@ -316,7 +329,7 @@ export default {
         };
         const order = {
           reference: reference, items: lines, customer: customer, shipping: shipping,
-          subtotal: sub, shippingCost: ship, total: total,
+          subtotal: sub, discount: discount, promo: promoCode, shippingCost: ship, total: total,
           status: 'en_attente_paiement', paid: false, ts: Date.now()
         };
         await fbSet(env, 'orders/' + reference, order);

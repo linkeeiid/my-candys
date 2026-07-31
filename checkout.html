@@ -255,7 +255,13 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
         <div class="co-sum-count" id="co-count">0 article</div>
         <div class="co-lines" id="co-lines"></div>
         <div class="co-sum-div"></div>
+        <div class="co-promo" style="display:flex;gap:8px;margin-bottom:8px">
+          <input id="co-promo-in" placeholder="Code promo fidélité" aria-label="Code promo" autocomplete="off" spellcheck="false" style="flex:1;min-width:0;border:1.5px solid #F1DAE7;border-radius:11px;padding:11px 12px;font-size:14px;font-family:inherit;text-transform:uppercase">
+          <button type="button" id="co-promo-btn" style="flex:none;background:#2A0A1C;color:#fff;font-weight:700;font-size:13.5px;padding:0 16px;border-radius:11px;cursor:pointer">Appliquer</button>
+        </div>
+        <div id="co-promo-msg" style="font-size:12.5px;margin:0 0 12px;min-height:0"></div>
         <div class="co-sum-row"><span>Sous-total</span><b id="co-sub">0,00 €</b></div>
+        <div class="co-sum-row" id="co-remrow" hidden><span>Remise <span id="co-remlbl" style="color:#1B8A57;font-weight:700"></span></span><b id="co-rem" style="color:#1B8A57">—</b></div>
         <div class="co-sum-row"><span>Livraison <span id="co-shipmode" style="color:#8A6076"></span></span><b id="co-ship">—</b></div>
         <div class="co-sum-div"></div>
         <div class="co-sum-total"><span>Total</span><b id="co-total">0,00 €</b></div>
@@ -304,6 +310,13 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
   };
   var mode = 'relais';
 
+  /* ---------- Code promo (fidélité MCFIDxx-XXXX, validé contre l'e-mail) ---------- */
+  var promo = null; // { code, pct }
+  function coUser() { try { return JSON.parse(localStorage.getItem('mcUserV1') || 'null'); } catch (e) { return null; } }
+  function curEmail() { var f = $('#f-email'), u = coUser(); return ((f && f.value) || (u && u.email) || '').trim(); }
+  function loyCode(key, pct) { var s = String(key || 'guest') + '|' + pct, h = 2166136261, i; for (i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = (h * 16777619) >>> 0; } return 'MCFID' + pct + '-' + ('000' + h.toString(36).toUpperCase()).slice(-4); }
+  function promoDiscount(sub) { if (!promo) return 0; var e = curEmail(); if (!e || loyCode(e, promo.pct) !== promo.code) return 0; return Math.round(sub * promo.pct / 100 * 100) / 100; }
+
   var elEmpty = $('#co-empty'), elForm = $('#co-form'), elDone = $('#co-done');
 
   function shipCost(sub) {
@@ -327,7 +340,8 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
 
     var sub = items.reduce(function (n, l) { return n + l.price * l.qty; }, 0);
     var ship = shipCost(sub);
-    var total = sub + ship;
+    var discount = promoDiscount(sub);
+    var total = sub - discount + ship;
 
     $('#co-count').textContent = count + (count > 1 ? ' articles' : ' article');
     $('#co-lines').innerHTML = items.map(function (l) {
@@ -344,6 +358,11 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
     }).join('');
 
     $('#co-sub').textContent = money(sub);
+    var remRow = $('#co-remrow');
+    if (remRow) {
+      if (discount > 0 && promo) { remRow.hidden = false; $('#co-remlbl').textContent = '(-' + promo.pct + '%)'; $('#co-rem').textContent = '-' + money(discount); }
+      else { remRow.hidden = true; }
+    }
     var shipEl = $('#co-ship'), modeEl = $('#co-shipmode');
     modeEl.textContent = '(' + MODES[mode].label.toLowerCase() + ')';
     if (ship === 0) { shipEl.textContent = 'Offerte'; shipEl.className = 'free'; }
@@ -370,6 +389,23 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
     });
     render();
   });
+
+  // Application du code promo fidélité
+  function applyPromo() {
+    var inp = $('#co-promo-in'), msg = $('#co-promo-msg');
+    var code = (inp.value || '').trim().toUpperCase();
+    if (!code) { promo = null; msg.textContent = ''; render(); return; }
+    var m = code.match(/^MCFID(5|10|15)-[A-Z0-9]{4}$/);
+    if (!m) { promo = null; msg.style.color = '#C62A22'; msg.textContent = '❌ Code invalide.'; render(); return; }
+    var pct = parseInt(m[1], 10), email = curEmail();
+    if (!email) { msg.style.color = '#C62A22'; msg.textContent = '⚠️ Renseigne d\'abord ton e-mail plus haut.'; return; }
+    if (loyCode(email, pct) !== code) { promo = null; msg.style.color = '#C62A22'; msg.textContent = '❌ Ce code ne correspond pas à ton compte (' + email + ').'; render(); return; }
+    promo = { code: code, pct: pct };
+    msg.style.color = '#1B8A57'; msg.textContent = '✅ Code appliqué : -' + pct + '% sur tes articles.';
+    render();
+  }
+  $('#co-promo-btn').addEventListener('click', applyPromo);
+  $('#co-promo-in').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); applyPromo(); } });
 
   /* ---------- Paiement SumUp (widget sécurisé) ---------- */
   var payBtn = $('#co-pay');
@@ -473,7 +509,7 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
 
     fetch(api + '/create-checkout', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: items, shipping: mode, customer: collectCustomer() })
+      body: JSON.stringify({ items: items, shipping: mode, customer: collectCustomer(), promo: (promo ? promo.code : '') })
     }).then(function (r) { return r.json(); }).then(function (d) {
       if (!d || !d.ok || !d.checkoutId) throw new Error(d && d.error ? errMsg(d.error) : 'paiement indisponible');
       checkout = { reference: d.reference, checkoutId: d.checkoutId, total: d.amount };
