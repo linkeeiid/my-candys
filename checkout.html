@@ -72,10 +72,21 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
 .co-mode-price.free{color:#1B8A57}
 
 /* ---------- Paiement ---------- */
-.co-paynote{display:flex;align-items:center;gap:10px;background:#FFF7EE;border:1px dashed #F1C7A8;border-radius:12px;padding:11px 14px;font-size:12.5px;color:#8A5A2A;margin-bottom:16px}
-.co-cards{display:flex;gap:6px;margin-left:auto}
-.co-cards span{background:#fff;border:1px solid #EEDDCB;color:#4A2A3A;font-weight:800;font-size:10px;padding:4px 7px;border-radius:6px}
-.co-pay-hint{font-size:13px;color:#8A6076;background:#FFF7EE;border:1px dashed #F1C7A8;border-radius:12px;padding:12px 14px}
+.co-paytrust{display:flex;align-items:center;gap:13px;background:linear-gradient(135deg,#F1FBF6,#EAF6FF);border:1px solid #D9EEE7;border-radius:14px;padding:13px 15px;margin-bottom:14px}
+.co-paytrust-lock{font-size:21px;flex:none;line-height:1}
+.co-paytrust-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.co-paytrust-txt b{font-size:13.5px;color:#177A57;font-weight:800}
+.co-paytrust-txt span{font-size:11.5px;color:#5E7C71;line-height:1.4}
+.co-paytrust-cards{display:flex;gap:5px;flex:none;flex-wrap:wrap;justify-content:flex-end;max-width:200px}
+.co-paytrust-cards span{display:inline-flex;align-items:center;gap:3px;background:#fff;border:1px solid #E4E9EE;border-radius:6px;font-weight:800;font-size:9.5px;padding:5px 6px;color:#2A0A1C;letter-spacing:.2px;line-height:1}
+.co-paytrust-cards .c-visa{color:#1A1F71}
+.co-paytrust-cards .c-mc{color:#EB5B2A}
+.co-paytrust-cards .c-cb{color:#177A57}
+.co-paytrust-cards .c-apay{background:#000;color:#fff;border-color:#000}
+.co-paytrust-cards .c-gpay{background:#fff;color:#3C4043}
+/* Apple Pay / Google Pay ne sont utilisables que sur mobile compatible → logos affichés uniquement là, cachés sur ordinateur */
+@media (min-width:561px){.co-paytrust-cards .c-apay,.co-paytrust-cards .c-gpay{display:none}}
+.co-pay-hint{font-size:12.5px;color:#8A6076;margin:0 2px 2px}
 .co-pay-err{margin-top:12px;font-size:13.5px;color:#C62A22;background:#FDECEC;border:1px solid #F6C9C4;border-radius:12px;padding:11px 14px;font-weight:600}
 #sumup-card{margin-top:6px}
 
@@ -240,8 +251,12 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
       <!-- 4. Paiement -->
       <section class="co-card">
         <div class="co-sec-head"><div class="co-sec-num">4</div><div class="co-sec-title">Paiement sécurisé</div></div>
-        <div class="co-paynote">🔒 Paiement sécurisé par <b>SumUp</b> — CB, Apple&nbsp;Pay &amp; Google&nbsp;Pay. Tes données de carte ne transitent jamais par le site. <span class="co-cards"><span>VISA</span><span>MC</span><span>CB</span></span></div>
-        <div id="co-pay-hint" class="co-pay-hint">Renseigne tes infos ci-dessus, puis clique sur <b>« Payer »</b> pour afficher le paiement sécurisé. 👇</div>
+        <div class="co-paytrust">
+          <span class="co-paytrust-lock">🔒</span>
+          <div class="co-paytrust-txt"><b>Paiement 100&nbsp;% sécurisé</b><span>Tes données bancaires sont chiffrées et ne transitent jamais par notre site.</span></div>
+          <div class="co-paytrust-cards"><span class="c-visa">VISA</span><span class="c-mc">Mastercard</span><span class="c-cb">CB</span><span class="c-apay"><svg viewBox="0 0 384 512" width="9" height="11" fill="#fff" aria-hidden="true"><path d="M318.7 268.7c-.2-36.71 16.41-64.39 50.01-84.78-18.83-26.91-47.26-41.72-84.72-44.6-35.5-2.79-74.32 20.69-88.51 20.69-14.99 0-49.4-19.68-76.44-19.68C36.5 141.09 0 184.66 0 273.65c0 26.35 4.81 53.57 14.44 81.63 12.83 36.9 59.06 127.3 107.3 125.79 25.21-.6 43.04-17.9 75.85-17.9 31.83 0 48.34 17.9 76.44 17.9 48.68-.71 90.51-82.86 102.71-119.87-65.24-30.76-61.61-90.11-61.61-91.6zm-56.51-164.19c27.25-32.35 24.77-61.82 23.96-72.42-23.06 1.35-49.75 15.74-64.96 33.44-16.75 18.95-26.6 42.39-24.48 71.83 24.93 1.9 47.7-10.9 65.48-32.85z"/></svg>Pay</span><span class="c-gpay"><svg viewBox="0 0 48 48" width="12" height="12" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Pay</span></div>
+        </div>
+        <div id="co-pay-hint" class="co-pay-hint">Remplis tes infos ci-dessus, puis clique sur <b>« Payer »</b> — le paiement sécurisé s'affiche juste ici. 👇</div>
         <div id="sumup-card"></div>
         <div id="co-pay-err" class="co-pay-err" hidden></div>
       </section>
@@ -345,9 +360,10 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
 
     $('#co-count').textContent = count + (count > 1 ? ' articles' : ' article');
     $('#co-lines').innerHTML = items.map(function (l) {
+      var _p = (window.MC && MC.byId) ? MC.byId(l.id) : null, _img = (_p && _p.img) || l.img;
       return '' +
         '<div class="co-line">' +
-          '<div class="co-line-img" style="background:' + (l.tint || '#FFE3F1') + '"><div class="mc-stripes"></div>' +
+          '<div class="co-line-img" style="background:' + (_img ? '#fff' : (l.tint || '#FFE3F1')) + '">' + (_img ? '<img src="' + MC.esc(_img) + '" alt="" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:3px">' : '<div class="mc-stripes"></div>') +
             '<span class="co-line-qty">' + l.qty + '</span></div>' +
           '<div class="co-line-mid">' +
             '<div class="co-line-name">' + MC.esc(l.name) + '</div>' +

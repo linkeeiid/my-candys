@@ -991,11 +991,12 @@ export default {
         for (const it of items) {
           const id = str(it.id, 60);
           const qty = Math.max(1, Math.min(99, parseInt(it.qty, 10) || 1));
-          const base = BASE_PRICES[id];
-          if (base == null) return json({ ok: false, error: 'produit_inconnu', id: id }, 400, allow);
           const o = ov[id] || {};
           if (o.deleted || o.available === false) return json({ ok: false, error: 'produit_indisponible', id: id }, 400, allow);
+          const base = BASE_PRICES[id];
+          // prix = override console (Firebase) s'il existe, sinon prix de base products.js
           const price = (o.price != null && !isNaN(o.price)) ? Number(o.price) : base;
+          if (price == null || isNaN(price)) return json({ ok: false, error: 'produit_inconnu', id: id }, 400, allow);
           sub += price * qty;
           lines.push({ id: id, name: str(it.name, 80) || id, price: round2(price), qty: qty });
         }

@@ -122,9 +122,12 @@
       if (foot) foot.style.display = count > 0 ? 'block' : 'none';
       if (lines) {
         lines.innerHTML = items.map(function (l) {
+          var _p = (window.MC && MC.byId) ? MC.byId(l.id) : null, _img = (_p && _p.img) || l.img;
           return '' +
             '<div class="mc-cline">' +
-              '<div class="mc-cline-img" style="background:' + (l.tint || '#FFE3F1') + '"><div class="mc-stripes"></div></div>' +
+              (_img
+                ? '<div class="mc-cline-img" style="background:#fff"><img src="' + MC.esc(_img) + '" alt="" loading="lazy" style="width:100%;height:100%;object-fit:contain;padding:4px"></div>'
+                : '<div class="mc-cline-img" style="background:' + (l.tint || '#FFE3F1') + '"><div class="mc-stripes"></div></div>') +
               '<div class="mc-cline-mid">' +
                 '<div class="mc-cline-name">' + MC.esc(l.name) + '</div>' +
                 '<div class="mc-cline-price">' + money(l.price) + '</div>' +
