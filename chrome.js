@@ -186,31 +186,7 @@
     document.head.appendChild(_cf);
   }
 
-  /* ---------- Méga-menus : sortis du header (sinon rognés/masqués par le contenu de page), positionnés en fixe sous leur déclencheur, ouverture au survol — fonctionne sur toutes les pages ---------- */
-  (function () {
-    // décos de hero (transform+filter → couche GPU qui passe par-dessus le menu) : on les masque via visibility pendant l'ouverture (l'animation floaty ne touche pas visibility)
-    var decos = document.querySelectorAll('[class*="decor"]');
-    function hideDecos(on) { Array.prototype.forEach.call(decos, function (d) { d.style.visibility = on ? 'hidden' : ''; }); }
-    Array.prototype.forEach.call(document.querySelectorAll('.mc-drop'), function (drop) {
-      var menu = drop.querySelector('.mc-dropmenu'), link = drop.querySelector('.mc-navlink');
-      if (!menu || !link) return;
-      document.body.appendChild(menu);            // sort du contexte d'empilement du header
-      var t;
-      function place() {
-        var r = link.getBoundingClientRect();
-        menu.style.top = r.bottom + 'px';
-        if (menu.classList.contains('mc-dropmenu--right')) { menu.style.right = Math.max(8, window.innerWidth - r.right) + 'px'; menu.style.left = 'auto'; }
-        else { menu.style.left = Math.max(8, Math.min(r.left, window.innerWidth - menu.offsetWidth - 8)) + 'px'; menu.style.right = 'auto'; }
-      }
-      function show() { clearTimeout(t); place(); hideDecos(true); menu.style.opacity = '1'; menu.style.visibility = 'visible'; menu.style.transform = 'translateY(0)'; }
-      function hide() { t = setTimeout(function () { menu.style.opacity = '0'; menu.style.visibility = 'hidden'; menu.style.transform = 'translateY(-6px)'; hideDecos(false); }, 140); }
-      drop.addEventListener('mouseenter', show);
-      drop.addEventListener('mouseleave', hide);
-      link.addEventListener('focus', show);
-      menu.addEventListener('mouseenter', function () { clearTimeout(t); });
-      menu.addEventListener('mouseleave', hide);
-    });
-  })();
+  /* Méga-menus : gérés en CSS pur (.mc-drop:hover .mc-dropmenu), en position absolue dans le header — au-dessus des décos (contexte header z:60 > décos z:0), pas d'empilement, pas de clignotement. */
 
   /* ---------- Modale « Mon compte » (connexion / inscription, partagée) ---------- */
   (function () {
