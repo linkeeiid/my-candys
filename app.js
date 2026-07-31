@@ -62,17 +62,42 @@
   function initMenu() {
     var menu = $('#mc-menu'), ov = $('#mc-menu-ov');
     if (!menu || !ov) return;
+    var mnav = menu.querySelector('.mc-mnav');
+    function mreset() {
+      if (!mnav) return;
+      mnav.querySelectorAll('.mc-mpanel').forEach(function (p) {
+        p.classList.toggle('is-active', p.getAttribute('data-panel') === 'root');
+        p.classList.remove('is-left');
+      });
+    }
     function set(open) {
       menu.style.transform = open ? 'translateX(0)' : 'translateX(-100%)';
       ov.style.opacity = open ? '1' : '0';
       ov.style.pointerEvents = open ? 'auto' : 'none';
       try { document.body.style.overflow = open ? 'hidden' : ''; } catch (e) {}
+      if (open) mreset();
     }
     $$('[data-menu-open]').forEach(function (b) { b.addEventListener('click', function () { set(true); }); });
     var burger = $('#mc-burger'); if (burger) burger.addEventListener('click', function () { set(true); });
     var close = $('#mc-menu-close'); if (close) close.addEventListener('click', function () { set(false); });
     ov.addEventListener('click', function () { set(false); });
     menu.addEventListener('click', function (e) { if (e.target.closest('a')) set(false); });
+    if (mnav) {
+      menu.addEventListener('click', function (e) {
+        var op = e.target.closest('[data-open]');
+        if (op) {
+          var root = mnav.querySelector('[data-panel="root"]'), sub = mnav.querySelector('[data-panel="' + op.getAttribute('data-open') + '"]');
+          if (root && sub) { root.classList.remove('is-active'); root.classList.add('is-left'); sub.classList.add('is-active'); }
+          return;
+        }
+        var bk = e.target.closest('[data-back]');
+        if (bk) {
+          var sub2 = bk.closest('.mc-mpanel'), root2 = mnav.querySelector('[data-panel="root"]');
+          if (sub2) sub2.classList.remove('is-active');
+          if (root2) { root2.classList.remove('is-left'); root2.classList.add('is-active'); }
+        }
+      });
+    }
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') set(false); });
   }
 

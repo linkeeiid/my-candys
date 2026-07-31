@@ -89,6 +89,43 @@
     '</div></nav>' +
   '</header>';
 
+  /* Menu mobile "drilldown" (niveau 1 → sous-menu qui glisse), inspiré de My American Shop */
+  var MENU = [
+    { t: 'Mini Prix 🪙', h: 'boutique.html?c=mini-prix' },
+    { t: 'Bestsellers 🩷', h: 'boutique.html?c=bestsellers' },
+    { t: 'Nouveautés ⭐', h: 'boutique.html?c=nouveautes' },
+    { t: 'Promos ⚡', h: 'boutique.html?c=promos' },
+    { t: 'Mystery Box 📦', h: 'mystery-box.html' },
+    { t: 'TikTok 🔥', h: 'index.html#tiktok' },
+    { t: 'Squishy 🌈', h: 'boutique.html?c=squishy' },
+    { t: 'Sucrés', h: 'boutique.html?c=sucres', all: 'Tous les produits sucrés', sub: [
+      ['Bonbons US', 'boutique.html?c=Bonbons'], ['Chewing-gum & sucettes', 'boutique.html?sub=gum'], ['Chamallow', 'boutique.html?sub=chamallow'], ['Barbe à papa', 'boutique.html?sub=barbeapapa'], ['Pop-corn', 'boutique.html?sub=popcorn'], ['Biscuits', 'boutique.html?sub=biscuit'], ['Gelées & gummies', 'boutique.html?sub=jelly'], ['Mochi', 'boutique.html?sub=mochi'], ['Chocolats intl', 'boutique.html?c=Chocolats'], ['Barres chocolatées', 'boutique.html?sub=barres'], ['Beurre de cacahuète', 'boutique.html?sub=peanut'], ['Chocolat de Dubaï ✨', 'boutique.html?sub=dubai'] ] },
+    { t: 'Salés', h: 'boutique.html?c=sales', all: 'Tous les produits salés', sub: [
+      ['Chips & crackers', 'boutique.html?sub=chips'], ['Takis & snacks épicés', 'boutique.html?sub=takis'], ['Beef jerky', 'boutique.html?sub=jerky'], ['Ramen & nouilles', 'boutique.html?sub=ramen'], ['Cuisine américaine', 'boutique.html?sub=americaine'], ['Sauces & dips', 'boutique.html?sub=sauce'], ['Salsa', 'boutique.html?sub=salsa'], ['Chamoy', 'boutique.html?sub=chamoy'] ] },
+    { t: 'Boissons', h: 'boutique.html?c=boissons', all: 'Toutes les boissons', sub: [
+      ['Énergisantes (Prime, Monster)', 'boutique.html?sub=energy'], ['Sodas viraux', 'boutique.html?sub=sodas'], ['Boissons asiatiques', 'boutique.html?c=asie'], ['Thé glacé', 'boutique.html?sub=the'], ['Slushies', 'boutique.html?sub=slush'], ['Eaux aromatisées', 'boutique.html?sub=eau'], ['Jus de fruits', 'boutique.html?sub=jus'], ['Bubble tea', 'boutique.html?sub=bubbletea'] ] },
+    { t: 'Asie', h: 'boutique.html?c=asie', all: 'Tout l\'univers Asie', sub: [
+      ['Ramen', 'boutique.html?sub=ramen'], ['Boissons asiatiques', 'boutique.html?c=asie'], ['Mochi', 'boutique.html?sub=mochi'], ['Mogu Mogu', 'boutique.html?sub=mogu'] ] },
+    { t: 'Anti-Gaspi ♻️', h: 'boutique.html?c=anti-gaspi' },
+    { t: 'Top Marques', h: 'marques.html', all: 'Toutes les marques →', sub: [
+      ['Red Bull', 'boutique.html?b=Red%20Bull'], ['Kinder', 'boutique.html?b=Kinder'], ['Fanta', 'boutique.html?b=Fanta'], ['Pringles', 'boutique.html?b=Pringles'], ['Snickers', 'boutique.html?b=Snickers'], ['Coca-Cola', 'boutique.html?b=Coca-Cola'], ['Nerds', 'boutique.html?b=Nerds'], ['Twix', 'boutique.html?b=Twix'], ['KitKat', 'boutique.html?b=KitKat'], ['Cheetos', 'boutique.html?b=Cheetos'], ['Takis', 'boutique.html?b=Takis'], ['Oreo', 'boutique.html?b=Oreo'] ] }
+  ];
+  function mdrawer() {
+    var root = '', panels = '';
+    MENU.forEach(function (m, i) {
+      if (m.sub) {
+        root += '<button class="mc-mrow mc-mrow--has" data-open="' + i + '">' + m.t + '</button>';
+        var s = '<div class="mc-mpanel" data-panel="' + i + '"><button class="mc-mback" data-back>' + m.t + '</button>';
+        m.sub.forEach(function (x) { s += '<a class="mc-mrow mc-mrow--sub" href="' + x[1] + '">' + x[0] + '</a>'; });
+        s += '<a class="mc-mrow mc-mrow--all" href="' + m.h + '">' + m.all + '</a></div>';
+        panels += s;
+      } else {
+        root += '<a class="mc-mrow" href="' + m.h + '">' + m.t + '</a>';
+      }
+    });
+    return '<div class="mc-mnav"><div class="mc-mpanel is-active" data-panel="root">' + root + '</div>' + panels + '</div>';
+  }
+
   var BOTTOM = '' +
   '<footer class="mc-footer">' +
     '<div class="mc-foot">' +
@@ -110,15 +147,7 @@
   '<div id="mc-menu-ov" class="mc-ov"></div>' +
   '<aside id="mc-menu" class="mc-drawer">' +
     '<div class="mc-menu-head"><a href="index.html"><img src="assets/logo.png" alt="My Candy\'s"></a><button id="mc-menu-close" class="mc-menu-close" title="Fermer">✕</button></div>' +
-    '<div class="mc-menu-body">' +
-      '<div class="mc-menu-sec"><div class="mc-menu-sectitle">🔥 Le top</div><a href="boutique.html?c=mini-prix" class="mc-menu-link">Mini Prix</a><a href="boutique.html?c=bestsellers" class="mc-menu-link">Bestsellers</a><a href="boutique.html?c=nouveautes" class="mc-menu-link">Nouveautés</a><a href="boutique.html?c=promos" class="mc-menu-link">Promos</a></div>' +
-      '<div class="mc-menu-div"></div>' +
-      '<div class="mc-menu-sec"><div class="mc-menu-sectitle">🍬 Gourmandises</div><a href="boutique.html?c=sucres" class="mc-menu-link">Sucrés</a><a href="boutique.html?c=sales" class="mc-menu-link">Salés</a><a href="boutique.html?c=boissons" class="mc-menu-link">Boissons</a><a href="boutique.html?c=asie" class="mc-menu-link">Asie</a></div>' +
-      '<div class="mc-menu-div"></div>' +
-      '<div class="mc-menu-sec"><div class="mc-menu-sectitle">🎁 Exclus</div><a href="mystery-box.html" class="mc-menu-link">Mystery Box</a><a href="boutique.html?c=squishy" class="mc-menu-link">Squishy</a><a href="boutique.html?c=anti-gaspi" class="mc-menu-link">Anti-Gaspi</a><a href="index.html#tiktok" class="mc-menu-link">TikTok</a></div>' +
-      '<div class="mc-menu-div"></div>' +
-      '<div class="mc-menu-sec"><div class="mc-menu-sectitle">🏆 Marques</div><a href="boutique.html?b=Red%20Bull" class="mc-menu-link">Red Bull</a><a href="boutique.html?b=Kinder" class="mc-menu-link">Kinder</a><a href="boutique.html?b=Fanta" class="mc-menu-link">Fanta</a><a href="marques.html" class="mc-menu-link mc-menu-link--all">Toutes les marques →</a></div>' +
-    '</div>' +
+    mdrawer() +
     '<div class="mc-menu-foot"><a href="compte.html" data-account><span>👤</span> Compte</a><a href="favoris.html"><span>🤍</span> Favoris</a></div>' +
   '</aside>' +
   '<div id="mc-cart-ov" class="mc-ov"></div>' +
