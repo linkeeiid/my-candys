@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>My Candy's — Bonbons & snacks viraux du monde entier</title>
 <meta name="description" content="L'épicerie des snacks viraux vus sur TikTok : bonbons US, sodas, Takis, Prime, Monster, Mystery Box… Livraison en France. Franchise née à Lyon. -26% avec le code Candysummer26.">
 <meta name="theme-color" content="#FF2E9A">
@@ -149,12 +149,11 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .mc-rev p{font-size:14.5px;line-height:1.55;color:#3A2230;margin:12px 0 14px}
 .mc-rev-who{display:flex;align-items:center;gap:10px}
 .mc-rev-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff}
-.mc-press-track{display:flex;white-space:nowrap;width:max-content;animation:marquee 34s linear infinite}
-.mc-press-track:hover{animation-play-state:paused}
-.mc-press-track > div{display:flex;gap:16px;padding-right:16px}
-.mc-press{flex:none;width:300px;white-space:normal;background:#fff;border-radius:18px;padding:22px;box-shadow:0 10px 24px rgba(122,14,74,.14)}
-.mc-press b{font-weight:700;font-size:19px;color:#2A0A1C;margin-bottom:10px;display:block}
-.mc-press p{font-size:13px;line-height:1.5;color:#7A5468;margin:0}
+/* Avis en défilement continu (marquee), comme l'ancienne bande presse */
+.mc-rev-track{display:flex;white-space:nowrap;width:max-content;animation:marquee 60s linear infinite}
+.mc-rev-track:hover{animation-play-state:paused}
+.mc-rev-track > div{display:flex;gap:16px;padding-right:16px}
+.mc-rev-track .mc-rev{flex:none;width:320px;white-space:normal}
 .mc-news{background:#2A0A1C;border-radius:30px;padding:44px;text-align:center;color:#fff;position:relative;overflow:hidden}
 .mc-news form{margin:22px auto 0;display:flex;gap:10px;max-width:460px;flex-wrap:wrap;justify-content:center}
 .mc-news input{flex:1;min-width:220px;border:none;border-radius:14px;padding:15px 18px;font-size:15px;font-family:inherit;outline:none}
@@ -190,6 +189,12 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
   .mc-news form{flex-direction:column}
   .mc-news input{min-width:0;width:100%}
   .mc-news button{width:100%}
+}
+/* Paysage téléphone / petites tablettes (769–1180px) : la mise en page « desktop » remplit bien
+   l'écran, mais la déco flottante desktop (500-580px) est trop grosse et recouvre le contenu.
+   → on la réduit fortement pour qu'elle ne fasse que dépasser des bords, sans gêner. */
+@media (min-width:769px) and (max-width:1180px){
+  .mc-decor{width:210px!important}
 }
 </style>
 </head>
@@ -292,17 +297,7 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
     <div class="mc-k mc-white-h" style="color:#fff">Vos avis parlent pour nous</div>
     <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-top:10px"><span style="font-weight:700;font-size:40px;color:#fff">4,8</span><div style="text-align:left"><div style="color:#FFD23F;font-size:20px;letter-spacing:2px">★★★★★</div><div style="font-size:13px;color:#fff;opacity:.9">sur 8 400+ avis vérifiés</div></div></div>
   </div>
-  <div class="mc-rev-grid mc-row">
-    <div class="mc-rev"><div style="display:flex;align-items:center;gap:6px"><span style="color:#FFB800;letter-spacing:1px">★★★★★</span><span style="background:#EAFBF3;color:#1B8A57;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px">✓ Vérifié</span></div><p>"Commande reçue en 24h, tout était nickel emballé. Les Takis Blue Heat sont incroyables 🔥"</p><div class="mc-rev-who"><div class="mc-rev-av" style="background:#FF2E9A">L</div><div style="font-size:13px;font-weight:600">Léa M.</div></div></div>
-    <div class="mc-rev"><div style="display:flex;align-items:center;gap:6px"><span style="color:#FFB800;letter-spacing:1px">★★★★★</span><span style="background:#EAFBF3;color:#1B8A57;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px">✓ Vérifié</span></div><p>"La Mystery Box vaut carrément le coup, mon fils a adoré filmer l'unboxing pour TikTok !"</p><div class="mc-rev-who"><div class="mc-rev-av" style="background:#22D3E4">K</div><div style="font-size:13px;font-weight:600">Karim B.</div></div></div>
-    <div class="mc-rev"><div style="display:flex;align-items:center;gap:6px"><span style="color:#FFB800;letter-spacing:1px">★★★★★</span><span style="background:#EAFBF3;color:#1B8A57;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px">✓ Vérifié</span></div><p>"Enfin un site FR qui a les vrais produits qu'on voit passer en story. Je recommande à fond."</p><div class="mc-rev-who"><div class="mc-rev-av" style="background:#8B3FD1">M</div><div style="font-size:13px;font-weight:600">Manon T.</div></div></div>
-  </div>
-</section>
-
-<!-- Presse -->
-<section style="max-width:1220px;margin:0 auto;padding:34px 22px 10px">
-  <div style="font-weight:700;font-size:26px;color:#fff;text-align:center;margin-bottom:20px">Ils parlent de nous 📰</div>
-  <div style="overflow:hidden;position:relative"><div class="mc-press-track" id="mc-press"></div></div>
+  <div style="overflow:hidden;position:relative;margin-top:22px"><div class="mc-rev-track" id="mc-reviews"></div></div>
 </section>
 
 <!-- Newsletter -->
@@ -419,14 +414,26 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
     host.addEventListener('click', function (e) { var b = e.target.closest('[data-tt]'); if (b) openLb(b.getAttribute('data-tt')); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && lb && lb.classList.contains('open')) closeLb(); });
   })();
-  var PR = [
-    { name: 'Le Progrès', q: 'La franchise lyonnaise qui transforme les snacks viraux en véritable phénomène de quartier.' },
-    { name: 'BFM Lyon', q: 'My Candy’s surfe sur la vague TikTok avec des files d’attente devant sa boutique.' },
-    { name: 'Tribune de Lyon', q: 'Une success story gourmande née à Lyon et en pleine expansion en franchise.' },
-    { name: 'Food & Sens', q: 'Le repaire des éditions limitées introuvables ailleurs en France.' }
+  // Avis clients — défilement continu (marquee), dupliqués pour une boucle sans couture
+  var REVIEWS = [
+    { t: "Commande reçue en 24h, tout était nickel emballé. Les Takis Blue Heat sont incroyables 🔥", n: "Léa M.", av: "L", c: "#FF2E9A" },
+    { t: "La Mystery Box vaut carrément le coup, mon fils a adoré filmer l'unboxing pour TikTok !", n: "Karim B.", av: "K", c: "#22D3E4" },
+    { t: "Enfin un site FR qui a les vrais produits qu'on voit passer en story. Je recommande à fond.", n: "Manon T.", av: "M", c: "#8B3FD1" },
+    { t: "Les Prime et les sodas US introuvables ailleurs, et livrés super vite. Les yeux fermés.", n: "Yanis R.", av: "Y", c: "#0FA9B8" },
+    { t: "Emballage au top, rien de cassé, et des petits bonbons offerts en bonus. Trop mignon 🍬", n: "Sarah L.", av: "S", c: "#E01784" },
+    { t: "J'ai testé les nouilles Buldak les plus fortes… défi relevé grâce à My Candy's 😅🌶️", n: "Théo D.", av: "T", c: "#F59E0B" },
+    { t: "Service client hyper réactif sur Insta, ils ont géré mon échange en 5 min. Au top.", n: "Inès B.", av: "I", c: "#E23A2E" },
+    { t: "Des prix corrects pour de l'import et un choix de dingue. C'est ma commande mensuelle maintenant !", n: "Noah C.", av: "N", c: "#1B8A57" },
+    { t: "Parfait pour les cadeaux : j'ai offert une Box XXL à ma sœur, elle était folle 🎁", n: "Camille F.", av: "C", c: "#8B3FD1" }
   ];
-  var pone = PR.map(function (p) { return '<div class="mc-press"><b>' + MC.esc(p.name) + '</b><p>' + MC.esc(p.q) + '</p></div>'; }).join('');
-  fill('mc-press', '<div>' + pone + '</div><div aria-hidden="true">' + pone + '</div>');
+  var rone = REVIEWS.map(function (r) {
+    return '<div class="mc-rev">' +
+      '<div style="display:flex;align-items:center;gap:6px"><span style="color:#FFB800;letter-spacing:1px">★★★★★</span><span style="background:#EAFBF3;color:#1B8A57;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px">✓ Vérifié</span></div>' +
+      '<p>« ' + MC.esc(r.t) + ' »</p>' +
+      '<div class="mc-rev-who"><div class="mc-rev-av" style="background:' + r.c + '">' + MC.esc(r.av) + '</div><div style="font-size:13px;font-weight:600">' + MC.esc(r.n) + '</div></div>' +
+    '</div>';
+  }).join('');
+  fill('mc-reviews', '<div>' + rone + '</div><div aria-hidden="true">' + rone + '</div>');
   var f = document.getElementById('mc-news-form');
   if (f) f.addEventListener('submit', function (e) {
     e.preventDefault();
