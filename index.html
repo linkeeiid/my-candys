@@ -94,8 +94,11 @@ body.mc-home{background:#FB2E9A}
 .mc-seeall:hover{background:#FFEBF5}
 .mc-prow{display:flex;gap:16px;overflow-x:auto;padding:8px 2px 20px;scroll-snap-type:x mandatory}
 .mc-prow .mc-prod{width:calc((100% - 64px)/5);scroll-snap-align:start}
-.mc-marquee{overflow:hidden;padding:6px 0 8px;position:relative;z-index:1}
-.mc-marquee-track{display:flex;white-space:nowrap;width:max-content;animation:marquee 38s linear infinite;will-change:transform;backface-visibility:hidden}
+.mc-marquee{overflow:hidden;padding:6px 0 8px;position:relative;z-index:1;transform:translateZ(0);min-height:100px}
+/* Pas de will-change/backface-visibility ici : sur iPhone, le rail (14 logos ×2 ≈ 4600px) dépasserait
+   la taille max d'une texture GPU → iOS pré-alloue une texture unique trop grande et affiche du VIDE
+   (le bandeau "disparaît"). Sans will-change, iOS découpe en tuiles → il s'affiche toujours. */
+.mc-marquee-track{display:flex;white-space:nowrap;width:max-content;animation:marquee 38s linear infinite}
 .mc-marquee-track > div{display:flex;gap:26px;padding-right:26px;align-items:center}
 .mc-mqlogo{flex:none;width:220px;height:130px;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .mc-mqlogo img{max-width:100%;max-height:100%;object-fit:contain;pointer-events:none}
