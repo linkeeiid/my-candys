@@ -493,12 +493,19 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
       '<div class="co-recap-row co-recap-tot"><span>Total payé</span><b>' + money(total) + '</b></div>';
     elForm.hidden = true; elEmpty.hidden = true; elDone.hidden = false;
     MCCart.clear();
+    // Mémorise coordonnées + livraison → plus besoin de les ressaisir la prochaine fois
+    // (enregistré dans le compte connecté + repli local générique).
+    try {
+      var _info = collectCustomer(); _info.ship = mode;
+      localStorage.setItem('mcCheckoutInfoV1', JSON.stringify(_info));
+    } catch (e) {}
     // Fidélité : 1 € dépensé = 1 point (+1 commande). Le palier atteint déclenche le code + l'email à la prochaine ouverture de « Mon compte ».
     try {
       var _u = JSON.parse(localStorage.getItem('mcUserV1') || 'null');
       if (_u && (_u.email || _u.provider)) {
         _u.points = (_u.points || 0) + Math.max(0, Math.round(total));
         _u.orders = (_u.orders || 0) + 1;
+        try { _u.ship = collectCustomer(); _u.ship.ship = mode; } catch (e2) {}
         localStorage.setItem('mcUserV1', JSON.stringify(_u));
       }
     } catch (e) {}
@@ -574,7 +581,38 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
   window.addEventListener('mc-cart-change', function () { if (!elDone.hidden) return; render(); });
   window.addEventListener('storage', function () { if (!elDone.hidden) return; render(); });
 
+  /* ---------- Pré-remplissage : coordonnées + livraison déjà connues ----------
+     Source : compte connecté (mcUserV1.ship) → repli commande précédente (mcCheckoutInfoV1)
+     → à défaut, au moins l'email/nom du compte. On ne remplit que les champs VIDES. */
+  function savedInfo() {
+    var u = coUser();
+    if (u && u.ship) return u.ship;
+    try { var g = JSON.parse(localStorage.getItem('mcCheckoutInfoV1') || 'null'); if (g) return g; } catch (e) {}
+    if (u && (u.email || u.name)) {
+      var parts = String(u.name || '').trim().split(/\s+/);
+      return { email: u.email || '', first: u.first || parts[0] || '', last: u.last || (parts.length > 1 ? parts.slice(1).join(' ') : '') };
+    }
+    return null;
+  }
+  function prefillForm() {
+    var s = savedInfo(); if (!s) return;
+    [['#f-email', 'email'], ['#f-first', 'first'], ['#f-last', 'last'], ['#f-tel', 'tel'],
+     ['#f-addr', 'addr'], ['#f-addr2', 'addr2'], ['#f-zip', 'zip'], ['#f-city', 'city']].forEach(function (p) {
+      var el = $(p[0]); if (el && !el.value && s[p[1]]) el.value = s[p[1]];
+    });
+    if (s.country) { var c = $('#f-country'); if (c) c.value = s.country; }
+    if (s.ship && MODES[s.ship]) {
+      var r = document.querySelector('input[name="ship"][value="' + s.ship + '"]');
+      if (r) {
+        r.checked = true; mode = s.ship;
+        document.querySelectorAll('.co-mode').forEach(function (m) { m.classList.toggle('on', m.getAttribute('data-mode') === mode); });
+      }
+    }
+  }
+
   render();
+  prefillForm();
+  render(); // rafraîchit les frais si le mode de livraison mémorisé diffère
 })();
 </script>
 </body>
