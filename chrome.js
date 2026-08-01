@@ -143,6 +143,7 @@
       '<div class="mc-fcol"><div class="mc-fcol-title">Boutique</div><div class="mc-fcol-links"><a href="boutique.html?c=bestsellers">Bestsellers</a><a href="boutique.html?c=nouveautes">Nouveautés</a><a href="boutique.html?c=promos">Promos</a><a href="mystery-box.html">Mystery Box</a></div></div>' +
     '</div>' +
     '<div class="mc-fbarwrap"><div class="mc-fbar"><div>© 2026 My Candy\'s — Tous droits réservés. · <a href="infos.html?p=mentions" style="color:#D9AEC4;text-decoration:underline">Mentions légales</a> · <a href="infos.html?p=cgv" style="color:#D9AEC4;text-decoration:underline">CGV</a> · <a href="infos.html?p=confidentialite" style="color:#D9AEC4;text-decoration:underline">Confidentialité</a></div><div class="mc-fpay"><span>VISA</span><span>Mastercard</span><span> Pay</span><span>G Pay</span></div></div></div>' +
+    '<div class="mc-fcredit" style="text-align:center;padding:14px 20px calc(16px + env(safe-area-inset-bottom,0px));font-size:12.5px;color:#9B7A8C;background:#160309;border-top:1px solid rgba(255,255,255,.06)">Site créé par : <a href="https://linkeeiid.github.io/linkedia/" target="_blank" rel="noopener" style="color:#FF2E9A;font-weight:700;text-decoration:none">LinkedIA</a></div>' +
   '</footer>' +
   '<div id="mc-menu-ov" class="mc-ov"></div>' +
   '<aside id="mc-menu" class="mc-drawer">' +
