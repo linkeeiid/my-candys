@@ -252,15 +252,24 @@
     return out;
   }
 
-  // Articles flottants du hero : duo aléatoire (change à chaque navigation / page)
+  // Articles flottants du hero : duo aléatoire — produits ET positions changent à chaque chargement.
+  // Les deux restent dans la moitié DROITE (jamais sur le texte de gauche) et sont bien séparés :
+  // l'un en haut-droite, l'autre plus bas et légèrement rentré → ils ne se collent plus.
   function rotateHero() {
     var decos = document.querySelectorAll('.shop-hero-decor');
     if (decos.length < 2) return;
     var pool = HERO_IMGS.slice(), pick = [];
     pick.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
     pick.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
-    decos[0].src = 'assets/hero/' + pick[0] + '.png';
-    decos[1].src = 'assets/hero/' + pick[1] + '.png';
+    var POS_A = [{ right: '1%', top: '-12px', r: 8 }, { right: '3%', top: '-6px', r: -7 }, { right: '2%', top: '-10px', r: 10 }];
+    var POS_B = [{ right: '12%', top: '58px', r: -9 }, { right: '14%', top: '64px', r: 8 }, { right: '10%', top: '52px', r: -6 }];
+    function apply(el, img, p) {
+      el.src = 'assets/hero/' + img + '.png';
+      el.style.left = 'auto'; el.style.right = p.right; el.style.top = p.top;
+      el.style.setProperty('--r', p.r + 'deg');
+    }
+    apply(decos[0], pick[0], POS_A[Math.floor(Math.random() * POS_A.length)]);
+    apply(decos[1], pick[1], POS_B[Math.floor(Math.random() * POS_B.length)]);
   }
   function pageList(cur, total) {
     var out = [], i;

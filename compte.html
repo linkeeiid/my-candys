@@ -91,6 +91,17 @@
 .acc-me-links a span:last-child{margin-left:auto;color:#B06089}
 .acc-logout{width:100%;justify-content:center;background:none;border:1.5px solid #F3C6DE;color:#B0146A;margin-top:4px}
 .acc-logout:hover{background:#FFF4F9}
+.acc-orders{margin-top:22px}
+.acc-orders-title{font-weight:800;font-size:15px;color:#2A0A1C;margin:0 0 12px}
+.acc-orders-empty{font-size:14px;color:#8A6076;line-height:1.5}
+.acc-orders-empty a{color:#E01784;font-weight:700}
+.acc-order{background:#FFF7FB;border:1px solid #F1DAE7;border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.acc-order-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.acc-order-top b{color:#2A0A1C;font-size:13.5px}
+.acc-order-top span{color:#8A6076;font-size:12.5px;white-space:nowrap}
+.acc-order-items{font-size:13px;color:#6A4A58;margin:6px 0;line-height:1.4}
+.acc-order-bot{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;color:#8A6076}
+.acc-order-bot b{color:#E01784;font-size:15px}
 
 /* ---------- Colonne latérale (avantages membre) ---------- */
 .acc-perks{background:linear-gradient(160deg,#FFF7EE,#FFF1F8);border:1px solid #F1DAE7;border-radius:26px;padding:26px 26px 24px;box-shadow:0 14px 32px rgba(122,14,74,.08)}
@@ -252,8 +263,11 @@
         <div class="acc-me-links">
           <a href="favoris.html"><span>🤍</span> Mes favoris <span>→</span></a>
           <a href="infos.html?p=livraison"><span>📦</span> Suivi de commande <span>→</span></a>
-          <a href="boutique.html?c=bestsellers"><span>🛍️</span> Continuer mes achats <span>→</span></a>
           <button class="acc-logout" type="button" id="me-logout">Se déconnecter</button>
+        </div>
+        <div class="acc-orders">
+          <div class="acc-orders-title">🧾 Mes commandes</div>
+          <div id="me-orders-list"></div>
         </div>
       </section>
     </div>
@@ -370,9 +384,30 @@
     $('#me-points').textContent = (u.points != null ? u.points : 0);
     $('#me-orders').textContent = (u.orders != null ? u.orders : 0);
     $('#me-wish').textContent = (window.MCWish ? MCWish.count() : 0);
+    renderOrders(u);
     tabs.hidden = true;
     paneLogin.hidden = true; paneSignup.hidden = true;
     paneMe.hidden = false;
+  }
+  // Historique « Mes commandes » (enregistré à chaque achat dans le compte)
+  function renderOrders(u) {
+    var host = document.getElementById('me-orders-list'); if (!host) return;
+    var money = function (n) { return window.MC ? MC.money(n) : (Number(n).toFixed(2).replace('.', ',') + ' €'); };
+    var esc = function (s) { return window.MC ? MC.esc(s) : String(s == null ? '' : s); };
+    var list = (u && u.orderHistory) || [];
+    if (!list.length) {
+      host.innerHTML = '<div class="acc-orders-empty">Aucune commande pour l\'instant. <a href="boutique.html">Découvrir la boutique →</a></div>';
+      return;
+    }
+    host.innerHTML = list.map(function (o) {
+      var d = ''; try { d = new Date(o.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' }); } catch (e) {}
+      var items = (o.items || []).map(function (it) { return esc(it.name) + ' ×' + it.qty; }).join(', ');
+      return '<div class="acc-order">' +
+        '<div class="acc-order-top"><b>N° ' + esc(o.num) + '</b><span>' + esc(d) + '</span></div>' +
+        (items ? '<div class="acc-order-items">' + items + '</div>' : '') +
+        '<div class="acc-order-bot"><span>' + o.count + ' article' + (o.count > 1 ? 's' : '') + (o.mode ? ' · ' + esc(o.mode) : '') + '</span><b>' + money(o.total) + '</b></div>' +
+      '</div>';
+    }).join('');
   }
   function logout() {
     clearUser();

@@ -853,6 +853,20 @@ window.MC = window.MC || {};
     { id:"cheetos-hands-barbecue-75g", img:"assets/products/cheetos-hands-barbecue-75g.jpg", name:"Cheetos Hands Barbecue 75g", brand:"Cheetos", price:2.99, old:null, reviews:242, nouveau:false, best:false, tint:T.brown, cat:"Snacks", desc:"Cheetos Hands Barbecue 75g : le snack croustillant et addictif qui cartonne sur TikTok. 🍿" }
   ];
 
+  // Déduplication : un même produit importé plusieurs fois (même nom) → on ne garde qu'UNE fiche,
+  // en privilégiant celle qui a une photo, puis un prix. Fini les doublons (ex. Takis Blue Heat ×3).
+  (function () {
+    var seen = {}, out = [];
+    var score = function (x) { return (x.img ? 2 : 0) + (x.price != null ? 1 : 0); };
+    MC.PRODUCTS.forEach(function (p) {
+      var k = String(p.name || '').toLowerCase().replace(/\s+/g, ' ').trim();
+      if (!k) { out.push(p); return; }
+      if (!(k in seen)) { seen[k] = out.length; out.push(p); return; }
+      if (score(p) > score(out[seen[k]])) out[seen[k]] = p; // garde la meilleure des deux
+    });
+    MC.PRODUCTS = out;
+  })();
+
   MC.BOXES = [
     { id:'box-s',   name:'Mystery Box S',   price:14.90, old:19.90, reviews:406,  nouveau:false, tint:T.pink,   box:true },
     { id:'box-m',   name:'Mystery Box M',   price:24.90, old:34.90, reviews:1011, nouveau:false, tint:T.cyan,   box:true },
