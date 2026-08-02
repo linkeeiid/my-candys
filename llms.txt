@@ -6,14 +6,14 @@ My Candy's s'adresse aux amateurs de snacks tendance et de nouveautés « vues s
 
 ## Pages clés
 
-- [Boutique](https://linkeeiid.github.io/my-candys/boutique.html) : catalogue complet, filtrable par catégorie, marque, promos et nouveautés.
-- [Nos marques](https://linkeeiid.github.io/my-candys/marques.html) : Prime, Takis, Monster, Kinder, Samyang et toutes les marques virales.
-- [Mystery Box](https://linkeeiid.github.io/my-candys/mystery-box.html) : box surprise de snacks, valeur supérieure au prix, parfaites à unboxer.
-- [Accueil](https://linkeeiid.github.io/my-candys/) : sélections du moment, bestsellers et nouveautés.
+- [Boutique](https://mycandys.fr/boutique.html) : catalogue complet, filtrable par catégorie, marque, promos et nouveautés.
+- [Nos marques](https://mycandys.fr/marques.html) : Prime, Takis, Monster, Kinder, Samyang et toutes les marques virales.
+- [Mystery Box](https://mycandys.fr/mystery-box.html) : box surprise de snacks, valeur supérieure au prix, parfaites à unboxer.
+- [Accueil](https://mycandys.fr/) : sélections du moment, bestsellers et nouveautés.
 
 ## Infos & contact
 
-- [FAQ](https://linkeeiid.github.io/my-candys/infos.html?p=faq) : réponses aux questions fréquentes.
-- [Livraison & retours](https://linkeeiid.github.io/my-candys/infos.html?p=livraison) : délais, tarifs, point relais et domicile.
-- [Qui sommes-nous](https://linkeeiid.github.io/my-candys/infos.html?p=about) : l'histoire de la marque, née à Lyon.
-- [Nous contacter](https://linkeeiid.github.io/my-candys/infos.html?p=contact) : formulaire et coordonnées.
+- [FAQ](https://mycandys.fr/infos.html?p=faq) : réponses aux questions fréquentes.
+- [Livraison & retours](https://mycandys.fr/infos.html?p=livraison) : délais, tarifs, point relais et domicile.
+- [Qui sommes-nous](https://mycandys.fr/infos.html?p=about) : l'histoire de la marque, née à Lyon.
+- [Nous contacter](https://mycandys.fr/infos.html?p=contact) : formulaire et coordonnées.

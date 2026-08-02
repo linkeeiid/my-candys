@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Suivi de commande — My Candy's</title>
+<meta name="description" content="Suis ton colis My Candy's : entre ton numéro de suivi reçu par email et accède directement au suivi de ton transporteur.">
+<meta name="theme-color" content="#FF2E9A">
+<link rel="icon" href="assets/logo.png">
+<link rel="canonical" href="https://mycandys.fr/suivi-commande.html">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+.suv-hero{background:#fff;position:relative;overflow:hidden}
+.suv-hero-in{max-width:1280px;margin:0 auto;padding:30px 34px 26px;position:relative;z-index:1}
+.suv-hero h1{font-size:44px;letter-spacing:-1px;margin:6px 0 0}
+.suv-hero p{font-size:16px;color:#7A5468;margin:8px 0 0;max-width:560px}
+.suv-hero-decor{position:absolute;z-index:0;pointer-events:none;animation:floaty 8s ease-in-out infinite;filter:drop-shadow(0 22px 16px rgba(0,0,0,.22))}
+
+.suv-band{background:#E9F5FB;position:relative}
+.suv-wrap{max-width:640px;margin:0 auto;padding:34px 22px 56px}
+.suv-card{background:#fff;border-radius:24px;padding:30px 28px;box-shadow:0 18px 40px rgba(122,14,74,.12)}
+.suv-card h2{font-size:22px;letter-spacing:-.4px;margin:0}
+.suv-card .lead{font-size:14.5px;color:#7A5468;line-height:1.55;margin:8px 0 22px}
+.suv-label{display:block;font-weight:700;font-size:13.5px;color:#2A0A1C;margin:0 0 7px}
+.suv-input,.suv-select{width:100%;border:1.5px solid #F3C6DE;border-radius:14px;padding:14px 16px;font-size:15px;font-family:inherit;color:#2A0A1C;outline:none;background:#fff}
+.suv-input:focus,.suv-select:focus{border-color:#FF2E9A;box-shadow:0 0 0 4px rgba(255,46,154,.12)}
+.suv-field{margin-bottom:18px}
+.suv-btn{width:100%;background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;font-weight:800;font-size:16px;padding:16px;border-radius:16px;box-shadow:0 12px 26px rgba(255,46,154,.32);display:flex;align-items:center;justify-content:center;gap:10px;transition:transform .15s,filter .15s;margin-top:6px}
+@media (hover:hover){.suv-btn:hover{transform:translateY(-2px);filter:brightness(1.03)}}
+.suv-btn:active{transform:translateY(0)}
+.suv-err{color:#C62A22;font-size:13px;font-weight:600;margin:10px 0 0;display:none}
+.suv-note{display:flex;gap:10px;align-items:flex-start;background:#FFF7FB;border:1px solid #F1DAE7;border-radius:14px;padding:13px 15px;margin-top:20px;font-size:13px;color:#6A4A58;line-height:1.5}
+.suv-note span{font-size:18px;line-height:1}
+.suv-help{text-align:center;font-size:13.5px;color:#7A5468;margin-top:22px}
+.suv-help a{color:#E01784;font-weight:700}
+@media (max-width:860px){
+  .suv-hero h1{font-size:30px}
+  .suv-hero-in{padding:22px 16px 20px}
+  .suv-wrap{padding:22px 16px 40px}
+  .suv-card{padding:24px 18px}
+  .suv-hero-decor{display:none!important}
+}
+</style>
+</head>
+<body data-nav="">
+
+<div class="suv-hero">
+  <div class="suv-hero-in">
+    <div class="mc-crumb" style="margin-bottom:8px"><a href="index.html">Accueil</a> › <a href="compte.html">Mon compte</a> › <span style="color:#2A0A1C;font-weight:600">Suivi de commande</span></div>
+    <h1>Suivi de commande 📦</h1>
+    <p>Entre ton numéro de suivi pour voir où en est ton colis, en direct chez le transporteur.</p>
+  </div>
+  <img src="assets/hero/monster-punch.png" alt="" aria-hidden="true" loading="lazy" decoding="async" class="suv-hero-decor" style="width:180px;right:3%;top:6px;--r:8deg">
+  <img src="assets/hero/samyang.png" alt="" aria-hidden="true" loading="lazy" decoding="async" class="suv-hero-decor" style="width:170px;right:16%;top:56px;--r:-9deg">
+</div>
+
+<div class="suv-band">
+  <div class="suv-wrap">
+    <div class="suv-card">
+      <h2>Suivre mon colis 🚚</h2>
+      <p class="lead">Ton numéro de suivi t'a été envoyé par e-mail dès l'expédition de ta commande. Colle-le ci-dessous et choisis ton transporteur : on t'ouvre directement la page de suivi officielle.</p>
+      <form id="suv-form" autocomplete="off">
+        <div class="suv-field">
+          <label class="suv-label" for="suv-num">Numéro de suivi</label>
+          <input class="suv-input" id="suv-num" type="text" inputmode="latin" placeholder="Ex : 6A01234567890" required spellcheck="false">
+        </div>
+        <div class="suv-field">
+          <label class="suv-label" for="suv-carrier">Transporteur</label>
+          <select class="suv-select" id="suv-carrier">
+            <option value="laposte">Colissimo / La Poste</option>
+            <option value="mondialrelay">Mondial Relay</option>
+            <option value="chronopost">Chronopost</option>
+            <option value="ups">UPS</option>
+            <option value="dhl">DHL</option>
+            <option value="autre">Autre / je ne sais pas</option>
+          </select>
+        </div>
+        <button type="submit" class="suv-btn"><span>Suivre mon colis</span> <span>→</span></button>
+        <div class="suv-err" id="suv-err">Entre d'abord ton numéro de suivi.</div>
+      </form>
+      <div class="suv-note"><span>ℹ️</span><div>Le suivi s'ouvre sur le site du transporteur (nouvel onglet). Il peut mettre <b>24 à 48 h</b> à s'activer après l'expédition — c'est normal, laisse-lui le temps de scanner ton colis.</div></div>
+    </div>
+    <div class="suv-help">Tu n'as pas reçu ton numéro de suivi ? <a href="infos.html?p=contact">Contacte-nous</a>, on s'en occupe. 💬</div>
+  </div>
+</div>
+
+<script src="cart-store.js"></script>
+<script src="products.js"></script>
+<script src="stock-store.js"></script>
+<script src="chrome.js"></script>
+<script src="app.js"></script>
+<script src="catalog-overrides.js"></script>
+<script>
+(function () {
+  var form = document.getElementById('suv-form');
+  var num = document.getElementById('suv-num');
+  var carrier = document.getElementById('suv-carrier');
+  var err = document.getElementById('suv-err');
+
+  // Pré-remplissage possible via ?num=... (pour un futur lien direct depuis un email)
+  try {
+    var q = new URLSearchParams(location.search);
+    if (q.get('num')) num.value = q.get('num').trim();
+    if (q.get('carrier')) carrier.value = q.get('carrier');
+  } catch (e) {}
+
+  // Modèles d'URL de suivi par transporteur ({N} = numéro encodé)
+  var URLS = {
+    laposte:      'https://www.laposte.fr/outils/suivre-vos-envois?code={N}',
+    mondialrelay: 'https://www.mondialrelay.fr/suivi-de-colis?numeroExpedition={N}',
+    chronopost:   'https://www.chronopost.fr/tracking-no-cms/suivi-page?listeNumerosLT={N}&langue=fr',
+    ups:          'https://www.ups.com/track?loc=fr_FR&tracknum={N}',
+    dhl:          'https://www.dhl.com/fr-fr/home/suivi.html?tracking-id={N}',
+    autre:        'https://www.google.com/search?q=suivi+colis+{N}'
+  };
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var n = (num.value || '').trim().replace(/\s+/g, '');
+    if (!n) { err.style.display = 'block'; num.focus(); return; }
+    err.style.display = 'none';
+    var tpl = URLS[carrier.value] || URLS.autre;
+    var url = tpl.replace('{N}', encodeURIComponent(n));
+    window.open(url, '_blank', 'noopener');
+  });
+  num.addEventListener('input', function () { if (num.value.trim()) err.style.display = 'none'; });
+})();
+</script>
+</body>
+</html>

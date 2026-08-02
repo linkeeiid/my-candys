@@ -1,4 +1,4 @@
-# robots.txt — My Candy's (https://linkeeiid.github.io/my-candys/)
+# robots.txt — My Candy's (https://mycandys.fr/)
 
 User-agent: *
 Allow: /
@@ -27,4 +27,4 @@ Allow: /
 User-agent: Bingbot
 Allow: /
 
-Sitemap: https://linkeeiid.github.io/my-candys/sitemap.xml
+Sitemap: https://mycandys.fr/sitemap.xml
