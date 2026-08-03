@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mystery Box — My Candy's</title>
+<meta name="description" content="Nos Mystery Box My Candy's : une sélection surprise de bonbons, snacks et sodas, d'une valeur toujours supérieure au prix. Le colis parfait à unboxer.">
+<meta name="theme-color" content="#FF2E9A">
+<link rel="icon" href="assets/logo.png">
+<link rel="canonical" href="https://mycandys.fr/box">
+<meta property="og:type" content="product">
+<meta property="og:site_name" content="My Candy's">
+<meta property="og:title" content="Mystery Box — My Candy's">
+<meta property="og:description" content="Une sélection surprise de bonbons, snacks et sodas, d'une valeur toujours supérieure au prix.">
+<meta property="og:url" content="https://mycandys.fr/box">
+<meta property="og:image" content="https://mycandys.fr/assets/banners/promo-site.png">
+<meta property="og:locale" content="fr_FR">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+.bx-wrap{max-width:1100px;margin:0 auto;padding:30px 22px 46px}
+.bx{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:start}
+.bx-imgwrap{position:relative;background:#fff;border-radius:26px;box-shadow:0 18px 40px rgba(122,14,74,.14);aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.bx-imgwrap img{width:100%;height:100%;object-fit:contain;padding:16px}
+.bx-ribbon{position:absolute;top:16px;left:0;background:#2A0A1C;color:#fff;font-weight:800;font-size:12px;letter-spacing:.5px;padding:7px 15px;border-radius:0 999px 999px 0;box-shadow:0 6px 14px rgba(0,0,0,.2);z-index:2}
+.bx-eyebrow{font-size:12.5px;color:#B06089;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.bx-title{font-weight:800;font-size:42px;margin:6px 0 0;letter-spacing:-1px;line-height:1.03}
+.bx-stars{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:12.5px;color:#8A6076}
+.bx-stars .s{color:#FFB800;font-size:16px;letter-spacing:1px}
+.bx-worth{margin-top:14px;display:inline-block;background:#EAFBF3;color:#1B8A57;font-weight:700;font-size:13px;padding:6px 13px;border-radius:999px}
+.bx-desc{font-size:15.5px;line-height:1.65;color:#4A2A3A;margin:16px 0 0}
+.bx-price{display:flex;align-items:baseline;gap:12px;margin-top:22px;flex-wrap:wrap}
+.bx-now{font-weight:800;font-size:40px;color:#E01784;letter-spacing:-1px}
+.bx-old{font-size:18px;color:#B7A0AC;text-decoration:line-through}
+.bx-badge{font-weight:800;font-size:13px;padding:5px 11px;border-radius:999px}
+.bx-unit{font-size:12.5px;color:#8A6076;margin-top:4px}
+.bx-buy{display:flex;align-items:center;gap:14px;margin-top:24px;flex-wrap:wrap}
+.bx-step{display:flex;align-items:center;background:#fff;border:1.5px solid #F3C6DE;border-radius:14px;overflow:hidden}
+.bx-step button{position:relative;width:46px;height:54px;font-size:0}
+.bx-step button::before{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:15px;height:2.6px;background:#E01784;border-radius:2px}
+.bx-step button#bx-inc::after{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:2.6px;height:15px;background:#E01784;border-radius:2px}
+@media (hover:hover){.bx-step button:hover{background:#FFF1F8}}
+.bx-step span{min-width:38px;text-align:center;font-weight:800;font-size:17px}
+.bx-add{flex:1;min-width:230px;background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;font-weight:800;font-size:17px;padding:17px 26px;border-radius:16px;box-shadow:0 12px 26px rgba(255,46,154,.32);display:flex;align-items:center;justify-content:center;gap:10px;transition:transform .15s,filter .15s}
+@media (hover:hover){.bx-add:hover{transform:translateY(-2px);filter:brightness(1.03)}}
+.bx-reassure{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px}
+.bx-reass{display:flex;align-items:center;gap:10px;background:#F8FBFC;border:1px solid #E6EFF2;border-radius:14px;padding:12px}
+.bx-reass span{font-size:22px;line-height:1}
+.bx-reass div{font-size:12.5px;font-weight:600;line-height:1.3}
+.bx-note{margin-top:18px;font-size:12.5px;color:#8A6076;line-height:1.5}
+@media(max-width:820px){.bx{grid-template-columns:1fr;gap:22px}.bx-title{font-size:30px}.bx-now{font-size:34px}.bx-reassure{grid-template-columns:1fr}}
+</style>
+</head>
+<body data-nav="mystery">
+<main class="bx-wrap">
+  <div class="bx" id="bx"></div>
+</main>
+
+<script src="cart-store.js"></script>
+<script src="products.js"></script>
+<script src="chrome.js"></script>
+<script src="app.js"></script>
+<script src="catalog-overrides.js"></script>
+<script>
+(function () {
+  'use strict';
+  function render() {
+    var id = new URLSearchParams(location.search).get('id');
+    var b = (window.MC && MC.byId) ? MC.byId(id) : null;
+    if (!b || !b.box) { b = (MC.BOXES && MC.BOXES[0]) || null; }
+    if (!b) { document.getElementById('bx').innerHTML = '<p style="padding:40px">Box introuvable. <a href="mystery-box">Voir toutes les box →</a></p>'; return; }
+
+    document.title = b.name + " — My Candy's";
+    var badge = MC.badge ? MC.badge(b) : null;
+    var qty = 1;
+    var root = document.getElementById('bx');
+    root.innerHTML =
+      '<div class="bx-media"><div class="bx-imgwrap" style="background:' + (b.img ? '#fff' : (b.tint || '#FFE3F1')) + '">' +
+        (b.img ? '<img src="' + b.img + '" alt="' + MC.esc(b.name) + '">' : '<div class="mc-stripes"></div>') +
+        (b.ribbon ? '<span class="bx-ribbon">' + b.ribbon + '</span>' : '') +
+      '</div></div>' +
+      '<div class="bx-info">' +
+        '<div class="bx-eyebrow">🎁 Mystery Box My Candy\'s</div>' +
+        '<h1 class="bx-title">' + MC.esc(b.name) + '</h1>' +
+        '<div class="bx-stars"><span class="s">★★★★★</span><span>4,8 · (' + (b.reviews || 0) + ' avis)</span></div>' +
+        (b.worth ? '<div class="bx-worth">🎯 ' + b.worth + '</div>' : '') +
+        '<p class="bx-desc">' + (b.desc || '') + '</p>' +
+        '<div class="bx-price"><span class="bx-now">' + MC.money(b.price) + '</span>' +
+          (b.old ? '<span class="bx-old">' + MC.money(b.old) + '</span>' : '') +
+          (badge ? '<span class="bx-badge" style="background:' + badge.bg + ';color:' + badge.color + '">' + badge.text + '</span>' : '') +
+        '</div>' +
+        '<div class="bx-unit">' + (b.old ? '💸 Tu économises ' + MC.money(b.old - b.price) + ' · ' : '') + 'TVA incluse · Livraison offerte dès 39 €</div>' +
+        '<div class="bx-buy">' +
+          '<div class="bx-step"><button id="bx-dec" aria-label="Diminuer"></button><span id="bx-qty">1</span><button id="bx-inc" aria-label="Augmenter"></button></div>' +
+          '<button class="bx-add" id="bx-add">🛒 Ajouter au panier — ' + MC.money(b.price) + '</button>' +
+        '</div>' +
+        '<div class="bx-reassure">' +
+          '<div class="bx-reass"><span>🎯</span><div>Valeur > prix<br>garanti</div></div>' +
+          '<div class="bx-reass"><span>🚚</span><div>Expédié<br>sous 24h</div></div>' +
+          '<div class="bx-reass"><span>🔒</span><div>Paiement<br>sécurisé</div></div>' +
+        '</div>' +
+        '<div class="bx-note">Contenu 100&nbsp;% surprise, différent à chaque box · valeur des produits toujours supérieure au prix payé · adaptable aux allergies (indique-le en commentaire de commande).</div>' +
+      '</div>';
+
+    function refresh() {
+      document.getElementById('bx-qty').textContent = qty;
+      document.getElementById('bx-add').textContent = '🛒 Ajouter au panier — ' + MC.money(b.price * qty);
+    }
+    document.getElementById('bx-inc').addEventListener('click', function () { if (qty < 20) { qty++; refresh(); } });
+    document.getElementById('bx-dec').addEventListener('click', function () { qty = Math.max(1, qty - 1); refresh(); });
+    document.getElementById('bx-add').addEventListener('click', function () {
+      MCCart.add({ id: b.id, name: b.name, price: b.price, tint: b.tint, old: b.old, img: b.img }, qty);
+      if (window.MCui && MCui.toast) MCui.toast(b.name + ' ajouté au panier 🛒');
+    });
+
+    // SEO : données structurées Product (prix)
+    try {
+      var ld = { "@context": "https://schema.org", "@type": "Product", "name": b.name, "image": [b.img ? ('https://mycandys.fr/' + String(b.img).replace(/^\//, '')) : ''], "description": (b.desc || '').replace(/<[^>]+>/g, ''), "sku": b.id, "brand": { "@type": "Brand", "name": "My Candy's" }, "offers": { "@type": "Offer", "priceCurrency": "EUR", "price": Number(b.price).toFixed(2), "availability": "https://schema.org/InStock", "url": "https://mycandys.fr/box?id=" + b.id } };
+      var s = document.createElement('script'); s.type = 'application/ld+json'; s.textContent = JSON.stringify(ld); document.head.appendChild(s);
+      var can = document.head.querySelector('link[rel="canonical"]'); if (can) can.setAttribute('href', 'https://mycandys.fr/box?id=' + b.id);
+    } catch (e) {}
+  }
+  if (window.MC && MC.BOXES) render();
+  else window.addEventListener('DOMContentLoaded', render);
+  window.addEventListener('mc-catalog-updated', render);
+})();
+</script>
+</body>
+</html>

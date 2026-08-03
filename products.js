@@ -868,21 +868,25 @@ window.MC = window.MC || {};
   })();
 
   MC.BOXES = [
-    { id:'box-blue', name:'Blue Box', price:24.90, old:34.90, reviews:406, tint:T.cyan, box:true, img:'assets/boxes/blue.jpg',
+    { id:'box-blue', name:'Blue Box', price:29.90, old:39.90, reviews:406, tint:T.cyan, box:true, img:'assets/boxes/blue.jpg',
       ribbon:'ALL BLUE 💙', pop:false,
       desc:'La box 100&nbsp;% bleue : une sélection surprise de nos meilleures pépites <b>blue</b> — du sucré acidulé au pétillant givré. All blue, all good.',
       worth:'Valeur toujours supérieure au prix payé' },
-    { id:'box-pink', name:'Pink Box', price:24.90, old:34.90, reviews:1011, tint:T.pink, box:true, img:'assets/boxes/pink.jpg',
+    { id:'box-pink', name:'Pink Box', price:29.90, old:39.90, reviews:1011, tint:T.pink, box:true, img:'assets/boxes/pink.jpg',
       ribbon:'LA PLUS POP', pop:true,
       desc:'<b>Sweet, pink &amp; fun</b> : une sélection surprise girly et gourmande, toute en douceur et en couleurs pastel. Le combo cute + délicieux à unboxer.',
       worth:'Valeur toujours supérieure au prix payé' },
-    { id:'box-hot', name:'Hot Box', price:27.90, old:39.90, reviews:512, tint:T.red, box:true, img:'assets/boxes/hot.jpg',
+    { id:'box-hot', name:'Hot Box', price:32.90, old:44.90, reviews:512, tint:T.red, box:true, img:'assets/boxes/hot.jpg',
       ribbon:'CHALLENGE 🔥', pop:false,
       desc:'<b>Can you handle the heat&nbsp;?</b> La box défi : une sélection surprise de nos snacks les plus piquants, pour te faire transpirer (et adorer ça).',
       worth:'Valeur toujours supérieure au prix payé' },
-    { id:'box-maxi', name:'Maxi Box', price:34.90, old:49.90, reviews:284, tint:T.purple, box:true, img:'assets/boxes/maxi.jpg',
-      ribbon:'LA PLUS GÉNÉREUSE', pop:false,
-      desc:'La grande box du monde entier : un <b>max</b> de bonbons, snacks et sodas viraux surprises, pour se régaler à plusieurs. Comme la Méga, en un peu plus léger (et moins cher).',
+    { id:'box-anti-gaspi', name:'Box Anti-Gaspi', price:24.90, old:39.90, reviews:284, tint:T.green, box:true, img:'assets/boxes/maxi.jpg',
+      ribbon:'ANTI-GASPI ♻️', pop:false,
+      desc:'La box maligne : une grosse sélection surprise à <b>prix mini</b>, pour se régaler sans rien gaspiller. Un max de bonbons, snacks et sodas pour bien plus que leur valeur. ♻️',
+      worth:'Valeur toujours supérieure au prix payé' },
+    { id:'box-mega', name:'Méga Box', price:59.90, old:84.90, reviews:730, tint:T.pink, box:true, img:'assets/boxes/mega.png',
+      ribbon:'ULTIME 🏆', pop:true,
+      desc:'La box <b>ultime</b> : notre plus grosse sélection surprise, débordante de pépites du monde entier. Le colis parfait à unboxer.',
       worth:'Valeur toujours supérieure au prix payé' }
   ];
 

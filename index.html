@@ -141,11 +141,12 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .mc-myst-giftbox small{font-family:ui-monospace,Menlo,monospace;font-size:11px;opacity:.85}
 .mc-myst-body{flex:1;min-width:280px}
 .mc-myst-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
-.mc-mbox{background:#FFF7EE;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:0 8px 18px rgba(122,14,74,.1)}
-.mc-mbox-img{position:relative;height:104px}
+.mc-mbox{background:#FFF7EE;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:0 8px 18px rgba(122,14,74,.1);text-decoration:none;color:inherit;cursor:pointer;transition:transform .18s,box-shadow .18s}
+.mc-mbox:hover{transform:translateY(-4px);box-shadow:0 16px 30px rgba(122,14,74,.18)}
+.mc-mbox-img{position:relative;height:150px;background:#fff}
 .mc-mbox-body{padding:11px 12px 12px;display:flex;flex-direction:column;flex:1}
 .mc-mbox-body b{font-weight:700;font-size:14px;line-height:1.15}
-.mc-mbox-add{margin-top:10px;width:100%;background:#2A0A1C;color:#fff;font-weight:600;font-size:12.5px;padding:9px;border-radius:11px}
+.mc-mbox-add{display:block;text-align:center;margin-top:auto;width:100%;background:#2A0A1C;color:#fff;font-weight:600;font-size:12.5px;padding:9px;border-radius:11px}
 .mc-mbox-add:hover{background:#E01784}
 .mc-white-h{color:#fff}
 .mc-rev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
@@ -207,7 +208,7 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 <!-- Hero carrousel -->
 <div class="mc-hero" id="mc-hero">
   <div class="mc-hero-track" id="mc-hero-track">
-    <a href="mystery-box"><picture><source media="(max-width:768px)" srcset="assets/banners/box-anti-gaspi-mobile.png"><img src="assets/banners/box-anti-gaspi.png" alt="My Candy's — Box Anti-Gaspi" fetchpriority="high"></picture></a>
+    <a href="box?id=box-anti-gaspi"><picture><source media="(max-width:768px)" srcset="assets/banners/box-anti-gaspi-mobile.png"><img src="assets/banners/box-anti-gaspi.png" alt="My Candy's — Box Anti-Gaspi" fetchpriority="high"></picture></a>
     <a href="boutique?c=promos"><picture><source media="(max-width:768px)" srcset="assets/banners/promo-site-mobile.png"><img src="assets/banners/promo-site.png" alt="-26% sur tout le site — Code Candysummer26" loading="lazy"></picture></a>
     <a href="boutique?c=nouveautes"><picture><source media="(max-width:768px)" srcset="assets/banners/kinder-minecraft-mobile.png"><img src="assets/banners/kinder-minecraft.png" alt="Kinder Joy Minecraft — 28 surprises à collectionner" loading="lazy"></picture></a>
   </div>
@@ -285,7 +286,7 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 <!-- Mystery Box -->
 <section id="mystery" style="max-width:1220px;margin:0 auto;padding:34px 22px 10px">
   <div class="mc-myst">
-    <div class="mc-myst-gift"><img src="assets/boxes/mega.jpg" alt="Méga Box My Candy's — pleine de snacks viraux" class="mc-myst-photo" loading="lazy" decoding="async"></div>
+    <div class="mc-myst-gift"><img src="assets/boxes/mega.png" alt="Méga Box My Candy's — pleine de snacks" class="mc-myst-photo" loading="lazy" decoding="async"></div>
     <div class="mc-myst-body">
       <h2 class="mc-h2" style="font-size:36px">Nos Mystery Box 🎉</h2>
       <p style="font-size:16px;color:#7A5468;margin:10px 0 0;max-width:460px">Le mélange ultime de nos univers : bonbons, sodas et snacks viraux du monde entier, pour bien plus que leur valeur. Le cadeau parfait à unboxer sur les réseaux.</p>
@@ -342,12 +343,12 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
   });
   fill('mc-boxes', MC.BOXES.slice(0, 3).map(function (p) {
     var b = MC.badge(p);
-    return '<div class="mc-mbox"><div class="mc-mbox-img" style="background:#fff">' + (p.img ? '<img src="' + p.img + '" alt="' + MC.esc(p.name) + '" loading="lazy" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain">' : '<div class="mc-stripes"></div>') +
+    return '<a class="mc-mbox" href="box?id=' + p.id + '"><div class="mc-mbox-img" style="background:#fff">' + (p.img ? '<img src="' + p.img + '" alt="' + MC.esc(p.name) + '" loading="lazy" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain">' : '<div class="mc-stripes"></div>') +
       '<div class="mc-price" style="top:10px;left:10px;font-size:13px;padding:5px 11px">' + MC.money(p.price) + '</div>' +
       (b ? '<span class="mc-badge" style="bottom:8px;background:' + b.bg + ';color:' + b.color + '">' + b.text + '</span>' : '') +
       '</div><div class="mc-mbox-body"><b>' + MC.esc(p.name) + '</b>' +
       (p.old ? '<div class="mc-old" style="margin-top:2px">' + MC.money(p.old) + '</div>' : '') +
-      '<button class="mc-mbox-add" data-add="' + p.id + '">Ajouter</button></div></div>';
+      '<span class="mc-mbox-add">Découvrir →</span></div></a>';
   }).join(''));
   var one = MC.LOGOS.map(function (l) { return '<a class="mc-mqlogo" href="' + l.href + '" title="Voir ' + MC.esc(l.name) + '"><img src="' + l.src + '" alt="' + MC.esc(l.name) + '" decoding="async"></a>'; }).join('');
   // Précharge les logos pour que la marquee défile déjà chargée (pas de "pop-in")

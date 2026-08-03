@@ -740,10 +740,11 @@ const BASE_PRICES = {
   'monstre-munich-original-85g': 2.99,
   'brets-cheddar-jalapeno-125g': 3.49,
   'cheetos-hands-barbecue-75g': 2.99,
-  'box-blue': 24.90,
-  'box-pink': 24.90,
-  'box-hot': 27.90,
-  'box-maxi': 34.90
+  'box-blue': 29.90,
+  'box-pink': 29.90,
+  'box-hot': 32.90,
+  'box-anti-gaspi': 24.90,
+  'box-mega': 59.90
 };
 /* Frais de port (identiques à checkout) : coût de base + seuil de gratuité. */
 const SHIP = { relais: { cost: 4.90, free: 39 }, domicile: { cost: 6.90, free: 59 } };
