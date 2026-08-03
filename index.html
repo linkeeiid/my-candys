@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>My Candy's — Bonbons & snacks viraux du monde entier</title>
 <meta name="description" content="L'épicerie des snacks viraux du monde entier : bonbons US, sodas, Takis, Prime, Monster, Mystery Box… Livraison en France. Franchise née à Lyon. -26% avec le code Candysummer26.">
-<meta name="theme-color" content="#FF2E9A">
+<meta name="theme-color" content="#ffffff">
 <link rel="icon" href="assets/logo.png">
 <link rel="canonical" href="https://mycandys.fr/">
 <!-- Open Graph -->
@@ -194,6 +194,8 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
   .mc-h2{font-size:24px}.mc-k{font-size:17px}
   .mc-myst{flex-direction:column;padding:18px;gap:16px}
   .mc-myst-gift{width:100%}
+  /* Méga box : pas d'animation flottante sur mobile (évite les saccades GPU sur iPhone) */
+  .mc-myst-photo{animation:none}
   /* Mystery Box mobile : 1 box par ligne, carte horizontale (image gauche / infos droite) */
   .mc-myst-grid{grid-template-columns:1fr;gap:14px}
   .mc-mbox{flex-direction:row}
