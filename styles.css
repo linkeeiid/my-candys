@@ -1,6 +1,6 @@
 /* My Candy's — styles partagés (habillage commun à toutes les pages) */
 *{box-sizing:border-box}
-html{scroll-behavior:smooth;overflow-x:clip}
+html{scroll-behavior:smooth;overflow-x:clip;background:#1c0512}
 body{margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#2A0A1C;background:#E9F5FB;-webkit-font-smoothing:antialiased;overflow-x:clip}
 a{color:#E01784;text-decoration:none}
 img{display:block;max-width:100%}
@@ -200,12 +200,12 @@ h1,h2,h3{font-weight:800;letter-spacing:-.5px;margin:0}
 
 /* ---------- Footer ---------- */
 .mc-footer{background:#1c0512;color:#fff;margin-top:-1px}
-.mc-foot{max-width:1220px;margin:0 auto;padding:52px max(22px,env(safe-area-inset-right)) 30px max(22px,env(safe-area-inset-left));display:flex;gap:40px;flex-wrap:wrap}
+.mc-foot{max-width:1220px;margin:0 auto;padding:32px max(22px,env(safe-area-inset-right)) 22px max(22px,env(safe-area-inset-left));display:flex;gap:36px;flex-wrap:wrap}
 .mc-fbrand{flex:1;min-width:260px}
-.mc-fbrand-logo{background:#fff;border-radius:16px;padding:12px 14px;display:inline-block}
-.mc-fbrand-logo img{height:46px;width:auto}
-.mc-fbrand p{color:#D9AEC4;font-size:14px;line-height:1.6;margin:16px 0 0;max-width:300px}
-.mc-fsocial{display:flex;gap:10px;margin-top:18px}
+.mc-fbrand-logo{display:inline-block;line-height:0}
+.mc-fbrand-logo img{height:52px;width:auto}
+.mc-fbrand p{color:#D9AEC4;font-size:13.5px;line-height:1.55;margin:12px 0 0;max-width:300px}
+.mc-fsocial{display:flex;gap:10px;margin-top:14px}
 .mc-fsocial a{width:40px;height:40px;border-radius:12px;background:#3D1329;display:flex;align-items:center;justify-content:center;font-size:18px;transition:background .15s}
 .mc-fsocial a:hover{background:#FF2E9A}
 .mc-fcol{flex:none;min-width:150px}
@@ -214,7 +214,7 @@ h1,h2,h3{font-weight:800;letter-spacing:-.5px;margin:0}
 .mc-fcol-links a{color:#D9AEC4}
 .mc-fcol-links a:hover{color:#fff}
 .mc-fbarwrap{border-top:1px solid #3D1329}
-.mc-fbar{max-width:1220px;margin:0 auto;padding:20px 22px;display:flex;gap:16px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.mc-fbar{max-width:1220px;margin:0 auto;padding:13px 22px;display:flex;gap:16px;justify-content:space-between;align-items:center;flex-wrap:wrap}
 .mc-fbar > div:first-child{color:#B78AA0;font-size:13px}
 .mc-fpay{display:flex;gap:7px;flex-wrap:wrap}
 .mc-fpay span{background:#fff;color:#1a1a1a;font-weight:700;font-size:10.5px;padding:5px 8px;border-radius:6px}
@@ -249,7 +249,7 @@ h1,h2,h3{font-weight:800;letter-spacing:-.5px;margin:0}
   .mc-tl{font-size:8px}
   .mc-tsep{font-size:14px;margin-top:-6px}
   .mc-code{font-size:10.5px;padding:5px 11px;border-radius:9px}
-  .mc-foot{padding:40px 20px 24px;gap:26px 14px;text-align:center}
+  .mc-foot{padding:26px 20px 18px;gap:22px 14px;text-align:center}
   .mc-fbrand{flex-basis:100%;text-align:center}
   .mc-fbrand p{margin-left:auto;margin-right:auto}
   .mc-fsocial{justify-content:center}

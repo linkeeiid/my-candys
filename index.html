@@ -343,7 +343,7 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
   });
   fill('mc-boxes', MC.BOXES.slice(0, 3).map(function (p) {
     var b = MC.badge(p);
-    return '<a class="mc-mbox" href="box?id=' + p.id + '"><div class="mc-mbox-img" style="background:#fff">' + (p.img ? '<img src="' + p.img + '" alt="' + MC.esc(p.name) + '" loading="lazy" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain">' : '<div class="mc-stripes"></div>') +
+    return '<a class="mc-mbox" href="box?id=' + p.id + '"><div class="mc-mbox-img" style="background:#fff">' + (p.img ? '<img src="' + p.img + '" alt="' + MC.esc(p.name) + '" loading="lazy" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">' : '<div class="mc-stripes"></div>') +
       '<div class="mc-price" style="top:10px;left:10px;font-size:13px;padding:5px 11px">' + MC.money(p.price) + '</div>' +
       (b ? '<span class="mc-badge" style="bottom:8px;background:' + b.bg + ';color:' + b.color + '">' + b.text + '</span>' : '') +
       '</div><div class="mc-mbox-body"><b>' + MC.esc(p.name) + '</b>' +
