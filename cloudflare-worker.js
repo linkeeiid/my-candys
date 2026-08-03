@@ -842,13 +842,17 @@ async function brevoSendEmail(env, { toEmail, toName, subject, html, replyTo }) 
   });
 }
 
+/* En-tête logo des emails — URL absolue (obligatoire en email ; le domaine est en ligne). */
+function logoHdr() {
+  return '<div style="text-align:center;padding:4px 0 16px"><img src="https://mycandys.fr/assets/logo.png" alt="My Candy\'s" width="150" style="width:150px;max-width:62%;height:auto"></div>';
+}
 function orderEmailHtml(o) {
   var lines = (o.items || []).map(function (l) {
     return '<tr><td style="padding:4px 0">' + esc(l.name) + ' × ' + (l.qty || 1) + '</td>' +
            '<td style="padding:4px 0;text-align:right">' + money((l.price || 0) * (l.qty || 1)) + '</td></tr>';
   }).join('');
   var ship = o.shippingCost ? money(o.shippingCost) : 'Offerte';
-  return '<div style="font-family:Arial,sans-serif;color:#2A0A1C">' +
+  return '<div style="font-family:Arial,sans-serif;color:#2A0A1C">' + logoHdr() +
     '<h2 style="color:#E01784">Merci pour ta commande ! 🍬</h2>' +
     '<p>Paiement bien reçu. On prépare ton colis avec soin.</p>' +
     '<p style="font-size:13px;color:#8A6076">Commande <b>' + esc(o.reference || '') + '</b></p>' +
@@ -867,7 +871,7 @@ function shippingEmailHtml(o, tracking, carrier) {
   var CARRIERS = { laposte: 'Colissimo / La Poste', mondialrelay: 'Mondial Relay', chronopost: 'Chronopost', ups: 'UPS', dhl: 'DHL', autre: 'Transporteur' };
   var cname = CARRIERS[carrier] || 'Transporteur';
   var link = 'https://mycandys.fr/suivi-commande.html?num=' + encodeURIComponent(tracking || '') + (carrier ? '&carrier=' + encodeURIComponent(carrier) : '');
-  return '<div style="font-family:Arial,sans-serif;color:#2A0A1C">' +
+  return '<div style="font-family:Arial,sans-serif;color:#2A0A1C">' + logoHdr() +
     '<h2 style="color:#E01784">Ton colis est en route ! 🚚</h2>' +
     '<p>Bonne nouvelle : ta commande <b>' + esc(o.reference || '') + '</b> vient d\'être expédiée.</p>' +
     '<table style="width:100%;border-collapse:collapse;font-size:14px;margin:10px 0">' +
@@ -879,7 +883,7 @@ function shippingEmailHtml(o, tracking, carrier) {
 
 /* Email de bienvenue newsletter — code -10% (BIENVENUE10) valable sur la 1re commande. */
 function welcomeEmailHtml() {
-  return '<div style="font-family:Arial,sans-serif;color:#2A0A1C">' +
+  return '<div style="font-family:Arial,sans-serif;color:#2A0A1C">' + logoHdr() +
     '<h2 style="color:#E01784">Bienvenue chez My Candy\'s ! 🍬</h2>' +
     '<p>Merci de rejoindre la famille ! Tu seras au premier rang pour les <b>nouveautés</b>, les <b>drops</b> et les <b>méga-promos</b>.</p>' +
     '<p>Et comme promis, voici ton cadeau de bienvenue :</p>' +
