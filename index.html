@@ -343,9 +343,11 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 (function () {
   function fill(id, html) { var el = document.getElementById(id); if (el) el.innerHTML = html; }
   var P = MC.PRODUCTS;
-  fill('row-brand', P.filter(function (p) { return p.brand; }).map(MC.card).join(''));
-  fill('row-best', P.filter(function (p) { return p.best; }).map(MC.card).join(''));
-  fill('row-new', P.filter(function (p) { return p.nouveau; }).map(MC.card).join(''));
+  // ⚠️ Carrousels limités : sans .slice() « row-brand » rendait ~700 produits (≈700 images)
+  // → crash mémoire sur iPhone (iOS Safari tue l'onglet). 24 par carrousel suffit largement.
+  fill('row-brand', P.filter(function (p) { return p.brand; }).slice(0, 24).map(MC.card).join(''));
+  fill('row-best', P.filter(function (p) { return p.best; }).slice(0, 24).map(MC.card).join(''));
+  fill('row-new', P.filter(function (p) { return p.nouveau; }).slice(0, 24).map(MC.card).join(''));
   // Les 1res images de chaque carrousel : chargement IMMÉDIAT (pas "lazy") pour qu'elles
   // soient déjà présentes dès qu'on arrive dessus (fini le carrousel blanc qui apparaît en retard).
   document.querySelectorAll('.mc-prow').forEach(function (row) {
