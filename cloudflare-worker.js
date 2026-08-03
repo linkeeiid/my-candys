@@ -923,6 +923,12 @@ async function notifyNewOrder(env) {
   } catch (e) {}
 }
 
+/* Prénom seul (jamais le nom complet dans les emails) — 1er mot, capitalisé. */
+function firstName(n) {
+  n = String(n || '').trim(); if (!n) return '';
+  var f = n.split(/[\s]+/)[0];
+  return f.charAt(0).toUpperCase() + f.slice(1);
+}
 /* En-tête logo des emails — URL absolue (obligatoire en email ; le domaine est en ligne). */
 function logoHdr() {
   return '<div style="text-align:center;padding:4px 0 16px"><img src="https://mycandys.fr/assets/logo.png" alt="My Candy\'s" width="150" style="width:150px;max-width:62%;height:auto"></div>';
@@ -990,7 +996,7 @@ function welcomeEmailHtml() {
 /* Email de relance client (bouton « Relancer » du back-office) — code -10% TAGADA10. */
 function relanceEmailHtml(name) {
   return '<div style="font-family:Arial,sans-serif;color:#2A0A1C">' + logoHdr() +
-    '<h2 style="color:#E01784">Tu nous manques' + (name ? ', ' + esc(name) : '') + ' ! 🍬</h2>' +
+    '<h2 style="color:#E01784">Tu nous manques' + (name ? ', ' + esc(firstName(name)) : '') + ' ! 🍬</h2>' +
     '<p>Ça fait un moment… De nouveaux snacks viraux viennent d\'arriver chez My Candy\'s, et on t\'a gardé une petite douceur :</p>' +
     '<div style="text-align:center;margin:20px 0"><div style="display:inline-block;border:2px dashed #FF2E9A;border-radius:14px;padding:16px 28px"><div style="font-size:13px;color:#8A6076">-10% sur ta prochaine commande</div><div style="font-size:26px;font-weight:800;color:#E01784;letter-spacing:1px">TAGADA10</div></div></div>' +
     '<p style="text-align:center;margin:22px 0 6px"><a href="https://mycandys.fr/boutique" style="background:#E01784;color:#fff;text-decoration:none;font-weight:700;padding:13px 26px;border-radius:12px;display:inline-block">Je reviens faire le plein →</a></p>' +
@@ -1012,7 +1018,7 @@ async function finalizeOrder(env, reference, paymentIntent) {
   order.paid = true;
   if (isEmail(order.customer && order.customer.email)) {
     await brevoSendEmail(env, {
-      toEmail: order.customer.email, toName: order.customer.name,
+      toEmail: order.customer.email, toName: firstName(order.customer.name),
       subject: "Ta commande My Candy's 🍬 — " + reference, html: orderEmailHtml(order)
     });
   }
@@ -1111,7 +1117,7 @@ export default {
         const tierName = pct === 15 ? 'Platine 💎' : (pct === 10 ? 'Or 🥇' : 'Argent 🥈');
         const html = '<div style="font-family:Arial,sans-serif;color:#2A0A1C;max-width:520px;margin:auto">' + logoHdr() +
           '<div style="text-align:center;margin:0 0 8px"><span style="display:inline-block;background:#FFF1F8;color:#E01784;font-weight:800;font-size:12px;letter-spacing:.5px;padding:5px 12px;border-radius:999px">🎁 PALIER ' + tierName + '</span></div>' +
-          '<h2 style="color:#E01784;margin:0 0 6px;text-align:center">Bravo ' + esc(first || '') + ' ! 🎉</h2>' +
+          '<h2 style="color:#E01784;margin:0 0 6px;text-align:center">Bravo ' + esc(firstName(first)) + ' ! 🎉</h2>' +
           '<p style="font-size:15px;line-height:1.6;text-align:center">Tu viens d\'atteindre <b>' + pts + ' points</b> de fidélité My Candy\'s — tu débloques <b>-' + pct + '% sur ta prochaine commande.</b></p>' +
           '<p style="font-size:14px;margin:18px 0 8px;text-align:center">Ton code de réduction personnel :</p>' +
           '<div style="font-family:monospace;font-size:22px;font-weight:800;letter-spacing:2px;color:#E01784;background:#FFF1F8;border:2px dashed #F3A9D0;border-radius:12px;padding:14px;text-align:center">' + esc(code) + '</div>' +
@@ -1220,7 +1226,7 @@ export default {
         const res = await fbPush(env, 'orders', order);
         if (isEmail(order.customer.email)) {
           await brevoSendEmail(env, {
-            toEmail: order.customer.email, toName: order.customer.name,
+            toEmail: order.customer.email, toName: firstName(order.customer.name),
             subject: "Ta commande My Candy's 🍬", html: orderEmailHtml(order)
           });
         }
@@ -1243,7 +1249,7 @@ export default {
         if (isEmail(order.customer && order.customer.email)) {
           try {
             await brevoSendEmail(env, {
-              toEmail: order.customer.email, toName: order.customer.name,
+              toEmail: order.customer.email, toName: firstName(order.customer.name),
               subject: "Ton colis My Candy's est parti ! 🚚 — " + reference, html: shippingEmailHtml(order, tracking, carrier)
             });
             mailed = true;
@@ -1282,7 +1288,7 @@ export default {
         const email = str(body.email, 254); const name = str(body.name, 80);
         if (!isEmail(email)) return json({ ok: false, error: 'email_invalide' }, 400, allow);
         let mailed = false;
-        try { await brevoSendEmail(env, { toEmail: email, toName: name, subject: "On t'a gardé -10% chez My Candy's 🍬", html: relanceEmailHtml(name) }); mailed = true; } catch (e) {}
+        try { await brevoSendEmail(env, { toEmail: email, toName: firstName(name), subject: "On t'a gardé -10% chez My Candy's 🍬", html: relanceEmailHtml(name) }); mailed = true; } catch (e) {}
         return json({ ok: true, mailed: mailed }, 200, allow);
       }
 
