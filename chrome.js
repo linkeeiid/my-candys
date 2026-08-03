@@ -128,6 +128,7 @@
 
   var BOTTOM = '' +
   '<footer class="mc-footer">' +
+    '<div class="mc-fwave"><svg viewBox="0 0 1440 170" preserveAspectRatio="none"><path d="M0,60 C130,96 250,104 370,78 C500,50 600,22 720,40 C850,60 950,98 1080,92 C1210,86 1330,44 1440,64 L1440,170 L0,170 Z" fill="#1c0512"></path></svg></div>' +
     '<div class="mc-foot">' +
       '<div class="mc-fbrand">' +
         '<p>Retrouve tout le meilleur des snacks viraux du monde — bonbons US, sodas rares, éditions limitées — dans ton épicerie du monde en ligne. Franchise née à Lyon. 🍬</p>' +

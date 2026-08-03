@@ -200,6 +200,10 @@ h1,h2,h3{font-weight:800;letter-spacing:-.5px;margin:0}
 
 /* ---------- Footer ---------- */
 .mc-footer{background:#1c0512;color:#fff;margin-top:-1px}
+/* Vague de séparation en haut du footer (toutes les pages, comme l'accueil) */
+.mc-fwave{position:relative;line-height:0;pointer-events:none;margin-top:-64px;z-index:2}
+.mc-fwave svg{display:block;width:100%;height:66px}
+.mc-fwave + .mc-foot{padding-top:6px}
 .mc-foot{max-width:1220px;margin:0 auto;padding:22px max(22px,env(safe-area-inset-right)) 18px max(22px,env(safe-area-inset-left));display:flex;align-items:center;justify-content:space-between;gap:28px;flex-wrap:wrap}
 .mc-fbrand{flex:1 1 220px;min-width:200px}
 .mc-fbrand-logo{flex:none;display:inline-block;line-height:0}

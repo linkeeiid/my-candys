@@ -161,6 +161,8 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .mc-rev-track:hover{animation-play-state:paused}
 .mc-rev-track > div{display:flex;gap:16px;padding-right:16px}
 .mc-rev-track .mc-rev{flex:none;width:320px;white-space:normal}
+/* Fondu aux bords gauche/droit du bandeau d'avis (au lieu d'une coupe nette) */
+.mc-revwrap{-webkit-mask-image:linear-gradient(to right,transparent 0,#000 7%,#000 93%,transparent 100%);mask-image:linear-gradient(to right,transparent 0,#000 7%,#000 93%,transparent 100%)}
 .mc-news{background:#2A0A1C;border-radius:30px;padding:44px;text-align:center;color:#fff;position:relative;overflow:hidden}
 .mc-news form{margin:22px auto 0;display:flex;gap:10px;max-width:460px;flex-wrap:wrap;justify-content:center}
 .mc-news input{flex:1;min-width:220px;border:none;border-radius:14px;padding:15px 18px;font-size:15px;font-family:inherit;outline:none}
@@ -200,7 +202,9 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
   .mc-mbox-body b{font-size:17px}
   .mc-mbox-add{margin-top:12px;width:auto;align-self:flex-start;padding:11px 24px;font-size:14px}
   /* Avis : cartes pleine largeur pour occuper tout l'écran */
-  .mc-rev-track .mc-rev{width:calc(100vw - 44px)}
+  .mc-revwrap{-webkit-mask-image:none;mask-image:none;margin-left:-22px;margin-right:-22px}
+  .mc-rev-track > div{padding-left:12px;padding-right:12px;gap:12px}
+  .mc-rev-track .mc-rev{width:calc(100vw - 24px)}
   .mc-news{padding:28px 20px}
   .mc-news form{flex-direction:column}
   .mc-news input{min-width:0;width:100%}
@@ -313,11 +317,11 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
     <div class="mc-k mc-white-h" style="color:#fff">Vos avis parlent pour nous</div>
     <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-top:10px"><span style="font-weight:700;font-size:40px;color:#fff">4,8</span><div style="text-align:left"><div style="color:#FFD23F;font-size:20px;letter-spacing:2px">★★★★★</div><div style="font-size:13px;color:#fff;opacity:.9">sur 500 avis vérifiés</div></div></div>
   </div>
-  <div style="overflow:hidden;position:relative;margin-top:22px"><div class="mc-rev-track" id="mc-reviews"></div></div>
+  <div class="mc-revwrap" style="overflow:hidden;position:relative;margin-top:22px"><div class="mc-rev-track" id="mc-reviews"></div></div>
 </section>
 
 <!-- Newsletter -->
-<section style="max-width:1220px;margin:0 auto;padding:30px 22px 30px">
+<section style="max-width:1220px;margin:0 auto;padding:30px 22px 82px">
   <div class="mc-news">
     <div style="position:absolute;width:200px;height:200px;border-radius:50%;background:rgba(255,46,154,.28);top:-70px;left:8%;filter:blur(12px)"></div>
     <div style="position:absolute;width:160px;height:160px;border-radius:50%;background:rgba(34,211,228,.24);bottom:-60px;right:10%;filter:blur(12px)"></div>
@@ -331,7 +335,7 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
   </div>
 </section>
 
-<div class="mc-wave" style="margin-top:-88px"><svg viewBox="0 0 1440 170" preserveAspectRatio="none"><path d="M0,60 C130,96 250,104 370,78 C500,50 600,22 720,40 C850,60 950,98 1080,92 C1210,86 1330,44 1440,64 L1440,170 L0,170 Z" fill="#1c0512"></path></svg></div>
+<!-- vague du footer désormais fournie par chrome.js (.mc-fwave) pour toutes les pages -->
 
 <script src="cart-store.js"></script>
 <script src="products.js"></script>
