@@ -199,11 +199,13 @@ h1,h2,h3{font-weight:800;letter-spacing:-.5px;margin:0}
 .mc-toast.is-on{opacity:1;visibility:visible;transform:translate(-50%,0)}
 
 /* ---------- Footer ---------- */
-.mc-footer{background:#1c0512;color:#fff;margin-top:-1px}
+/* margin-top crée un ESPACE (fond de la page) au-dessus du footer : la vague y remonte
+   sans jamais recouvrir le contenu de la page (FAQ, sections, etc.). */
+.mc-footer{background:#1c0512;color:#fff;margin-top:96px}
 /* Vague de séparation en haut du footer (toutes les pages, comme l'accueil) */
-.mc-fwave{position:relative;line-height:0;pointer-events:none;margin-top:-64px;z-index:2}
-.mc-fwave svg{display:block;width:100%;height:66px}
-.mc-fwave + .mc-foot{padding-top:6px}
+.mc-fwave{position:relative;line-height:0;pointer-events:none;margin-top:-96px;z-index:2}
+.mc-fwave svg{display:block;width:100%;height:98px}
+.mc-fwave + .mc-foot{padding-top:4px}
 .mc-foot{max-width:1220px;margin:0 auto;padding:22px max(22px,env(safe-area-inset-right)) 18px max(22px,env(safe-area-inset-left));display:flex;align-items:center;justify-content:space-between;gap:28px;flex-wrap:wrap}
 .mc-fbrand{flex:1 1 220px;min-width:200px}
 .mc-fbrand-logo{flex:none;display:inline-block;line-height:0}
@@ -270,6 +272,9 @@ h1,h2,h3{font-weight:800;letter-spacing:-.5px;margin:0}
   .mc-fcol-links{gap:8px;font-size:12px}
   .mc-fbar{flex-direction:column;justify-content:center;text-align:center;gap:10px}
   .mc-fpay{justify-content:center}
+  .mc-footer{margin-top:54px}
+  .mc-fwave{margin-top:-54px}
+  .mc-fwave svg{height:56px}
 }
 @media (max-width:400px){
   .mc-actions{gap:1px}
