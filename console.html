@@ -388,11 +388,8 @@
       <button class="navlink" data-view="clients"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0112 0"/><path d="M16 5.5a3 3 0 010 5.8M21 20a6 6 0 00-4-5.6"/></svg> Clients</button>
       <button class="navlink" data-view="loyalty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 3.2l2.5 5.1 5.6.8-4 3.9 1 5.6L12 16l-5 2.6 1-5.6-4-3.9 5.6-.8z"/></svg> Fidélité</button>
       <button class="navlink" data-view="reviews"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8 8 0 01-11.5 7.2L3 20.5l1.8-4.9A8 8 0 1121 11.5z"/><path d="M8.5 11h7M8.5 8h4"/></svg> Avis</button>
-      <div class="grp">Système</div>
-      <button class="navlink" data-view="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v2.6M12 18.9v2.6M4.6 4.6l1.9 1.9M17.5 17.5l1.9 1.9M2.5 12h2.6M18.9 12h2.6M4.6 19.4l1.9-1.9M17.5 6.5l1.9-1.9"/></svg> Réglages</button>
     </nav>
     <div class="side-foot">
-      <div class="conn"><div class="r1"><span class="d"></span> SumUp POS</div><div class="r2">En attente de la clé API</div></div>
       <div class="userchip"><div class="av">GR</div><div class="ut"><div class="n">Gérant</div><div class="s">My Candy's</div></div></div>
     </div>
   </aside>
@@ -462,31 +459,6 @@
       <!-- ===== BOÎTE DE RÉCEPTION ===== -->
       <section class="view" id="view-inbox">
         <div id="inbox-root"></div>
-      </section>
-
-      <!-- ===== SETTINGS ===== -->
-      <section class="view" id="view-settings">
-        <div class="setgrid">
-          <div class="card"><div class="card-h"><h3>Connexion caisse</h3></div><div class="card-b">
-            <div class="srow"><div class="st"><div class="t">SumUp POS</div><div class="d">Source du stock &amp; des ventes boutique</div></div><span class="rt badge-soft b-wait">⏳ En attente de la clé</span></div>
-            <div class="field"><input value="Clé API SumUp — à récupérer en boutique" disabled></div>
-            <div class="srow"><div class="st"><div class="t">Synchronisation automatique</div><div class="d">Webhook product.stock_updated → site</div></div><span class="rt switch" id="sw-sync"></span></div>
-          </div></div>
-          <div class="card"><div class="card-h"><h3>Notifications client</h3></div><div class="card-b">
-            <div class="srow"><div class="st"><div class="t">E-mail de suivi (Brevo)</div><div class="d">Prévenir le client à l'expédition</div></div><span class="rt switch" id="sw-mail"></span></div>
-            <div class="srow"><div class="st"><div class="t">Expéditeur</div><div class="d">Nom affiché dans l'e-mail</div></div><span class="rt" style="font-weight:700;font-size:.82rem">My Candy's 🍬</span></div>
-            <div class="srow"><div class="st"><div class="t">Alerte stock bas</div><div class="d">M'avertir en dessous de 3 unités</div></div><span class="rt switch" id="sw-alert"></span></div>
-          </div></div>
-          <div class="card"><div class="card-h"><h3>Paiement en ligne</h3></div><div class="card-b">
-            <div class="srow"><div class="st"><div class="t">Encaissement</div><div class="d">Sans frais fixe · ~1,5 % par vente</div></div><span class="rt badge-soft b-on">Prêt à connecter</span></div>
-            <div class="srow"><div class="st"><div class="t">Devise</div></div><span class="rt" style="font-weight:700;font-size:.82rem">EUR (€)</span></div>
-          </div></div>
-          <div class="card"><div class="card-h"><h3>Boutique</h3></div><div class="card-b">
-            <div class="srow"><div class="st"><div class="t">Enseigne</div></div><span class="rt" style="font-weight:700;font-size:.82rem">My Candy's</span></div>
-            <div class="srow"><div class="st"><div class="t">Catalogue</div><div class="d">Références suivies en stock</div></div><span class="rt" style="font-weight:700;font-size:.82rem" id="setRefs">—</span></div>
-            <div class="srow"><div class="st"><div class="t">Mode</div><div class="d">Données fictives de démonstration</div></div><span class="rt badge-soft b-wait">Démo</span></div>
-          </div></div>
-        </div>
       </section>
 
       <!-- ===== STATISTIQUES ===== -->
@@ -822,9 +794,6 @@
     fetch(MCAPI+'/order/ship',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+ADMINKEY},body:JSON.stringify({reference:ref,tracking:num,carrier:car})}).then(function(r){return r.json();}).then(function(d){if(d&&d.ok){toast('📧 Client prévenu — '+ref+' expédiée','good');loadReal();}else{btn.disabled=false;btn.textContent='📦 Expédié & prévenir';toast('Erreur : '+((d&&d.error)||'?'),'warn');}}).catch(function(){btn.disabled=false;btn.textContent='📦 Expédié & prévenir';toast('Erreur réseau','warn');});}
   function toggleOrder(id){if(openSet[id])delete openSet[id];else openSet[id]=true;var el=$('orders').querySelector('[data-order="'+id+'"]');if(el)el.classList.toggle('open');}
 
-  /* ---------- settings ---------- */
-  function renderSettings(){$('setRefs').textContent=CATALOG.length+' références';}
-
   /* ---------- PRODUITS ---------- */
   /* ====== PRODUITS — catalogue réel connecté (Firebase via Worker) ====== */
   var MCAPI='https://my-candys-api.halimjeremy.workers.dev';
@@ -912,7 +881,8 @@
       : (p.price!=null?'Pas de promo. Prix actuel : '+money(p.price)+'.':'Renseigne d\'abord un prix pour ce produit.');
     var subOpts='<option value="">— Automatique (mots-clés) —</option>'+SUBKEYS.map(function(k){return '<option value="'+k+'"'+(p.sub===k?' selected':'')+'>'+esc(SUBLABELS[k])+'</option>';}).join('');
     openModal('Fiche — '+p.name,
-      '<form><div style="display:flex;gap:1.1rem;flex-wrap:wrap;align-items:flex-start"><div style="text-align:center">'+prev+(canEdit?'<div style="margin-top:.5rem"><button type="button" class="btn btn-ghost pFile" style="font-size:.74rem;padding:.35rem .6rem">📷 Choisir un fichier</button></div><input type="file" accept="image/*" class="pFileIn" style="display:none">':'')+'</div>'+
+      '<form>'+(canEdit?'<div class="form-row"><label>Nom du produit</label><input name="pname" value="'+esc(p.name||'')+'" placeholder="Nom du produit…"></div>':'<div class="form-row"><label>Nom du produit</label><input value="'+esc(p.name||'')+'" disabled></div>')+
+      '<div style="display:flex;gap:1.1rem;flex-wrap:wrap;align-items:flex-start"><div style="text-align:center">'+prev+(canEdit?'<div style="margin-top:.5rem"><button type="button" class="btn btn-ghost pFile" style="font-size:.74rem;padding:.35rem .6rem">📷 Choisir un fichier</button></div><input type="file" accept="image/*" class="pFileIn" style="display:none">':'')+'</div>'+
       '<div style="flex:1;min-width:210px"><div class="form-row"><label>Description</label><textarea name="desc" rows="4"'+lock+' style="width:100%;resize:vertical;font-family:inherit;border:1px solid var(--line);border-radius:9px;padding:.55rem .7rem;font-size:.85rem" placeholder="Décris le produit en une ou deux phrases…">'+esc(p.desc||'')+'</textarea></div>'+
       '<div class="form-row"><label>URL de la photo</label><input name="img" value="'+esc(p.img||'')+'"'+lock+' placeholder="Coller une URL d\'image…"></div>'+
       '<div class="form-row"><label>Sous-catégorie (rayon boutique)</label><select class="pin pSubSel"'+lock+'>'+subOpts+'</select><div style="font-size:.72rem;color:var(--muted);margin-top:.25rem">Forcer un rayon précis (prime sur la détection automatique).</div></div></div></div>'+
@@ -922,7 +892,7 @@
         (canEdit?'<div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:flex-end"><div class="form-row" style="margin:0"><label>Prix promo (€)</label><input class="pin pPromoIn" type="number" step="0.01" min="0" value="'+(inPromo&&p.price!=null?p.price:'')+'" placeholder="ex. 1.99" style="width:120px"></div><button type="button" class="btn btn-primary pPromoApply" style="padding:.5rem .85rem;font-size:.8rem">'+(inPromo?'Mettre à jour':'Mettre en promo')+'</button>'+(inPromo?'<button type="button" class="btn btn-ghost pPromoRemove" style="padding:.5rem .85rem;font-size:.8rem">Retirer la promo</button>':'')+'</div>':'')+
       '</div>'+
       (canEdit?'<button class="btn btn-primary" type="submit" style="width:100%;justify-content:center;margin-top:.7rem">Enregistrer la fiche</button>':'<p style="font-size:.8rem;color:var(--muted);margin:.7rem 0 0">🔒 Active l\'édition pour modifier la fiche.</p>')+'</form>',
-      function(f){if(!canEdit)return;pSave(id,{desc:f.desc.value.trim(),img:f.img.value.trim()},function(ok){if(ok){closeModal();renderProducts();toast('Fiche enregistrée ✓','good');}});});
+      function(f){if(!canEdit)return;var nm=(f.pname?f.pname.value.trim():'');var patch={desc:f.desc.value.trim(),img:f.img.value.trim()};if(nm)patch.name=nm;pSave(id,patch,function(ok){if(ok){closeModal();renderProducts();toast('Fiche enregistrée ✓','good');}});});
     if(canEdit){var fb=$('modalBody').querySelector('.pFile'),fin=$('modalBody').querySelector('.pFileIn');
       if(fb)fb.addEventListener('click',function(){fin.click();});
       if(fin)fin.addEventListener('change',function(){var file=fin.files[0];if(!file)return;fb.textContent='Compression…';pResize(file,function(data){fb.textContent='📷 Choisir un fichier';if(!data){toast('Image illisible','warn');return;}var im=$('modalBody').querySelector('[name=img]');if(im)im.value=data;var pv=$('modalBody').querySelector('img');if(pv)pv.src=data;toast('Photo prête — clique Enregistrer');});});
@@ -1089,7 +1059,7 @@
   /* ---------- render orchestration ---------- */
   function refresh(){renderStock();renderOrders();
     if(curView==='dash')renderDash();else if(curView==='stats')renderStats();else if(curView==='clients')renderClients();else if(curView==='products')renderProducts();else if(curView==='restock')renderRestock();else if(curView==='reports')renderReports();}
-  function renderAll(){renderStock();renderOrders();renderInbox();renderDash();renderSettings();renderProducts();renderStats();renderClients();renderPromos();renderRestock();renderReports();renderLoyalty();renderReviews();}
+  function renderAll(){renderStock();renderOrders();renderInbox();renderDash();renderProducts();renderStats();renderClients();renderPromos();renderRestock();renderReports();renderLoyalty();renderReviews();}
 
   /* ---------- journal / toast ---------- */
   function clearLog(){$('log').innerHTML='<div class="empty">En attente d\'une première opération…</div>';$('logCnt').textContent='';}
@@ -1104,7 +1074,7 @@
 
   /* ---------- routing ---------- */
   var curView='dash';
-  var TITLES={dash:['Tableau de bord','Vue d\'ensemble de l\'activité'],stats:['Statistiques','Analyse des ventes et du catalogue'],products:['Produits','Gérer le catalogue de la boutique'],stock:['Stock & synchro','Réconciliation caisse ↔ site en temps réel'],orders:['Commandes','Traiter et expédier les commandes en ligne'],clients:['Clients','Fichier clients et historique'],inbox:['Boîte de réception','Inscrits newsletter & messages de contact'],promos:['Promotions','Codes de réduction et campagnes'],restock:['Réapprovisionnement','Ce qu\'il faut recommander aux fournisseurs'],reports:['Rapports & export','Bilans, exports comptables et clôture'],loyalty:['Fidélité','Programme de points et paliers'],reviews:['Avis clients','Modérer les avis produits'],settings:['Réglages','Connexions et préférences']};
+  var TITLES={dash:['Tableau de bord','Vue d\'ensemble de l\'activité'],stats:['Statistiques','Analyse des ventes et du catalogue'],products:['Produits','Gérer le catalogue de la boutique'],stock:['Stock & synchro','Réconciliation caisse ↔ site en temps réel'],orders:['Commandes','Traiter et expédier les commandes en ligne'],clients:['Clients','Fichier clients et historique'],inbox:['Boîte de réception','Inscrits newsletter & messages de contact'],promos:['Promotions','Codes de réduction et campagnes'],restock:['Réapprovisionnement','Ce qu\'il faut recommander aux fournisseurs'],reports:['Rapports & export','Bilans, exports comptables et clôture'],loyalty:['Fidélité','Programme de points et paliers'],reviews:['Avis clients','Modérer les avis produits']};
   function setView(v){
     curView=v;
     document.querySelectorAll('.navlink').forEach(function(n){n.classList.toggle('active',n.getAttribute('data-view')===v);});
@@ -1195,8 +1165,6 @@
   function startAuto(){autoOn=true;autoBtn.textContent='⏸ Arrêter la démo';autoBtn.classList.add('live-on');tickAuto();autoTimer=setInterval(tickAuto,2200);}
   function stopAuto(){autoOn=false;if(autoTimer){clearInterval(autoTimer);autoTimer=null;}autoBtn.textContent='🔴 Boutique en direct';autoBtn.classList.remove('live-on');}
   autoBtn.addEventListener('click',function(){autoOn?stopAuto():startAuto();});
-  // switches (settings)
-  document.querySelectorAll('.switch').forEach(function(sw){sw.addEventListener('click',function(){sw.classList.toggle('off');});});
   /* (graphique 7 jours retiré du tableau de bord) */
 
   document.addEventListener('click',function(e){if(e.target.closest('[data-opsunlock]'))pUnlockModal();});

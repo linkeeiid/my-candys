@@ -19,6 +19,7 @@
     }
     MC.PRODUCTS.forEach(function (p) {
       var o = ov[p.id]; if (!o) return;
+      if (o.name) p.name = o.name;
       if (o.cat) p.cat = o.cat;
       if (o.brand !== undefined) p.brand = (o.brand === null ? null : o.brand);
       if (o.price != null && !isNaN(o.price)) p.price = o.price;

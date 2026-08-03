@@ -183,7 +183,7 @@
     if (btn) btn.addEventListener('click', function () { set(panel.style.display === 'none' || !panel.style.display); });
     if (close) close.addEventListener('click', function () { set(false); });
     if (input) input.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') { var v = input.value.trim(); location.href = 'boutique.html' + (v ? ('?q=' + encodeURIComponent(v)) : ''); }
+      if (e.key === 'Enter') { var v = input.value.trim(); location.href = 'boutique' + (v ? ('?q=' + encodeURIComponent(v)) : ''); }
     });
   }
 

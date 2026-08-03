@@ -2,8 +2,9 @@
 
 User-agent: *
 Allow: /
-Disallow: /gestion.html
-Disallow: /console.html
+Disallow: /gestion
+Disallow: /console
+Disallow: /catalogue
 
 # --- Bots IA explicitement autorisés ---
 User-agent: GPTBot

@@ -7,13 +7,13 @@
 <meta name="description" content="Prime, Takis, Monster… toutes les marques de snacks virales du monde entier, réunies chez My Candy's. L'épicerie des bonbons et snacks TikTok, née à Lyon.">
 <meta name="theme-color" content="#FF2E9A">
 <link rel="icon" href="assets/logo.png">
-<link rel="canonical" href="https://mycandys.fr/marques.html">
+<link rel="canonical" href="https://mycandys.fr/marques">
 <!-- Open Graph -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="My Candy's">
 <meta property="og:title" content="Nos marques cultes 🏆 — My Candy's">
 <meta property="og:description" content="Prime, Takis, Monster… toutes les marques de snacks virales du monde entier, réunies chez My Candy's. L'épicerie des bonbons et snacks TikTok, née à Lyon.">
-<meta property="og:url" content="https://mycandys.fr/marques.html">
+<meta property="og:url" content="https://mycandys.fr/marques">
 <meta property="og:image" content="https://mycandys.fr/assets/banners/promo-site.png">
 <meta property="og:locale" content="fr_FR">
 <!-- Twitter -->
@@ -55,7 +55,7 @@
 
 <div class="mq-hero">
   <div class="mq-hero-in">
-    <div class="mc-crumb" style="margin-bottom:8px"><a href="index.html">Accueil</a> › <span style="color:#2A0A1C;font-weight:600">Top Marques</span></div>
+    <div class="mc-crumb" style="margin-bottom:8px"><a href="/">Accueil</a> › <span style="color:#2A0A1C;font-weight:600">Top Marques</span></div>
     <h1>Nos marques cultes 🏆</h1>
     <p style="font-size:16px;color:#7A5468;margin:8px 0 0;max-width:560px">Prime, Takis, Monster… toutes les marques virales du monde entier, réunies au même endroit. Clique pour explorer.</p>
   </div>
@@ -98,7 +98,7 @@
     { name: "Jack Link's", logo: 'assets/logos/jacklinks.png', count: 3, b: null }
   ];
   document.getElementById('mq-grid').innerHTML = BRANDS.map(function (x) {
-    var href = 'boutique.html?b=' + encodeURIComponent(x.b || x.name);
+    var href = 'boutique?b=' + encodeURIComponent(x.b || x.name);
     var logo = x.logo
       ? '<img src="' + x.logo + '" alt="' + MC.esc(x.name) + '" loading="lazy" decoding="async">'
       : '<div style="font-weight:800;font-size:22px;letter-spacing:-.5px;color:' + (x.tone || '#2A0A1C') + '">' + MC.esc(x.name) + '</div>';

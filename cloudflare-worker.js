@@ -739,7 +739,7 @@ const BASE_PRICES = {
   'box-m': 24.90,
   'box-xxl': 49.90
 };
-/* Frais de port (identiques à checkout.html) : coût de base + seuil de gratuité. */
+/* Frais de port (identiques à checkout) : coût de base + seuil de gratuité. */
 const SHIP = { relais: { cost: 4.90, free: 39 }, domicile: { cost: 6.90, free: 59 } };
 function shipCost(mode, sub) { const m = SHIP[mode] || SHIP.relais; return sub >= m.free ? 0 : m.cost; }
 function round2(n) { return Math.round((Number(n) || 0) * 100) / 100; }
@@ -891,7 +891,7 @@ function orderEmailHtml(o) {
     '<td style="padding-top:8px;border-top:1px solid #eee;text-align:right"><b>' + money(o.total) + '</b></td></tr></table>' +
     '<p style="color:#8A6076;font-size:13px">Comme certains produits sont réapprovisionnés à la commande, ' +
     'compte quelques jours de préparation. Tu recevras ton numéro de suivi par email dès l\'expédition. 💌</p>' +
-    '<p style="text-align:center;margin:22px 0 6px"><a href="https://mycandys.fr/suivi-commande.html" style="background:#E01784;color:#fff;text-decoration:none;font-weight:700;padding:12px 24px;border-radius:12px;display:inline-block">Suivre ma commande →</a></p>' +
+    '<p style="text-align:center;margin:22px 0 6px"><a href="https://mycandys.fr/suivi-commande" style="background:#E01784;color:#fff;text-decoration:none;font-weight:700;padding:12px 24px;border-radius:12px;display:inline-block">Suivre ma commande →</a></p>' +
     '</div>';
 }
 
@@ -899,7 +899,7 @@ function orderEmailHtml(o) {
 function shippingEmailHtml(o, tracking, carrier) {
   var CARRIERS = { laposte: 'Colissimo / La Poste', mondialrelay: 'Mondial Relay', chronopost: 'Chronopost', ups: 'UPS', dhl: 'DHL', autre: 'Transporteur' };
   var cname = CARRIERS[carrier] || 'Transporteur';
-  var link = 'https://mycandys.fr/suivi-commande.html?num=' + encodeURIComponent(tracking || '') + (carrier ? '&carrier=' + encodeURIComponent(carrier) : '');
+  var link = 'https://mycandys.fr/suivi-commande?num=' + encodeURIComponent(tracking || '') + (carrier ? '&carrier=' + encodeURIComponent(carrier) : '');
   return '<div style="font-family:Arial,sans-serif;color:#2A0A1C">' + logoHdr() +
     '<h2 style="color:#E01784">Ton colis est en route ! 🚚</h2>' +
     '<p>Bonne nouvelle : ta commande <b>' + esc(o.reference || '') + '</b> vient d\'être expédiée.</p>' +
@@ -917,7 +917,7 @@ function welcomeEmailHtml() {
     '<p>Merci de rejoindre la famille ! Tu seras au premier rang pour les <b>nouveautés</b>, les <b>drops</b> et les <b>méga-promos</b>.</p>' +
     '<p>Et comme promis, voici ton cadeau de bienvenue :</p>' +
     '<div style="text-align:center;margin:20px 0"><div style="display:inline-block;border:2px dashed #FF2E9A;border-radius:14px;padding:16px 28px"><div style="font-size:13px;color:#8A6076">-10% sur ta 1re commande</div><div style="font-size:26px;font-weight:800;color:#E01784;letter-spacing:1px">BIENVENUE10</div></div></div>' +
-    '<p style="text-align:center;margin:22px 0 6px"><a href="https://mycandys.fr/boutique.html" style="background:#E01784;color:#fff;text-decoration:none;font-weight:700;padding:13px 26px;border-radius:12px;display:inline-block">Je découvre la boutique →</a></p>' +
+    '<p style="text-align:center;margin:22px 0 6px"><a href="https://mycandys.fr/boutique" style="background:#E01784;color:#fff;text-decoration:none;font-weight:700;padding:13px 26px;border-radius:12px;display:inline-block">Je découvre la boutique →</a></p>' +
     '<p style="color:#8A6076;font-size:12.5px">Code à saisir au moment du paiement. À très vite ! 💌</p></div>';
 }
 
@@ -927,7 +927,7 @@ function relanceEmailHtml(name) {
     '<h2 style="color:#E01784">Tu nous manques' + (name ? ', ' + esc(name) : '') + ' ! 🍬</h2>' +
     '<p>Ça fait un moment… De nouveaux snacks viraux viennent d\'arriver chez My Candy\'s, et on t\'a gardé une petite douceur :</p>' +
     '<div style="text-align:center;margin:20px 0"><div style="display:inline-block;border:2px dashed #FF2E9A;border-radius:14px;padding:16px 28px"><div style="font-size:13px;color:#8A6076">-10% sur ta prochaine commande</div><div style="font-size:26px;font-weight:800;color:#E01784;letter-spacing:1px">TAGADA10</div></div></div>' +
-    '<p style="text-align:center;margin:22px 0 6px"><a href="https://mycandys.fr/boutique.html" style="background:#E01784;color:#fff;text-decoration:none;font-weight:700;padding:13px 26px;border-radius:12px;display:inline-block">Je reviens faire le plein →</a></p>' +
+    '<p style="text-align:center;margin:22px 0 6px"><a href="https://mycandys.fr/boutique" style="background:#E01784;color:#fff;text-decoration:none;font-weight:700;padding:13px 26px;border-radius:12px;display:inline-block">Je reviens faire le plein →</a></p>' +
     '<p style="color:#8A6076;font-size:12.5px">Code à saisir au paiement. À très vite ! 💌</p></div>';
 }
 

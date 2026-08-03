@@ -7,13 +7,13 @@
 <meta name="description" content="FAQ, livraison &amp; retours, contact, notre histoire, nos boutiques et la franchise My Candy's. Toute l'aide dont tu as besoin, au même endroit.">
 <meta name="theme-color" content="#FF2E9A">
 <link rel="icon" href="assets/logo.png">
-<link rel="canonical" href="https://mycandys.fr/infos.html">
+<link rel="canonical" href="https://mycandys.fr/infos">
 <!-- Open Graph -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="My Candy's">
 <meta property="og:title" content="Infos &amp; aide — My Candy's">
 <meta property="og:description" content="FAQ, livraison &amp; retours, contact, nos boutiques, la franchise et les informations légales de My Candy's.">
-<meta property="og:url" content="https://mycandys.fr/infos.html">
+<meta property="og:url" content="https://mycandys.fr/infos">
 <meta property="og:image" content="https://mycandys.fr/assets/banners/promo-site.png">
 <meta property="og:locale" content="fr_FR">
 <!-- Twitter -->
@@ -28,13 +28,40 @@
   "@type": "FAQPage",
   "mainEntity": [
     {"@type":"Question","name":"Quels sont les délais de livraison ?","acceptedAnswer":{"@type":"Answer","text":"On expédie sous 24 à 48h ouvrées après ta commande. Comptez ensuite 2 à 4 jours ouvrés en point relais et 2 à 3 jours à domicile en France métropolitaine. Un email de suivi t'est envoyé dès que ton colis part de notre atelier lyonnais."}},
-    {"@type":"Question","name":"Quels moyens de paiement acceptez-vous ?","acceptedAnswer":{"@type":"Answer","text":"Carte bancaire (Visa, Mastercard), Apple Pay et Google Pay. Le paiement est 100% sécurisé et chiffré — on ne stocke jamais tes coordonnées bancaires."}},
+    {"@type":"Question","name":"Quels moyens de paiement acceptez-vous ?","acceptedAnswer":{"@type":"Answer","text":"Carte bancaire (Visa, Mastercard). Le paiement est 100% sécurisé et chiffré — on ne stocke jamais tes coordonnées bancaires."}},
     {"@type":"Question","name":"Vos produits sont-ils frais et bien conservés ?","acceptedAnswer":{"@type":"Answer","text":"Oui ! On tourne notre stock en permanence et on ne référence que des produits avec une DLC confortable. Chaque commande est préparée à la main, calée avec soin, et les boissons voyagent dans un emballage renforcé pour arriver nickel."}},
     {"@type":"Question","name":"Comment utiliser un code promo ?","acceptedAnswer":{"@type":"Answer","text":"Ajoute tes snacks au panier, puis saisis ton code dans le champ « Code promo » du panier ou à l'étape paiement. La réduction s'applique aussitôt. Un seul code par commande, non cumulable avec les Box et l'Anti-Gaspi."}},
     {"@type":"Question","name":"Puis-je retourner ou échanger un produit ?","acceptedAnswer":{"@type":"Answer","text":"Pour des raisons d'hygiène alimentaire, les produits ouverts ou consommés ne sont ni repris ni échangés. En revanche, si un article est abîmé, manquant ou périmé à l'arrivée, écris-nous sous 48h avec une photo : on te rembourse ou on te réexpédie."}},
     {"@type":"Question","name":"Que contient une Mystery Box ?","acceptedAnswer":{"@type":"Answer","text":"Une sélection surprise de nos snacks et boissons viraux, avec une valeur toujours supérieure au prix payé. La taille (S, M, XXL) détermine le nombre de produits. Tu peux nous signaler une allergie en commentaire de commande."}}
   ]
 }
+</script>
+<!-- Boutiques physiques (SEO local) -->
+<script type="application/ld+json">
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "Store",
+    "name": "My Candy's — Villeurbanne",
+    "image": "https://mycandys.fr/assets/logo.png",
+    "url": "https://mycandys.fr/infos?p=boutiques",
+    "priceRange": "€€",
+    "address": { "@type": "PostalAddress", "streetAddress": "52 rue Séverine", "postalCode": "69100", "addressLocality": "Villeurbanne", "addressRegion": "Auvergne-Rhône-Alpes", "addressCountry": "FR" },
+    "parentOrganization": { "@type": "Organization", "name": "My Candy's", "url": "https://mycandys.fr/" },
+    "sameAs": ["https://www.tiktok.com/@my.candys.raphael", "https://www.instagram.com/my.candys.straphael", "https://www.snapchat.com/add/candy83700"]
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Store",
+    "name": "My Candy's — Saint-Raphaël",
+    "image": "https://mycandys.fr/assets/logo.png",
+    "url": "https://mycandys.fr/infos?p=boutiques",
+    "priceRange": "€€",
+    "address": { "@type": "PostalAddress", "streetAddress": "251 avenue du Général Leclerc", "postalCode": "83700", "addressLocality": "Saint-Raphaël", "addressRegion": "Provence-Alpes-Côte d'Azur", "addressCountry": "FR" },
+    "parentOrganization": { "@type": "Organization", "name": "My Candy's", "url": "https://mycandys.fr/" },
+    "sameAs": ["https://www.tiktok.com/@my.candys.raphael", "https://www.instagram.com/my.candys.straphael", "https://www.snapchat.com/add/candy83700"]
+  }
+]
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -190,7 +217,7 @@
 
 <div class="info-hero">
   <div class="info-hero-in">
-    <div class="mc-crumb" style="margin-bottom:8px"><a href="index.html">Accueil</a> › <span id="info-crumb" style="color:#2A0A1C;font-weight:600">Infos &amp; aide</span></div>
+    <div class="mc-crumb" style="margin-bottom:8px"><a href="/">Accueil</a> › <span id="info-crumb" style="color:#2A0A1C;font-weight:600">Infos &amp; aide</span></div>
     <h1 id="info-title">Infos &amp; aide 💬</h1>
     <p id="info-sub">Une question sur ta commande, la livraison ou nos boutiques ? Tout est là.</p>
   </div>
@@ -203,24 +230,24 @@
 
     <aside class="info-aside">
       <nav class="info-nav" id="info-nav" aria-label="Sections d'aide">
-        <a class="info-navlink" data-sec="faq"       href="infos.html?p=faq"><span class="ic">❓</span> FAQ</a>
-        <a class="info-navlink" data-sec="fidelite"  href="infos.html?p=fidelite"><span class="ic">🎁</span> Programme fidélité</a>
-        <a class="info-navlink" data-sec="livraison" href="infos.html?p=livraison"><span class="ic">🚚</span> Livraison &amp; retours</a>
-        <a class="info-navlink" data-sec="contact"   href="infos.html?p=contact"><span class="ic">✉️</span> Nous contacter</a>
-        <a class="info-navlink" data-sec="about"     href="infos.html?p=about"><span class="ic">🍬</span> Qui sommes-nous ?</a>
-        <a class="info-navlink" data-sec="boutiques" href="infos.html?p=boutiques"><span class="ic">🏪</span> Nos boutiques</a>
-        <a class="info-navlink" data-sec="franchise" href="infos.html?p=franchise"><span class="ic">🤝</span> Devenir franchisé</a>
+        <a class="info-navlink" data-sec="faq"       href="infos?p=faq"><span class="ic">❓</span> FAQ</a>
+        <a class="info-navlink" data-sec="fidelite"  href="infos?p=fidelite"><span class="ic">🎁</span> Programme fidélité</a>
+        <a class="info-navlink" data-sec="livraison" href="infos?p=livraison"><span class="ic">🚚</span> Livraison &amp; retours</a>
+        <a class="info-navlink" data-sec="contact"   href="infos?p=contact"><span class="ic">✉️</span> Nous contacter</a>
+        <a class="info-navlink" data-sec="about"     href="infos?p=about"><span class="ic">🍬</span> Qui sommes-nous ?</a>
+        <a class="info-navlink" data-sec="boutiques" href="infos?p=boutiques"><span class="ic">🏪</span> Nos boutiques</a>
+        <a class="info-navlink" data-sec="franchise" href="infos?p=franchise"><span class="ic">🤝</span> Devenir franchisé</a>
       </nav>
       <div class="info-help">
         <div class="t">Besoin d'un coup de main ? 🍭</div>
         <p>Notre équipe répond du lundi au samedi, 9h–19h. On adore parler snacks.</p>
-        <a class="btn" href="infos.html?p=contact" data-sec="contact">Nous écrire →</a>
+        <a class="btn" href="infos?p=contact" data-sec="contact">Nous écrire →</a>
       </div>
       <nav class="info-nav info-nav-legal" aria-label="Informations légales">
         <div class="info-navgroup-t">Informations légales</div>
-        <a class="info-navlink" data-sec="mentions"        href="infos.html?p=mentions"><span class="ic">⚖️</span> Mentions légales</a>
-        <a class="info-navlink" data-sec="cgv"             href="infos.html?p=cgv"><span class="ic">📜</span> CGV</a>
-        <a class="info-navlink" data-sec="confidentialite" href="infos.html?p=confidentialite"><span class="ic">🔒</span> Confidentialité</a>
+        <a class="info-navlink" data-sec="mentions"        href="infos?p=mentions"><span class="ic">⚖️</span> Mentions légales</a>
+        <a class="info-navlink" data-sec="cgv"             href="infos?p=cgv"><span class="ic">📜</span> CGV</a>
+        <a class="info-navlink" data-sec="confidentialite" href="infos?p=confidentialite"><span class="ic">🔒</span> Confidentialité</a>
       </nav>
     </aside>
 
@@ -273,7 +300,7 @@
         <div class="info-card">
           <span class="info-eyebrow">Foire aux questions</span>
           <h2 id="faq-h">Les questions qu'on nous pose le plus ❓</h2>
-          <p class="lead">Délais, paiement, fraîcheur, retours… on t'a préparé les réponses. Il en manque une ? <a class="inl" href="infos.html?p=contact" data-sec="contact">Écris-nous</a>.</p>
+          <p class="lead">Délais, paiement, fraîcheur, retours… on t'a préparé les réponses. Il en manque une ? <a class="inl" href="infos?p=contact" data-sec="contact">Écris-nous</a>.</p>
 
           <div class="faq" id="faq">
             <div class="faq-item">
@@ -282,7 +309,7 @@
             </div>
             <div class="faq-item">
               <button class="faq-q" type="button">Quels moyens de paiement acceptez-vous ? <span class="faq-plus">+</span></button>
-              <div class="faq-a"><div class="faq-a-in">Carte bancaire (Visa, Mastercard), <strong>Apple Pay</strong>, <strong>Google Pay</strong>. Le paiement est 100% sécurisé et chiffré — on ne stocke jamais tes coordonnées bancaires.</div></div>
+              <div class="faq-a"><div class="faq-a-in"><strong>Carte bancaire</strong> (Visa, Mastercard). Le paiement est 100% sécurisé et chiffré — on ne stocke jamais tes coordonnées bancaires.</div></div>
             </div>
             <div class="faq-item">
               <button class="faq-q" type="button">Vos produits sont-ils frais et bien conservés ? <span class="faq-plus">+</span></button>
@@ -337,7 +364,7 @@
           <div class="info-note">🎁 <strong>Astuce :</strong> il te manque quelques euros pour débloquer la livraison offerte ? La barre de progression dans ton panier te dit exactement combien ajouter.</div>
 
           <h3>Suivi de commande</h3>
-          <p>Dès l'expédition, tu reçois un email avec ton numéro de suivi. Tu peux aussi le retrouver à tout moment depuis ton <a class="inl" href="compte.html">compte</a>.</p>
+          <p>Dès l'expédition, tu reçois un email avec ton numéro de suivi. Tu peux aussi le retrouver à tout moment depuis ton <a class="inl" href="compte">compte</a>.</p>
 
           <h3>Retours &amp; remboursements</h3>
           <ul>
@@ -345,7 +372,7 @@
             <li>Pour des raisons d'hygiène, les produits alimentaires <strong>ouverts</strong> ne sont pas repris.</li>
             <li>Colis retourné faute de retrait en point relais : on te recontacte pour un renvoi (frais de réexpédition à prévoir).</li>
           </ul>
-          <p>Un souci ? <a class="inl" href="infos.html?p=contact" data-sec="contact">Contacte-nous</a>, on règle ça vite et bien.</p>
+          <p>Un souci ? <a class="inl" href="infos?p=contact" data-sec="contact">Contacte-nous</a>, on règle ça vite et bien.</p>
         </div>
       </section>
 
@@ -380,7 +407,7 @@
               <a class="line" href="https://www.instagram.com/my.candys.straphael" target="_blank" rel="noopener"><span class="em" style="width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF,#515BD4)"><svg viewBox="0 0 24 24" width="19" height="19" fill="#fff" aria-hidden="true"><path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z"/></svg></span><span><b>@my.candys.straphael</b><small>Instagram — coulisses &amp; concours</small></span></a>
               <a class="line" href="https://www.tiktok.com/@my.candys.raphael" target="_blank" rel="noopener"><span class="em" style="width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:#010101"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff" aria-hidden="true"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg></span><span><b>@my.candys.raphael</b><small>TikTok — nos dernières trouvailles</small></span></a>
               <a class="line" href="https://www.snapchat.com/add/candy83700" target="_blank" rel="noopener"><span class="em" style="width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:#FFFC00"><svg viewBox="0 0 24 24" width="19" height="19" fill="#111" aria-hidden="true"><path d="M12.206.793c.99 0 4.347.276 5.93 3.821.529 1.193.403 3.219.299 4.847l-.003.06c-.012.18-.022.345-.03.51.075.045.203.09.401.09.3-.016.659-.12 1.033-.301.165-.088.344-.104.464-.104.182 0 .359.029.509.09.45.149.734.479.734.838.015.449-.39.839-1.213 1.168-.089.029-.209.075-.344.119-.45.135-1.139.36-1.333.81-.09.224-.061.524.12.868l.015.015c.06.136 1.526 3.475 4.791 4.014.255.044.435.27.42.509 0 .075-.015.149-.045.225-.24.569-1.273.988-3.146 1.271-.061.075-.12.375-.166.57-.03.135-.075.36-.135.591-.075.3-.27.45-.585.45h-.03c-.135 0-.313-.031-.539-.075-.36-.075-.765-.135-1.273-.135-.3 0-.599.015-.913.074-.6.104-1.123.464-1.723.884-.853.599-1.826 1.288-3.294 1.288-.06 0-.119-.015-.18-.015h-.149c-1.468 0-2.427-.675-3.279-1.288-.599-.42-1.107-.779-1.707-.884-.314-.045-.629-.074-.928-.074-.54 0-.958.089-1.272.149-.211.043-.391.074-.54.074-.374 0-.523-.224-.583-.42-.061-.192-.135-.42-.135-.591-.046-.195-.135-.495-.166-.57-1.887-.284-2.92-.703-3.16-1.288-.03-.06-.045-.135-.045-.21-.015-.239.165-.464.42-.509 3.264-.54 4.73-3.879 4.791-4.02l.016-.029c.18-.345.224-.645.119-.869-.195-.434-.884-.658-1.332-.809-.121-.029-.24-.074-.346-.119-1.107-.435-1.257-.93-1.197-1.273.09-.479.674-.793 1.168-.793.146 0 .27.029.383.074.42.194.789.3 1.104.3.234 0 .384-.06.465-.104l-.048-.638c-.135-1.638-.3-3.68.27-4.995C7.851 1.076 11.008.793 11.998.793h.208z"/></svg></span><span><b>candy83700</b><small>Snapchat — nos snaps du jour</small></span></a>
-              <div class="line"><span class="em">📍</span><span><b>Lyon, France</b><small>Notre atelier &amp; notre première boutique</small></span></div>
+              <div class="line"><span class="em">📍</span><span><b>Villeurbanne (Lyon) &amp; Saint-Raphaël</b><small>Nos deux boutiques — voir « Nos boutiques »</small></span></div>
               <div class="line"><span class="em">🕘</span><span><b>Lun – Sam · 9h – 19h</b><small>Service client francophone</small></span></div>
             </div>
           </div>
@@ -410,34 +437,19 @@
       <section class="info-sec" data-sec="boutiques" aria-labelledby="bt-h">
         <div class="info-card">
           <span class="info-eyebrow">Nos boutiques</span>
-          <h2 id="bt-h">Retrouve-nous en vrai 🏪</h2>
-          <p class="lead">Rien ne vaut de choisir ses snacks les yeux dans les rayons. Voici où nous trouver — et ça s'agrandit vite.</p>
+          <h2 id="bt-h">Nos boutiques de bonbons à Villeurbanne (Lyon) &amp; Saint-Raphaël 🏪</h2>
+          <p class="lead">Rien ne vaut de choisir ses snacks les yeux dans les rayons. Retrouve My Candy's en vrai dans nos deux boutiques.</p>
 
           <div class="info-shops">
             <div class="info-shop">
-              <div class="city">Lyon 6e — La Maison mère</div>
-              <div class="addr">42 rue Vitton, 69006 Lyon<br>Lun–Sam · 10h–19h30</div>
+              <div class="city">Villeurbanne (Lyon)</div>
+              <div class="addr">52 rue Séverine, 69100 Villeurbanne<br>🕐 Ouvert 14h – 02h<br><a class="inl" href="https://www.google.com/maps/search/?api=1&amp;query=52+rue+S%C3%A9verine+69100+Villeurbanne" target="_blank" rel="noopener">Voir l'itinéraire ↗</a></div>
               <span class="tag open">Ouverte</span>
             </div>
             <div class="info-shop">
-              <div class="city">Lyon 2e — Presqu'île</div>
-              <div class="addr">18 rue de la République, 69002 Lyon<br>Lun–Sam · 10h–20h</div>
+              <div class="city">Saint-Raphaël</div>
+              <div class="addr">251 avenue du Général Leclerc, 83700 Saint-Raphaël<br>🕐 Ouvert 10h – 22h<br><a class="inl" href="https://www.google.com/maps/search/?api=1&amp;query=251+avenue+du+G%C3%A9n%C3%A9ral+Leclerc+83700+Saint-Rapha%C3%ABl" target="_blank" rel="noopener">Voir l'itinéraire ↗</a></div>
               <span class="tag open">Ouverte</span>
-            </div>
-            <div class="info-shop">
-              <div class="city">Villeurbanne</div>
-              <div class="addr">Centre commercial Gratte-Ciel<br>Lun–Sam · 10h–20h</div>
-              <span class="tag open">Ouverte</span>
-            </div>
-            <div class="info-shop">
-              <div class="city">Paris 11e</div>
-              <div class="addr">Rue Oberkampf<br>Ouverture prévue automne 2026</div>
-              <span class="tag soon">Bientôt</span>
-            </div>
-            <div class="info-shop">
-              <div class="city">Marseille</div>
-              <div class="addr">Vieux-Port<br>Ouverture prévue fin 2026</div>
-              <span class="tag soon">Bientôt</span>
             </div>
             <div class="info-shop">
               <div class="city">Ta ville ?</div>
@@ -446,7 +458,7 @@
             </div>
           </div>
 
-          <div class="info-note" style="margin-top:16px">🛒 Pas de boutique près de chez toi ? Pas de panique — la <a class="inl" href="boutique.html">boutique en ligne</a> livre partout en France.</div>
+          <div class="info-note" style="margin-top:16px">🛒 Pas de boutique près de chez toi ? Pas de panique — la <a class="inl" href="boutique">boutique en ligne</a> livre partout en France.</div>
         </div>
       </section>
 
@@ -481,7 +493,7 @@
           </ul>
 
           <div class="info-cta-row">
-            <a class="primary" href="infos.html?p=contact" data-sec="contact">Déposer ma candidature →</a>
+            <a class="primary" href="infos?p=contact" data-sec="contact">Déposer ma candidature →</a>
             <a class="ghost" href="mailto:hello@mycandys.fr">hello@mycandys.fr</a>
           </div>
         </div>
@@ -509,7 +521,7 @@
           <p>
             Email : <span class="legal-todo">[email de contact — à compléter]</span><br>
             Téléphone : <span class="legal-todo">[téléphone — optionnel]</span><br>
-            Pour toute question, tu peux aussi passer par notre <a class="inl" href="infos.html?p=contact" data-sec="contact">formulaire de contact</a>.
+            Pour toute question, tu peux aussi passer par notre <a class="inl" href="infos?p=contact" data-sec="contact">formulaire de contact</a>.
           </p>
 
           <h3>Directeur de la publication</h3>
@@ -531,7 +543,7 @@
           <p>L'ensemble des éléments composant ce site (marque « My Candy's », logo, textes, visuels, mise en page, code) est protégé par le droit de la propriété intellectuelle et demeure la propriété de MY CANDYS LYON ou de ses partenaires. Toute reproduction, représentation ou réutilisation, totale ou partielle, sans autorisation écrite préalable est interdite. Les marques et logos des produits présentés restent la propriété de leurs détenteurs respectifs.</p>
 
           <h3>Données personnelles</h3>
-          <p>Le traitement de tes données personnelles est détaillé dans notre <a class="inl" href="infos.html?p=confidentialite" data-sec="confidentialite">politique de confidentialité</a>.</p>
+          <p>Le traitement de tes données personnelles est détaillé dans notre <a class="inl" href="infos?p=confidentialite" data-sec="confidentialite">politique de confidentialité</a>.</p>
 
           <p class="legal-date">Dernière mise à jour : 27 juillet 2026</p>
         </div>
@@ -579,7 +591,7 @@
           <p>Indépendamment de toute garantie commerciale, tu bénéficies de la <strong>garantie légale de conformité</strong> (articles L217-3 et suivants du Code de la consommation) et de la <strong>garantie contre les vices cachés</strong> (articles 1641 et suivants du Code civil), dans les conditions prévues par la loi.</p>
 
           <h3>10. Service client</h3>
-          <p>Notre service client francophone est joignable du lundi au samedi, de 9h à 19h, via le <a class="inl" href="infos.html?p=contact" data-sec="contact">formulaire de contact</a> ou par email à <span class="legal-todo">[email de contact — à compléter]</span>.</p>
+          <p>Notre service client francophone est joignable du lundi au samedi, de 9h à 19h, via le <a class="inl" href="infos?p=contact" data-sec="contact">formulaire de contact</a> ou par email à <span class="legal-todo">[email de contact — à compléter]</span>.</p>
 
           <h3>11. Médiation de la consommation</h3>
           <p>Conformément à l'article L612-1 du Code de la consommation, le consommateur peut recourir gratuitement à un médiateur de la consommation en vue de la résolution amiable d'un litige. Médiateur désigné : <span class="legal-todo">[médiateur de la consommation — à désigner]</span>.</p>
@@ -668,7 +680,7 @@
     livraison: ['Livraison & retours 🚚', 'Livraison & retours', 'Délais, points relais, livraison offerte dès 39 € et retours.'],
     contact:   ['Nous contacter ✉️', 'Nous contacter', 'Une question ? On te répond en un rien de temps.'],
     about:     ['Qui sommes-nous ? 🍬', 'Qui sommes-nous ?', "L'histoire de My Candy's, née à Lyon."],
-    boutiques: ['Nos boutiques 🏪', 'Nos boutiques', "Retrouve-nous en vrai, un peu partout en France."],
+    boutiques: ['Nos boutiques 🏪', 'Nos boutiques', "Nos boutiques de bonbons à Villeurbanne (Lyon) et Saint-Raphaël."],
     franchise: ['Devenir franchisé 🤝', 'Devenir franchisé', 'Ouvre ta boutique My Candy\'s et rejoins le réseau.'],
     mentions:        ['Mentions légales ⚖️', 'Mentions légales', "Éditeur, hébergeur et informations légales du site My Candy's."],
     cgv:             ['Conditions Générales de Vente 📜', 'Conditions Générales de Vente', 'Commande, paiement, livraison, rétractation et garanties.'],
@@ -706,7 +718,7 @@
       try { activeLink.scrollIntoView({ inline: 'center', block: 'nearest' }); } catch (e) {}
     }
     if (push) {
-      try { history.pushState({ sec: sec }, '', 'infos.html?p=' + sec); } catch (e) {}
+      try { history.pushState({ sec: sec }, '', 'infos?p=' + sec); } catch (e) {}
     }
     try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); }
   }

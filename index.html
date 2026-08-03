@@ -45,7 +45,7 @@
         "@type": "SearchAction",
         "target": {
           "@type": "EntryPoint",
-          "urlTemplate": "https://mycandys.fr/boutique.html?q={search_term_string}"
+          "urlTemplate": "https://mycandys.fr/boutique?q={search_term_string}"
         },
         "query-input": "required name=search_term_string"
       }
@@ -206,9 +206,9 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 <!-- Hero carrousel -->
 <div class="mc-hero" id="mc-hero">
   <div class="mc-hero-track" id="mc-hero-track">
-    <a href="mystery-box.html"><picture><source media="(max-width:768px)" srcset="assets/banners/box-anti-gaspi-mobile.png"><img src="assets/banners/box-anti-gaspi.png" alt="My Candy's — Box Anti-Gaspi" fetchpriority="high"></picture></a>
-    <a href="boutique.html?c=promos"><picture><source media="(max-width:768px)" srcset="assets/banners/promo-site-mobile.png"><img src="assets/banners/promo-site.png" alt="-26% sur tout le site — Code Candysummer26" loading="lazy"></picture></a>
-    <a href="boutique.html?c=nouveautes"><picture><source media="(max-width:768px)" srcset="assets/banners/kinder-minecraft-mobile.png"><img src="assets/banners/kinder-minecraft.png" alt="Kinder Joy Minecraft — 28 surprises à collectionner" loading="lazy"></picture></a>
+    <a href="mystery-box"><picture><source media="(max-width:768px)" srcset="assets/banners/box-anti-gaspi-mobile.png"><img src="assets/banners/box-anti-gaspi.png" alt="My Candy's — Box Anti-Gaspi" fetchpriority="high"></picture></a>
+    <a href="boutique?c=promos"><picture><source media="(max-width:768px)" srcset="assets/banners/promo-site-mobile.png"><img src="assets/banners/promo-site.png" alt="-26% sur tout le site — Code Candysummer26" loading="lazy"></picture></a>
+    <a href="boutique?c=nouveautes"><picture><source media="(max-width:768px)" srcset="assets/banners/kinder-minecraft-mobile.png"><img src="assets/banners/kinder-minecraft.png" alt="Kinder Joy Minecraft — 28 surprises à collectionner" loading="lazy"></picture></a>
   </div>
   <div class="mc-dots" id="mc-hero-dots"></div>
 </div>
@@ -233,13 +233,13 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 
   <div class="mc-catwrap">
     <div class="mc-cat4">
-      <a href="boutique.html?c=nouveautes"><img src="assets/categories/new.png" alt="Nouveautés" loading="lazy"></a>
-      <a href="boutique.html?c=promos"><img src="assets/categories/promos.png" alt="Promos" loading="lazy"></a>
-      <a href="mystery-box.html"><img src="assets/categories/box.png" alt="Mystery Box" loading="lazy"></a>
-      <a href="boutique.html?c=pick-n-mix"><img src="assets/categories/picknmix.png" alt="Pick'n'Mix" loading="lazy"></a>
+      <a href="boutique?c=nouveautes"><img src="assets/categories/new.png" alt="Nouveautés" loading="lazy"></a>
+      <a href="boutique?c=promos"><img src="assets/categories/promos.png" alt="Promos" loading="lazy"></a>
+      <a href="mystery-box"><img src="assets/categories/box.png" alt="Mystery Box" loading="lazy"></a>
+      <a href="boutique?c=pick-n-mix"><img src="assets/categories/picknmix.png" alt="Pick'n'Mix" loading="lazy"></a>
     </div>
     <div class="mc-trust">
-      <div class="mc-trust-item"><span>🔒</span><div><b>Paiement 100% sécurisé</b><small>CB, Visa, Apple Pay, Google Pay</small></div></div>
+      <div class="mc-trust-item"><span>🔒</span><div><b>Paiement 100% sécurisé</b><small>Carte bancaire · Visa · Mastercard</small></div></div>
       <div class="mc-trust-item"><span>💬</span><div><b>SAV réactif</b><small>On est là pour t'aider !</small></div></div>
       <div class="mc-trust-item"><span>📦</span><div><b>Emballage soigné</b><small>Chaque colis préparé avec soin</small></div></div>
     </div>
@@ -256,7 +256,7 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
   <section id="bestsellers" class="mc-sec">
     <div class="mc-sechead">
       <div><div class="mc-k" style="margin-left:22px">nos petits chouchous</div><h2 class="mc-h2">🩷 Nos bestsellers</h2></div>
-      <a href="boutique.html?c=bestsellers" class="mc-seeall">Afficher tout →</a>
+      <a href="boutique?c=bestsellers" class="mc-seeall">Afficher tout →</a>
     </div>
     <div id="row-best" class="mc-row mc-prow"></div>
     <div style="height:2px;background:#F1DAE7;border-radius:2px;margin-top:6px"></div>
@@ -265,7 +265,7 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
   <section id="nouveautes" class="mc-sec" style="padding-bottom:78px;z-index:6">
     <div class="mc-sechead">
       <div><div class="mc-k" style="color:#0FA9B8">fraîchement débarqués</div><h2 class="mc-h2">⭐ Nos nouveautés</h2></div>
-      <a href="boutique.html?c=nouveautes" class="mc-seeall">Afficher tout →</a>
+      <a href="boutique?c=nouveautes" class="mc-seeall">Afficher tout →</a>
     </div>
     <div id="row-new" class="mc-row mc-prow"></div>
   </section>
@@ -383,6 +383,12 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
       swipe(lb.querySelector('.mc-ttlb-grab'));
     }
     function openLb(id) {
+      // Consentement cookies : la vidéo TikTok charge un lecteur tiers (cookies) → on demande l'accord si besoin
+      if (window.MCcanTrack && !window.MCcanTrack()) {
+        var ok = window.confirm("La lecture des vidéos TikTok charge un contenu tiers qui dépose des cookies. Les autoriser pour lire la vidéo ?");
+        if (!ok) return;
+        if (window.MCsetConsent) window.MCsetConsent('yes');
+      }
       if (!lb) build();
       iframe.src = 'https://www.tiktok.com/embed/v2/' + id;
       sy0 = window.pageYOffset || 0;

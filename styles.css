@@ -46,6 +46,20 @@ h1,h2,h3{font-weight:800;letter-spacing:-.5px;margin:0}
 .mc-act{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;border-radius:12px;color:#2A0A1C;position:relative;transition:background .15s}
 .mc-act:hover{background:#FFEBF5}
 .mc-act > span:first-child{font-size:19px;line-height:1}
+/* Avatar « connecté » : initiale dans un rond rose (header + menu) */
+.mc-avai{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;font-weight:800;font-size:13px;line-height:1}
+/* Bandeau cookies */
+.mc-cookie{position:fixed;left:0;right:0;bottom:0;z-index:120;background:#fff;border-top:1px solid #F3C6DE;box-shadow:0 -8px 30px rgba(122,14,74,.14);padding:14px 18px;padding-bottom:calc(14px + env(safe-area-inset-bottom));animation:mcckup .35s ease}
+@keyframes mcckup{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mc-cookie-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:center}
+.mc-cookie-txt{flex:1;min-width:240px;font-size:13.5px;color:#4A2A3A;line-height:1.5}
+.mc-cookie-txt a{color:#E01784;text-decoration:underline;font-weight:600}
+.mc-cookie-btns{display:flex;gap:10px;flex:none}
+.mc-cookie-btns button{font-weight:700;font-size:13.5px;padding:10px 18px;border-radius:12px;cursor:pointer;border:1.5px solid #F3C6DE}
+.mc-cookie-no{background:#fff;color:#8A6076}
+.mc-cookie-no:hover{background:#FFEBF5}
+.mc-cookie-yes{background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;border-color:transparent;box-shadow:0 8px 18px rgba(255,46,154,.3)}
+@media(max-width:560px){.mc-cookie-btns{width:100%}.mc-cookie-btns button{flex:1}}
 .mc-lbl{font-size:10.5px;font-weight:600}
 .mc-fr{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#7A5468;padding:8px 10px}
 .mc-cartbtn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 12px;border-radius:12px;color:#fff;background:linear-gradient(135deg,#FF2E9A,#E01784);position:relative;box-shadow:0 6px 15px rgba(255,46,154,.3);transition:filter .15s}

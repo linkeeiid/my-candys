@@ -7,13 +7,13 @@
 <meta name="description" content="Ton panier My Candy's : bonbons US, sodas viraux, chips épicées et éditions limitées. Ajuste les quantités, débloque la livraison offerte dès 39 € et passe au paiement.">
 <meta name="theme-color" content="#FF2E9A">
 <link rel="icon" href="assets/logo.png">
-<link rel="canonical" href="https://mycandys.fr/panier.html">
+<link rel="canonical" href="https://mycandys.fr/panier">
 <!-- Open Graph -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="My Candy's">
 <meta property="og:title" content="Mon panier — My Candy's">
 <meta property="og:description" content="Ton panier My Candy's : bonbons US, sodas viraux, chips épicées et éditions limitées. Ajuste les quantités, débloque la livraison offerte dès 39 € et passe au paiement.">
-<meta property="og:url" content="https://mycandys.fr/panier.html">
+<meta property="og:url" content="https://mycandys.fr/panier">
 <meta property="og:image" content="https://mycandys.fr/assets/banners/promo-site.png">
 <meta property="og:locale" content="fr_FR">
 <!-- Twitter -->
@@ -124,7 +124,7 @@
 <div class="pan-band">
   <div class="pan-wrap">
     <div class="pan-top">
-      <div class="mc-crumb" style="margin-bottom:8px"><a href="index.html">Accueil</a> › <span style="color:#2A0A1C;font-weight:600">Panier</span></div>
+      <div class="mc-crumb" style="margin-bottom:8px"><a href="/">Accueil</a> › <span style="color:#2A0A1C;font-weight:600">Panier</span></div>
       <div class="pan-title">
         <h1>Mon panier 🛒</h1>
         <span class="n" id="pan-count-lbl"></span>
@@ -142,7 +142,7 @@
           <div id="pan-lines"></div>
         </div>
         <div class="pan-backrow">
-          <a href="boutique.html" class="pan-back">← Continuer mes achats</a>
+          <a href="boutique" class="pan-back">← Continuer mes achats</a>
         </div>
       </div>
 
@@ -159,7 +159,7 @@
           <div class="l">Total</div>
           <div class="v" id="pan-total">0,00 €<small>TVA incluse</small></div>
         </div>
-        <a href="checkout.html" class="mc-cart-pay">Passer au paiement →</a>
+        <a href="checkout" class="mc-cart-pay">Passer au paiement →</a>
         <div class="mc-cart-secure" style="margin-top:12px">🔒 Paiement sécurisé</div>
         <ul class="pan-perks">
           <li><span>🚚</span> Livraison en point relais offerte dès 39 €</li>
@@ -174,7 +174,7 @@
       <div class="big">🛒</div>
       <div class="t">Ton panier est vide</div>
       <p>Ajoute tes snacks viraux préférés — bonbons US, sodas TikTok et éditions limitées t'attendent !</p>
-      <a href="boutique.html">Continuer mes achats →</a>
+      <a href="boutique">Continuer mes achats →</a>
     </div>
   </div>
 </div>
@@ -210,10 +210,10 @@
     var id = MC.esc(l.id);
     return '' +
       '<div class="pan-line" data-id="' + id + '">' +
-        '<a href="produit.html?id=' + encodeURIComponent(l.id) + '" class="pan-line-img" style="background:' + (img ? '#fff' : tint) + '" aria-label="' + MC.esc(l.name) + '">' + (img ? '<img src="' + MC.esc(img) + '" alt="" loading="lazy" style="width:100%;height:100%;object-fit:contain;padding:6px">' : '<div class="mc-stripes"></div>') + '</a>' +
+        '<a href="produit?id=' + encodeURIComponent(l.id) + '" class="pan-line-img" style="background:' + (img ? '#fff' : tint) + '" aria-label="' + MC.esc(l.name) + '">' + (img ? '<img src="' + MC.esc(img) + '" alt="" loading="lazy" style="width:100%;height:100%;object-fit:contain;padding:6px">' : '<div class="mc-stripes"></div>') + '</a>' +
         '<div class="pan-line-body">' +
           (brand ? '<div class="pan-line-brand">' + MC.esc(brand) + '</div>' : '') +
-          '<a href="produit.html?id=' + encodeURIComponent(l.id) + '" class="pan-line-name">' + MC.esc(l.name) + '</a>' +
+          '<a href="produit?id=' + encodeURIComponent(l.id) + '" class="pan-line-name">' + MC.esc(l.name) + '</a>' +
           '<div class="pan-line-unit">' + MC.money(l.price) + ' / unité' + (l.old ? '<span class="pan-line-old">' + MC.money(l.old) + '</span>' : '') + '</div>' +
           '<div class="pan-line-ctrls">' +
             '<div class="mc-step"><button type="button" data-dec="' + id + '" aria-label="Diminuer la quantité">−</button><span>' + l.qty + '</span><button type="button" data-inc="' + id + '" aria-label="Augmenter la quantité">+</button></div>' +
