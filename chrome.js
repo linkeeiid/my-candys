@@ -194,7 +194,7 @@
         '<div class="mc-authme-head"><div class="mc-authme-av" id="mc-authme-av">🍬</div><div style="min-width:0"><div class="mc-authme-hi" id="mc-authme-hi">Salut !</div><div class="mc-authme-mail" id="mc-authme-mail"></div></div></div>' +
         '<div class="mc-authme-stats"><a href="infos?p=fidelite" class="mc-authme-stat mc-authme-stat--link" title="Voir le programme fidélité"><b id="mc-authme-pts">0</b><span>Points ›</span></a><div class="mc-authme-stat"><b id="mc-authme-ord">0</b><span>Commandes</span></div><div class="mc-authme-stat"><b id="mc-authme-wish">0</b><span>Favoris</span></div></div>' +
         '<div class="mc-loy" id="mc-authme-loy"></div>' +
-        '<div class="mc-authme-links"><a href="favoris"><span>🤍</span> Mes favoris <span>→</span></a><a href="infos?p=livraison"><span>📦</span> Suivi de commande <span>→</span></a><a href="boutique?c=bestsellers"><span>🛍️</span> Continuer mes achats <span>→</span></a><button class="mc-auth-logout" id="mc-auth-logout" type="button">Se déconnecter</button></div>' +
+        '<div class="mc-authme-links"><a href="favoris"><span>🤍</span> Mes favoris <span>→</span></a><a href="suivi-commande"><span>📦</span> Suivi de commande <span>→</span></a><a href="infos"><span>ℹ️</span> Infos &amp; contact <span>→</span></a><button class="mc-auth-logout" id="mc-auth-logout" type="button">Se déconnecter</button></div>' +
       '</div>' +
     '</div>' +
   '</div>' +
