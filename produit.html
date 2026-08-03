@@ -519,13 +519,15 @@
   $('pd-title').textContent = p.name;
 
   var badge = MC.badge(p);
-  $('pd-price').innerHTML =
-    '<span class="pd-now">' + MC.money(p.price) + '</span>' +
-    (p.old ? '<span class="pd-old">' + MC.money(p.old) + '</span>' : '') +
-    (badge ? '<span class="pd-badge" style="background:' + badge.bg + ';color:' + badge.color + '">' + badge.text + '</span>' : '');
-  $('pd-unit').textContent = p.old
-    ? ('💸 Tu économises ' + MC.money(p.old - p.price) + ' · TVA incluse')
-    : 'TVA incluse · Livraison offerte dès 39 €';
+  var _noPrice = (p.price == null || isNaN(p.price) || Number(p.price) <= 0);
+  $('pd-price').innerHTML = _noPrice
+    ? '<span class="pd-now" style="font-size:26px">Prix à venir</span>'
+    : ('<span class="pd-now">' + MC.money(p.price) + '</span>' +
+       (p.old ? '<span class="pd-old">' + MC.money(p.old) + '</span>' : '') +
+       (badge ? '<span class="pd-badge" style="background:' + badge.bg + ';color:' + badge.color + '">' + badge.text + '</span>' : ''));
+  $('pd-unit').textContent = _noPrice
+    ? '🔜 Ce produit arrive très bientôt'
+    : (p.old ? ('💸 Tu économises ' + MC.money(p.old - p.price) + ' · TVA incluse') : 'TVA incluse · Livraison offerte dès 39 €');
 
   $('pd-desc').textContent = shortDesc();
   $('pd-tags').innerHTML = tags.map(function (t) { return '<div class="pd-tag">' + MC.esc(t) + '</div>'; }).join('');
@@ -543,14 +545,17 @@
     var a = avail();
     if (qty > a) qty = Math.max(1, a);
     qtyEl.textContent = qty;
-    if (a <= 0) {
+    if (_noPrice) {
+      addBtn.disabled = true;
+      addBtn.textContent = '🔜 Bientôt disponible';
+      if (stepEl) stepEl.classList.add('is-off');
+    } else if (a <= 0) {
       addBtn.disabled = true;
       addBtn.textContent = '😔 Rupture de stock';
       if (stepEl) stepEl.classList.add('is-off');
     } else {
       addBtn.disabled = false;
-      // Prix 0 / non renseigné → on n'affiche pas « — 0,00 € » (ce serait moche)
-      addBtn.textContent = p.price ? ('🛒 Ajouter au panier — ' + MC.money(p.price * qty)) : '🛒 Ajouter au panier';
+      addBtn.textContent = '🛒 Ajouter au panier — ' + MC.money(p.price * qty);
       if (stepEl) stepEl.classList.remove('is-off');
     }
   }
@@ -567,6 +572,7 @@
   $('pd-inc').addEventListener('click', function () { if (qty < avail()) { qty++; refreshAdd(); } });
   $('pd-dec').addEventListener('click', function () { qty = Math.max(1, qty - 1); refreshAdd(); });
   addBtn.addEventListener('click', function () {
+    if (_noPrice) { MCui.toast('🔜 Bientôt disponible'); return; }
     var a = avail();
     if (a <= 0) { MCui.toast('Rupture de stock 😔'); return; }
     var inCart = 0;

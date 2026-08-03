@@ -556,7 +556,11 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ items: items, shipping: mode, customer: cust, promo: (promo ? promo.code : '') })
     }).then(function (r) { return r.json(); }).then(function (d) {
-      if (!d || !d.ok || !d.clientSecret || !d.publishableKey) throw new Error(d && d.error ? errMsg(d.error) : 'paiement indisponible');
+      if (!d || !d.ok || !d.clientSecret || !d.publishableKey) {
+        var _em = d && d.error ? errMsg(d.error) : 'paiement indisponible';
+        if (d && d.id) { var _pp = (window.MC && MC.byId) ? MC.byId(d.id) : null; _em += ' : « ' + ((_pp && _pp.name) || d.id) + ' » — retire-le du panier.'; }
+        throw new Error(_em);
+      }
       var reference = d.reference, sessionId = d.sessionId, total = d.amount, email = cust.email;
       loadStripeJs(function () {
         var stripe;

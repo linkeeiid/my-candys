@@ -205,6 +205,8 @@
           }
         }
         var p = MC.byId(addId);
+        // Produit pas encore prixé (price:null) → non vendable : on n'ajoute pas au panier.
+        if (p && (p.price == null || isNaN(p.price) || Number(p.price) <= 0)) { toast('🔜 Bientôt disponible'); return; }
         if (p && window.MCCart) { MCCart.add({ id: p.id, name: p.name, price: p.price, tint: p.tint, old: p.old }); toast(p.name + ' ajouté au panier'); }
         return;
       }

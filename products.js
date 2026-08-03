@@ -893,13 +893,15 @@ window.MC = window.MC || {};
   MC.card = function (p) {
     var b = MC.badge(p);
     var out = (p.available === false) || (p.stock === 0);
+    var noPrice = (p.price == null || isNaN(p.price) || Number(p.price) <= 0);
+    var dis = out || noPrice;
     var wished = (window.MCWish && MCWish.has(p.id));
     return '' +
       '<article class="mc-prod" data-id="' + esc(p.id) + '">' +
         '<a href="produit?id=' + encodeURIComponent(p.id) + '" class="mc-prod-imglink" aria-label="' + esc(p.name) + '">' +
           '<div class="mc-prod-img" style="background:' + (p.img ? '#fff' : p.tint) + '">' +
             (p.img ? '<img class="mc-prod-photo" src="' + esc(p.img) + '" alt="' + esc(p.name) + '" loading="lazy" decoding="async">' : '<div class="mc-stripes"></div>') +
-            '<div class="mc-price">' + MC.money(p.price) + '</div>' +
+            (noPrice ? '<div class="mc-price" style="font-size:.82em">Bientôt</div>' : '<div class="mc-price">' + MC.money(p.price) + '</div>') +
             (out ? '<span class="mc-badge" style="background:#5a5a5a;color:#fff">Épuisé</span>' : (b ? '<span class="mc-badge" style="background:' + b.bg + ';color:' + b.color + '">' + b.text + '</span>' : '')) +
           '</div>' +
         '</a>' +
@@ -909,7 +911,7 @@ window.MC = window.MC || {};
           '<div class="mc-stars"><span>★★★★★</span><span>' + (p.reviews ? '(' + p.reviews + ')' : '') + '</span></div>' +
           (p.old ? '<div class="mc-old">' + MC.money(p.old) + '</div>' : '') +
         '</div>' +
-        '<button class="mc-add" data-add="' + esc(p.id) + '"' + (out ? ' disabled style="filter:grayscale(1);opacity:.45;cursor:not-allowed"' : '') + ' title="Ajouter au panier" aria-label="Ajouter au panier">+</button>' +
+        '<button class="mc-add" data-add="' + esc(p.id) + '"' + (dis ? ' disabled style="filter:grayscale(1);opacity:.45;cursor:not-allowed"' : '') + ' title="' + (noPrice ? 'Bientôt disponible' : 'Ajouter au panier') + '" aria-label="Ajouter au panier">+</button>' +
       '</article>';
   };
 
