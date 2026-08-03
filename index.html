@@ -2,15 +2,6 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<!-- ⚠️ DIAGNOSTIC TEMPORAIRE — à retirer après. Affiche les erreurs JS à l'écran (pour déboguer iPhone). -->
-<script>
-(function(){
-  function box(){var d=document.getElementById('_diag');if(!d){d=document.createElement('div');d.id='_diag';d.style.cssText='position:fixed;left:0;right:0;top:0;z-index:2147483647;background:#b00020;color:#fff;font:12px/1.4 monospace;padding:8px 10px;white-space:pre-wrap;word-break:break-word;max-height:60vh;overflow:auto;box-shadow:0 2px 8px rgba(0,0,0,.4)';(document.body||document.documentElement).appendChild(d);}return d;}
-  window.addEventListener('error',function(e){var m='JS ERROR: '+(e.message||(e.error&&e.error.message)||e.error||'?');if(e.filename)m+=' @ '+String(e.filename).split('/').pop()+':'+e.lineno;box().textContent+=m+'\n';},true);
-  window.addEventListener('unhandledrejection',function(e){box().textContent+='PROMISE: '+((e.reason&&e.reason.message)||e.reason)+'\n';});
-  window.addEventListener('load',function(){setTimeout(function(){var d=document.getElementById('_diag');if(!d){var g=document.createElement('div');g.style.cssText='position:fixed;left:0;right:0;top:0;z-index:2147483647;background:#0a7d33;color:#fff;font:12px monospace;padding:6px 10px;text-align:center';g.textContent='DIAG: page chargée sans erreur JS ✓';document.body.appendChild(g);setTimeout(function(){g.remove();},4000);}},1500);});
-})();
-</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>My Candy's — Bonbons & snacks viraux du monde entier</title>
 <meta name="description" content="L'épicerie des snacks viraux du monde entier : bonbons US, sodas, Takis, Prime, Monster, Mystery Box… Livraison en France. Franchise née à Lyon. -26% avec le code Candysummer26.">
