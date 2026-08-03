@@ -72,7 +72,7 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
 .co-mode-price.free{color:#1B8A57}
 
 /* ---------- Paiement ---------- */
-.co-paytrust{display:flex;align-items:center;gap:13px;background:linear-gradient(135deg,#F1FBF6,#EAF6FF);border:1px solid #D9EEE7;border-radius:14px;padding:13px 15px;margin-bottom:14px}
+.co-paytrust{display:flex;align-items:center;gap:13px;background:linear-gradient(135deg,#F1FBF6,#EAF6FF);border:1px solid #D9EEE7;border-radius:14px;padding:13px 15px;margin:14px 0 4px}
 .co-paytrust-lock{font-size:21px;flex:none;line-height:1}
 .co-paytrust-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
 .co-paytrust-txt b{font-size:13.5px;color:#177A57;font-weight:800}
@@ -267,11 +267,6 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
       <!-- 4. Paiement -->
       <section class="co-card">
         <div class="co-sec-head"><div class="co-sec-num">4</div><div class="co-sec-title">Paiement sécurisé</div></div>
-        <div class="co-paytrust">
-          <span class="co-paytrust-lock">🔒</span>
-          <div class="co-paytrust-txt"><b>Paiement 100&nbsp;% sécurisé</b><span>Tes données bancaires sont chiffrées et ne transitent jamais par notre site.</span></div>
-          <div class="co-paytrust-cards"><span class="c-visa">VISA</span><span class="c-mc">Mastercard</span><span class="c-cb">CB</span></div>
-        </div>
         <div id="co-pay-hint" class="co-pay-hint">Remplis tes infos ci-dessus, puis clique sur <b>« Payer »</b> — le paiement sécurisé (carte, Apple&nbsp;Pay, Google&nbsp;Pay) s'affiche <b>directement ici</b>. 🔒</div>
         <div id="co-embed"></div>
         <div id="co-pay-err" class="co-pay-err" hidden></div>
@@ -280,7 +275,11 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
       <!-- Action de paiement (bas du formulaire desktop / bas de page mobile) -->
       <div class="co-action">
         <button type="submit" class="co-pay" id="co-pay"><span>Payer</span> <span>🔒</span></button>
-        <div class="co-secure">Paiement chiffré · Tu peux payer en toute confiance</div>
+        <div class="co-paytrust">
+          <span class="co-paytrust-lock">🔒</span>
+          <div class="co-paytrust-txt"><b>Paiement 100&nbsp;% sécurisé</b><span>Tes données bancaires sont chiffrées et ne transitent jamais par notre site.</span></div>
+          <div class="co-paytrust-cards"><span class="c-visa">VISA</span><span class="c-mc">Mastercard</span><span class="c-cb">CB</span></div>
+        </div>
         <div class="co-reassure">
           <div><span>🚚</span> Expédié sous 24h ouvrées</div>
           <div><span>↩️</span> Retours &amp; SAV sous 30 jours</div>
