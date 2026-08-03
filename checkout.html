@@ -90,6 +90,7 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
 }
 .co-pay-hint{font-size:12.5px;color:#8A6076;margin:0 2px 2px}
 .co-pay-err{margin-top:12px;font-size:13.5px;color:#C62A22;background:#FDECEC;border:1px solid #F6C9C4;border-radius:12px;padding:11px 14px;font-weight:600}
+#co-embed{margin-top:10px}
 
 /* ---------- Récapitulatif ---------- */
 .co-sum{background:#FFF6FB;border:1px solid #F3D9E9;border-radius:20px;padding:20px 22px;box-shadow:0 10px 26px rgba(122,14,74,.1)}
@@ -270,7 +271,8 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
           <div class="co-paytrust-txt"><b>Paiement 100&nbsp;% sécurisé</b><span>Tes données bancaires sont chiffrées et ne transitent jamais par notre site.</span></div>
           <div class="co-paytrust-cards"><span class="c-visa">VISA</span><span class="c-mc">Mastercard</span><span class="c-cb">CB</span></div>
         </div>
-        <div id="co-pay-hint" class="co-pay-hint">Remplis tes infos ci-dessus, puis clique sur <b>« Payer »</b> — tu seras redirigé vers la page de paiement 100&nbsp;% sécurisée (carte, Apple&nbsp;Pay, Google&nbsp;Pay). 🔒</div>
+        <div id="co-pay-hint" class="co-pay-hint">Remplis tes infos ci-dessus, puis clique sur <b>« Payer »</b> — le paiement sécurisé (carte, Apple&nbsp;Pay, Google&nbsp;Pay) s'affiche <b>directement ici</b>. 🔒</div>
+        <div id="co-embed"></div>
         <div id="co-pay-err" class="co-pay-err" hidden></div>
       </section>
 
@@ -459,8 +461,9 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
     sumToggle.setAttribute('aria-expanded', String(!collapsed));
   });
 
-  /* ---------- Paiement Stripe (page hébergée : CB + Apple Pay + Google Pay) ---------- */
+  /* ---------- Paiement Stripe INTÉGRÉ (formulaire sur le site : CB + Apple Pay + Google Pay) ---------- */
   var payBtn = $('#co-pay');
+  var stripeCk = null; // instance du formulaire de paiement intégré une fois monté
 
   function payErr(msg) {
     var e = $('#co-pay-err'); if (!e) return;
@@ -523,62 +526,72 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
     } catch (e) {}
   }
 
-  // Soumission : crée la session Stripe (montant recalculé serveur) → redirige vers la page de paiement
+  // Charge Stripe.js à la demande (uniquement au moment de payer)
+  function loadStripeJs(cb) {
+    if (window.Stripe) { cb(); return; }
+    if (!document.getElementById('stripe-js')) {
+      var s = document.createElement('script'); s.id = 'stripe-js'; s.src = 'https://js.stripe.com/v3/'; document.head.appendChild(s);
+    }
+    var n = 0, t = setInterval(function () {
+      if (window.Stripe) { clearInterval(t); cb(); }
+      else if (++n > 60) { clearInterval(t); payBtn.disabled = false; render(); payErr('Le module de paiement n\'a pas pu se charger. Recharge la page et réessaie.'); }
+    }, 100);
+  }
+
+  // Soumission : crée la session Stripe (montant recalculé serveur) → monte le formulaire de paiement SUR LA PAGE
   elForm.addEventListener('submit', function (e) {
     e.preventDefault();
     if (!elForm.reportValidity()) return;
+    if (stripeCk) return; // formulaire déjà affiché
     payErr('');
     var items = MCCart.items().map(function (l) { return { id: l.id, qty: l.qty, name: l.name }; });
     if (!items.length) return;
     var api = (window.MC_API || '').replace(/\/$/, '');
     if (!api) { payErr('Paiement momentanément indisponible. Réessaie plus tard.'); return; }
     payBtn.disabled = true;
-    payBtn.firstElementChild.textContent = 'Redirection vers le paiement…';
+    payBtn.firstElementChild.textContent = 'Chargement du paiement…';
     var cust = collectCustomer();
+    var modeLabel = (MODES[mode] && MODES[mode].label) || '';
     fetch(api + '/create-checkout', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ items: items, shipping: mode, customer: cust, promo: (promo ? promo.code : '') })
     }).then(function (r) { return r.json(); }).then(function (d) {
-      if (!d || !d.ok || !d.url) throw new Error(d && d.error ? errMsg(d.error) : 'paiement indisponible');
-      try {
-        localStorage.setItem('mcPendingOrderV1', JSON.stringify({ reference: d.reference, total: d.amount, email: cust.email, modeLabel: (MODES[mode] && MODES[mode].label) || '' }));
-      } catch (e2) {}
-      window.location.href = d.url; // → page de paiement sécurisée Stripe
+      if (!d || !d.ok || !d.clientSecret || !d.publishableKey) throw new Error(d && d.error ? errMsg(d.error) : 'paiement indisponible');
+      var reference = d.reference, sessionId = d.sessionId, total = d.amount, email = cust.email;
+      loadStripeJs(function () {
+        var stripe;
+        try { stripe = window.Stripe(d.publishableKey); } catch (x) { payBtn.disabled = false; render(); payErr('Le paiement n\'a pas pu s\'initialiser.'); return; }
+        stripe.initEmbeddedCheckout({
+          clientSecret: d.clientSecret,
+          onComplete: function () {
+            // Paiement terminé sur la page → on vérifie côté serveur puis on affiche la confirmation
+            var finish = function () {
+              renderDone(reference, total, email, modeLabel);
+              applyPostPayment(reference, total, modeLabel);
+              try { if (stripeCk) { stripeCk.destroy(); stripeCk = null; } } catch (x) {}
+            };
+            fetch(api + '/stripe/verify', {
+              method: 'POST', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ session_id: sessionId, reference: reference })
+            }).then(function (r) { return r.json(); }).then(function () { finish(); }).catch(function () { finish(); });
+          }
+        }).then(function (ck) {
+          stripeCk = ck;
+          var hint = $('#co-pay-hint'); if (hint) hint.hidden = true;
+          payBtn.style.display = 'none';
+          ck.mount('#co-embed');
+          try { document.getElementById('co-embed').scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (x) {}
+        }).catch(function () {
+          payBtn.disabled = false; payBtn.style.display = ''; render();
+          payErr('Le formulaire de paiement n\'a pas pu s\'afficher. Réessaie.');
+        });
+      });
     }).catch(function (err) {
       payBtn.disabled = false;
       render(); // restaure le libellé "Payer X€"
       payErr(err.message || 'Une erreur est survenue. Réessaie.');
     });
   });
-
-  // Retour depuis Stripe : ?paid=1&ref=…&session_id=…  (succès) · ?canceled=1 (annulé)
-  (function handleReturn() {
-    var qs = new URLSearchParams(location.search);
-    if (qs.get('canceled')) {
-      try { history.replaceState({}, '', 'checkout'); } catch (e) {}
-      payErr('Paiement annulé — ton panier est intact, tu peux réessayer quand tu veux.');
-      return;
-    }
-    if (!qs.get('paid')) return;
-    var ref = qs.get('ref') || '';
-    var sid = qs.get('session_id') || '';
-    var pend = null; try { pend = JSON.parse(localStorage.getItem('mcPendingOrderV1') || 'null'); } catch (e) {}
-    var total = (pend && pend.total) || 0, email = (pend && pend.email) || '', modeLabel = (pend && pend.modeLabel) || '';
-    try { history.replaceState({}, '', 'checkout'); } catch (e) {}
-    function finish() {
-      renderDone(ref, total, email, modeLabel);
-      if (pend) { applyPostPayment(ref, total, modeLabel); try { localStorage.removeItem('mcPendingOrderV1'); } catch (e) {} }
-    }
-    var api = (window.MC_API || '').replace(/\/$/, '');
-    if (!sid || !api) { finish(); return; }
-    fetch(api + '/stripe/verify', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ session_id: sid, reference: ref })
-    }).then(function (r) { return r.json(); }).then(function (d) {
-      if (d && d.ok) { if (!total && d.total) total = d.total; finish(); }
-      else payErr('Paiement en cours de confirmation. Tu recevras un email dès validation — réf ' + (ref || '') + '.');
-    }).catch(function () { finish(); }); // réseau : le webhook a finalisé côté serveur
-  })();
 
   // Re-render si le panier change ailleurs (autre onglet) — mais pas après confirmation
   window.addEventListener('mc-cart-change', function () { if (!elDone.hidden) return; render(); });

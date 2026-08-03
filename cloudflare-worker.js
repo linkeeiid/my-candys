@@ -15,20 +15,23 @@
      POST /order            → (LEGACY) commande sans paiement
      POST /create-checkout  → { items:[{id,qty,name}], shipping, customer, promo }
                               → recalcule le montant CÔTÉ SERVEUR, crée la session Stripe Checkout
-                                (CB + Apple Pay + Google Pay), enregistre la commande "en_attente_paiement"
-                              → renvoie { url, reference, amount } (le site redirige vers url)
+                                INTÉGRÉE (embedded, CB + Apple Pay + Google Pay), enregistre la
+                                commande "en_attente_paiement"
+                              → renvoie { clientSecret, sessionId, publishableKey, reference, amount }
+                                (le site monte le formulaire de paiement sur la page, sans redirection)
      POST /stripe/verify    → { session_id, reference } → interroge Stripe ; si payé, finalise
-                                la commande + email client (idempotent) — vérif au retour
+                                la commande + email client (idempotent) — appelé à la fin du paiement
      POST /stripe/webhook   → événement Stripe signé (checkout.session.completed) → finalise
-                                (filet si le client ferme l'onglet avant le retour)
+                                (filet si le client ferme l'onglet avant la confirmation)
 
    VARIABLES (Cloudflare → Settings → Variables and Secrets) :
      BREVO_API_KEY (secret) · BREVO_LIST_ID · SENDER_EMAIL · SENDER_NAME · TO_EMAIL
      FIREBASE_DB_URL · FIREBASE_SECRET (secret) · ADMIN_KEY (secret) · ALLOW_ORIGIN (opt)
      VAPID_PRIVATE_JWK (secret) — notifications push
      >>> À AJOUTER pour le paiement Stripe :
-     STRIPE_SECRET_KEY     (secret)  clé secrète Stripe (sk_test_… puis sk_live_…)
-     STRIPE_WEBHOOK_SECRET (secret)  secret de signature du webhook (whsec_…)
+     STRIPE_SECRET_KEY      (secret)  clé secrète Stripe (sk_test_… puis sk_live_…)
+     STRIPE_WEBHOOK_SECRET  (secret)  secret de signature du webhook (whsec_…)
+     STRIPE_PUBLISHABLE_KEY (var)     clé publique Stripe (pk_test_… puis pk_live_…) — envoyée au site
    ============================================================================= */
 
 /* Prix de BASE (source de vérité serveur, tiré de products.js). Le prix facturé =
@@ -793,13 +796,14 @@ async function fbGet(env, path) {
   try { return await r.json(); } catch (e) { return null; }
 }
 
-/* ---- Stripe Checkout (page de paiement hébergée : CB + Apple Pay + Google Pay) ---- */
-// Crée une session Checkout. Les moyens de paiement (carte, wallets) sont ceux activés dans le dashboard Stripe.
-async function stripeCreateSession(env, { reference, order, successUrl, cancelUrl, couponId }) {
+/* ---- Stripe Checkout INTÉGRÉ (formulaire de paiement sur le site : CB + Apple Pay + Google Pay) ---- */
+// Crée une session Checkout en mode "embedded" (iframe sur le site, sans redirection).
+// Les moyens de paiement (carte, wallets) sont ceux activés dans le dashboard Stripe.
+async function stripeCreateSession(env, { reference, order, couponId }) {
   const p = [];
+  p.push(['ui_mode', 'embedded']);
   p.push(['mode', 'payment']);
-  p.push(['success_url', successUrl]);
-  p.push(['cancel_url', cancelUrl]);
+  p.push(['redirect_on_completion', 'never']);
   p.push(['client_reference_id', reference]);
   p.push(['metadata[reference]', reference]);
   p.push(['locale', 'fr']);
@@ -1167,17 +1171,11 @@ export default {
           const coup = await stripeCreateCoupon(env, Math.round(discount * 100));
           if (coup && coup.id) couponId = coup.id;
         }
-        const originBase = env.ALLOW_ORIGIN || url.origin;
-        const session = await stripeCreateSession(env, {
-          reference: reference, order: order,
-          successUrl: originBase + '/checkout?paid=1&ref=' + reference + '&session_id={CHECKOUT_SESSION_ID}',
-          cancelUrl: originBase + '/checkout?canceled=1&ref=' + reference,
-          couponId: couponId
-        });
-        if (!session || !session.url) {
+        const session = await stripeCreateSession(env, { reference: reference, order: order, couponId: couponId });
+        if (!session || !session.client_secret) {
           return json({ ok: false, error: 'stripe_checkout_failed', detail: session && session.error && session.error.message }, 502, allow);
         }
-        return json({ ok: true, url: session.url, reference: reference, amount: total }, 200, allow);
+        return json({ ok: true, clientSecret: session.client_secret, sessionId: session.id, publishableKey: env.STRIPE_PUBLISHABLE_KEY || '', reference: reference, amount: total }, 200, allow);
       }
 
       // Vérification au retour de Stripe (page de confirmation) : on interroge Stripe et on finalise si payé.
