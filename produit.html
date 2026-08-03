@@ -325,7 +325,8 @@
      parfum/type détecté dans le nom + variations déterministes (chaque fiche a un texte différent) */
   function normn(s) { return (s || '').toLowerCase().replace(/[àâä]/g, 'a').replace(/[éèêë]/g, 'e').replace(/[îï]/g, 'i').replace(/[ôö]/g, 'o').replace(/[ûü]/g, 'u').replace(/ç/g, 'c'); }
   var FLAV = [
-    [['choco', 'chocolat', 'bueno', 'brownie', 'cookie', 'nutella', 'oreo', 'kinder', 'milka', 'twix', 'snicker', 'kitkat', 'bounty', 'lion', 'reese', 'feastable', 'hershey', 'cacao', 'praline', 'schoko', 'cioccolat', 'nachos'], "le chocolat fondant et ultra-gourmand"],
+    [['nacho', 'salsa', 'guacamole', 'tortilla', 'tex mex', 'doritos'], "ce bon goût nacho, maïs grillé et sauce tex-mex"],
+    [['choco', 'chocolat', 'bueno', 'brownie', 'cookie', 'nutella', 'oreo', 'kinder', 'milka', 'twix', 'snicker', 'kitkat', 'bounty', 'lion', 'reese', 'feastable', 'hershey', 'cacao', 'praline', 'schoko', 'cioccolat'], "le chocolat fondant et ultra-gourmand"],
     [['fraise', 'strawberry', 'red velvet'], "la fraise juteuse et acidulée"],
     [['framboise', 'raspberry'], "la framboise pétillante et fruitée"],
     [['mangue', 'mango'], "la mangue exotique et ensoleillée"],
@@ -356,12 +357,21 @@
     for (i = 0; i < FLAV.length; i++) { if (FLAV[i][0].some(function (k) { return n.indexOf(k) >= 0; })) return FLAV[i][1]; }
     return ({ 'Sodas': "un goût pétillant qui sort de l'ordinaire", 'Snacks': "un croquant assaisonné qui claque", 'Bonbons': "un goût sucré explosif", 'Chocolats': "un chocolat fondant et gourmand", 'Épicé': "un mélange sucré-épicé intense", 'Desserts': "une douceur délicate et originale" }[CAT] || "un goût unique qui fait le buzz");
   }
+  /* Article défini (Le / La / L') pour introduire le nom dans les descriptions.
+     Féminin pour une liste de mots clairement féminins, élision devant voyelle, masculin par défaut. */
+  function artOf(nm) {
+    var n = normn(nm).replace(/^[^a-z0-9]+/, '');
+    var vowel = /^[aeiou]/.test(n);
+    var FEM = ['barbe a papa', 'monster', 'prime', 'limonade', 'sauce', 'gaufre', 'pizza', 'creme', 'biere', 'vodka', 'tequila', 'sucette', 'guimauve', 'confiture', 'madeleine'];
+    var isF = false, i; for (i = 0; i < FEM.length; i++) { if (n.indexOf(FEM[i]) >= 0) { isF = true; break; } }
+    return { cap: vowel ? "L'" : (isF ? 'La ' : 'Le '), low: vowel ? "l'" : (isF ? 'la ' : 'le ') };
+  }
   var OPEN = [
     "Il y a des produits qu'on repère au premier coup d'œil, et {name} en fait clairement partie.",
     "Tu l'as sûrement vu passer sur TikTok : {name}, c'est LE genre de trouvaille qu'on s'arrache.",
     "Laisse-moi te présenter {name} — une petite pépite qu'on ne croise pas au supermarché du coin.",
-    "{name}, c'est le genre de produit qui transforme une simple envie de grignoter en vrai petit moment.",
-    "Certains snacks se contentent d'être bons. {name}, lui, a carrément une personnalité.",
+    "{Name}, c'est le genre de produit qui transforme une simple envie de grignoter en vrai petit moment.",
+    "Certains snacks se contentent d'être bons. {Name}, lui, a carrément une personnalité.",
     "On ne va pas se mentir : {name}, ça devient vite une petite obsession dès qu'on y a goûté une fois."
   ];
   var TASTE = [
@@ -373,8 +383,8 @@
   ];
   var STORY = [
     "Importé pour de vrai, {name} fait partie de ces références qu'on déniche aux quatre coins du monde et qu'on ramène rien que pour toi. Pas de version « supermarché » édulcorée : l'original, celui que les vrais fans s'échangent.",
-    "Chez My Candy's, on chasse ce genre de trouvailles introuvables ailleurs. {name} arrive tout droit de sa sélection d'origine, exactement comme dans les vidéos qui t'ont donné envie.",
-    "{name}, tu ne le croiseras pas entre deux packs d'eau au supermarché. C'est une trouvaille d'import, de celles qui rendent une commande un peu plus excitante à ouvrir.",
+    "Chez My Candy's, on chasse ce genre de trouvailles introuvables ailleurs. {Name} arrive tout droit de sa sélection d'origine, exactement comme dans les vidéos qui t'ont donné envie.",
+    "{Name}, tu ne le croiseras pas entre deux packs d'eau au supermarché. C'est une trouvaille d'import, de celles qui rendent une commande un peu plus excitante à ouvrir.",
     "On a flashé sur {name} pour une raison simple : c'est authentique, difficile à trouver, et ça a ce petit truc en plus que les versions locales n'ont pas."
   ];
   var MOMENT = [
@@ -386,8 +396,8 @@
   function pickV(arr, seed) { return arr[seed % arr.length]; }
   function richDesc() {
     var seed = 0, i; for (i = 0; i < p.id.length; i++) seed += p.id.charCodeAt(i);
-    var nm = '<b>' + MC.esc(p.name) + '</b>', fl = flavorOf(p.name);
-    function F(s) { return s.replace(/\{name\}/g, nm).replace(/\{flavor\}/g, fl); }
+    var nm = '<b>' + MC.esc(p.name) + '</b>', fl = flavorOf(p.name), art = artOf(p.name);
+    function F(s) { return s.replace(/\{Name\}/g, art.cap + nm).replace(/\{name\}/g, art.low + nm).replace(/\{flavor\}/g, fl); }
     return '<p>' + F(pickV(OPEN, seed)) + '</p>' +
            '<p>' + F(pickV(TASTE, seed + 2)) + '</p>' +
            '<p>' + F(pickV(STORY, seed + 1)) + '</p>' +
@@ -398,16 +408,16 @@
      2 phrases tirées de pools distincts (accroche + chute), personnalisées avec le nom réel
      et le parfum détecté, sélection déterministe par id → chaque fiche a un texte différent. */
   var LEAD = [
-    "{name}, c'est {flavor} version virale — le genre de trouvaille qu'on ne lâche plus une fois goûtée.",
+    "{Name}, c'est {flavor} version virale — le genre de trouvaille qu'on ne lâche plus une fois goûtée.",
     "Avec {name}, tu retrouves {flavor} dans une édition importée qu'on ne croise pas au supermarché du coin.",
-    "{name} mise tout sur {flavor} : franc, généreux, exactement le petit plaisir qu'on cherchait.",
+    "{Name} mise tout sur {flavor} : franc, généreux, exactement le petit plaisir qu'on cherchait.",
     "Repéré sur TikTok, {name} t'offre {flavor} dans un format qui donne juste envie d'y revenir.",
     "Si tu craques pour {name}, c'est normal : {flavor} y est dosé pile comme il faut pour que ça devienne une habitude.",
-    "{name}, c'est {flavor} sans compromis — une pépite d'import à s'offrir ou à s'échanger entre vrais fans.",
+    "{Name}, c'est {flavor} sans compromis — une pépite d'import à s'offrir ou à s'échanger entre vrais fans.",
     "On a flashé sur {name} pour {flavor} : original, difficile à trouver, et diablement satisfaisant.",
-    "{name} transforme une simple envie de grignoter en vrai petit moment, porté par {flavor}.",
+    "{Name} transforme une simple envie de grignoter en vrai petit moment, porté par {flavor}.",
     "Dans {name}, {flavor} prend toute la place — et on comprend vite pourquoi ça fait autant parler.",
-    "{name} : {flavor}, un format qui claque et ce petit côté « encore une fois » impossible à contrôler."
+    "{Name} : {flavor}, un format qui claque et ce petit côté « encore une fois » impossible à contrôler."
   ];
   var CLOSE = [
     "Bref, une valeur sûre à ajouter au panier avant qu'elle reparte en rupture.",
@@ -420,8 +430,8 @@
   var CATEMO = { 'Sodas': ' 🥤', 'Snacks': ' 🍿', 'Bonbons': ' 🍬', 'Chocolats': ' 🍫', 'Épicé': ' 🌶️', 'Desserts': ' 🍨' };
   function shortDesc() {
     var seed = 0, i; for (i = 0; i < p.id.length; i++) seed += p.id.charCodeAt(i);
-    var fl = flavorOf(p.name);
-    function F(s) { return s.replace(/\{name\}/g, p.name).replace(/\{flavor\}/g, fl); }
+    var fl = flavorOf(p.name), art = artOf(p.name);
+    function F(s) { return s.replace(/\{Name\}/g, art.cap + p.name).replace(/\{name\}/g, art.low + p.name).replace(/\{flavor\}/g, fl); }
     return F(pickV(LEAD, seed)) + ' ' + F(pickV(CLOSE, seed + 4)) + (CATEMO[CAT] || ' ✨');
   }
 
