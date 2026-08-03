@@ -601,6 +601,10 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
   // Re-render si le panier change ailleurs (autre onglet) — mais pas après confirmation
   window.addEventListener('mc-cart-change', function () { if (!elDone.hidden) return; render(); });
   window.addEventListener('storage', function () { if (!elDone.hidden) return; render(); });
+  // Retour de page (bouton précédent / restauration bfcache) → recalcule à partir du panier réel
+  window.addEventListener('pageshow', function () { if (!elDone.hidden) return; render(); });
+  // Retour sur l'onglet → resynchronise si le panier a changé ailleurs
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && elDone.hidden) render(); });
 
   /* ---------- Pré-remplissage : coordonnées + livraison déjà connues ----------
      Source : compte connecté (mcUserV1.ship) → repli commande précédente (mcCheckoutInfoV1)
