@@ -801,7 +801,7 @@ async function fbGet(env, path) {
 // Les moyens de paiement (carte, wallets) sont ceux activés dans le dashboard Stripe.
 async function stripeCreateSession(env, { reference, order, couponId }) {
   const p = [];
-  p.push(['ui_mode', 'embedded']);
+  p.push(['ui_mode', 'embedded_page']);
   p.push(['mode', 'payment']);
   p.push(['redirect_on_completion', 'never']);
   p.push(['client_reference_id', reference]);
@@ -925,22 +925,34 @@ async function notifyNewOrder(env) {
 function logoHdr() {
   return '<div style="text-align:center;padding:4px 0 16px"><img src="https://mycandys.fr/assets/logo.png" alt="My Candy\'s" width="150" style="width:150px;max-width:62%;height:auto"></div>';
 }
-function orderEmailHtml(o) {
-  var lines = (o.items || []).map(function (l) {
-    return '<tr><td style="padding:4px 0">' + esc(l.name) + ' × ' + (l.qty || 1) + '</td>' +
-           '<td style="padding:4px 0;text-align:right">' + money((l.price || 0) * (l.qty || 1)) + '</td></tr>';
+/* URL d'image absolue pour les emails (les data: ne s'affichent pas dans Gmail → ignorées). */
+function imgAbs(src) { src = String(src || ''); if (!src || /^data:/i.test(src)) return ''; if (/^https?:/i.test(src)) return src; return 'https://mycandys.fr/' + src.replace(/^\//, ''); }
+/* Lignes produits AVEC photo pour les emails (photo + nom × qté + prix). */
+function itemRowsHtml(o) {
+  return (o.items || []).map(function (l) {
+    var im = imgAbs(l.img);
+    var cell = im
+      ? '<img src="' + im + '" width="44" height="44" style="border-radius:8px;object-fit:contain;background:#fff;border:1px solid #F0DCE8;display:block">'
+      : '<div style="width:44px;height:44px;border-radius:8px;background:#FFF1F8;text-align:center;line-height:44px;font-size:20px">🍬</div>';
+    return '<tr>' +
+      '<td style="padding:7px 0;width:52px;vertical-align:middle">' + cell + '</td>' +
+      '<td style="padding:7px 10px;vertical-align:middle;font-size:14px">' + esc(l.name) + '<span style="color:#8A6076"> × ' + (l.qty || 1) + '</span></td>' +
+      '<td style="padding:7px 0;text-align:right;vertical-align:middle;font-size:14px;white-space:nowrap">' + money((l.price || 0) * (l.qty || 1)) + '</td>' +
+    '</tr>';
   }).join('');
+}
+function orderEmailHtml(o) {
   var ship = o.shippingCost ? money(o.shippingCost) : 'Offerte';
-  return '<div style="font-family:Arial,sans-serif;color:#2A0A1C">' + logoHdr() +
+  return '<div style="font-family:Arial,sans-serif;color:#2A0A1C;max-width:520px;margin:auto">' + logoHdr() +
     '<h2 style="color:#E01784">Merci pour ta commande ! 🍬</h2>' +
     '<p>Paiement bien reçu. On prépare ton colis avec soin.</p>' +
     '<p style="font-size:13px;color:#8A6076">Commande <b>' + esc(o.reference || '') + '</b></p>' +
-    '<table style="width:100%;border-collapse:collapse;font-size:14px">' + lines +
-    '<tr><td style="padding-top:8px">Livraison</td><td style="padding-top:8px;text-align:right">' + ship + '</td></tr>' +
-    '<tr><td style="padding-top:8px;border-top:1px solid #eee"><b>Total payé</b></td>' +
-    '<td style="padding-top:8px;border-top:1px solid #eee;text-align:right"><b>' + money(o.total) + '</b></td></tr></table>' +
+    '<table style="width:100%;border-collapse:collapse">' + itemRowsHtml(o) +
+    '<tr><td colspan="2" style="padding-top:10px;border-top:1px solid #eee;font-size:14px">Livraison</td><td style="padding-top:10px;border-top:1px solid #eee;text-align:right;font-size:14px">' + ship + '</td></tr>' +
+    '<tr><td colspan="2" style="padding-top:8px;font-size:15px"><b>Total payé</b></td>' +
+    '<td style="padding-top:8px;text-align:right;font-size:15px"><b>' + money(o.total) + '</b></td></tr></table>' +
     '<p style="color:#8A6076;font-size:13px">Comme certains produits sont réapprovisionnés à la commande, ' +
-    'compte quelques jours de préparation. Tu recevras ton numéro de suivi par email dès l\'expédition. 💌</p>' +
+    'compte quelques jours de préparation. Tu recevras ton <b>numéro de suivi</b> par email dès l\'expédition. 💌</p>' +
     '<p style="text-align:center;margin:22px 0 6px"><a href="https://mycandys.fr/suivi-commande" style="background:#E01784;color:#fff;text-decoration:none;font-weight:700;padding:12px 24px;border-radius:12px;display:inline-block">Suivre ma commande →</a></p>' +
     '</div>';
 }
@@ -950,13 +962,15 @@ function shippingEmailHtml(o, tracking, carrier) {
   var CARRIERS = { laposte: 'Colissimo / La Poste', mondialrelay: 'Mondial Relay', chronopost: 'Chronopost', ups: 'UPS', dhl: 'DHL', autre: 'Transporteur' };
   var cname = CARRIERS[carrier] || 'Transporteur';
   var link = 'https://mycandys.fr/suivi-commande?num=' + encodeURIComponent(tracking || '') + (carrier ? '&carrier=' + encodeURIComponent(carrier) : '');
-  return '<div style="font-family:Arial,sans-serif;color:#2A0A1C">' + logoHdr() +
+  var items = itemRowsHtml(o);
+  return '<div style="font-family:Arial,sans-serif;color:#2A0A1C;max-width:520px;margin:auto">' + logoHdr() +
     '<h2 style="color:#E01784">Ton colis est en route ! 🚚</h2>' +
     '<p>Bonne nouvelle : ta commande <b>' + esc(o.reference || '') + '</b> vient d\'être expédiée.</p>' +
     '<table style="width:100%;border-collapse:collapse;font-size:14px;margin:10px 0">' +
     '<tr><td style="padding:6px 0;color:#8A6076">Transporteur</td><td style="padding:6px 0;text-align:right"><b>' + esc(cname) + '</b></td></tr>' +
     '<tr><td style="padding:6px 0;color:#8A6076">N° de suivi</td><td style="padding:6px 0;text-align:right"><b>' + esc(tracking || '') + '</b></td></tr></table>' +
-    '<p style="text-align:center;margin:22px 0 6px"><a href="' + link + '" style="background:#E01784;color:#fff;text-decoration:none;font-weight:700;padding:13px 26px;border-radius:12px;display:inline-block">Suivre mon colis →</a></p>' +
+    '<p style="text-align:center;margin:18px 0 6px"><a href="' + link + '" style="background:#E01784;color:#fff;text-decoration:none;font-weight:700;padding:13px 26px;border-radius:12px;display:inline-block">Suivre mon colis →</a></p>' +
+    (items ? '<p style="font-size:13px;color:#8A6076;margin:20px 0 6px">📦 Ton colis contient :</p><table style="width:100%;border-collapse:collapse">' + items + '</table>' : '') +
     '<p style="color:#8A6076;font-size:13px">Le suivi peut mettre 24-48 h à s\'activer, le temps que le transporteur scanne ton colis. Merci pour ta confiance et régale-toi ! 🍬</p></div>';
 }
 
@@ -1128,7 +1142,8 @@ export default {
           const price = (o.price != null && !isNaN(o.price)) ? Number(o.price) : basePrice;
           if (price == null || isNaN(price)) return json({ ok: false, error: 'produit_inconnu', id: id }, 400, allow);
           sub += price * qty;
-          lines.push({ id: id, name: (o.name || str(it.name, 80) || id), price: round2(price), qty: qty });
+          var imgv = (o.img || str(it.img, 400) || ''); if (/^data:/i.test(imgv)) imgv = '';
+          lines.push({ id: id, name: (o.name || str(it.name, 80) || id), price: round2(price), qty: qty, img: imgv || null });
         }
         sub = round2(sub);
         // Codes promo (source de vérité serveur) : codes fixes + code fidélité MCFIDxx-XXXX validé contre l'e-mail
@@ -1151,7 +1166,7 @@ export default {
         const total = round2(sub - discount + ship);
         if (total <= 0) return json({ ok: false, error: 'montant_invalide' }, 400, allow);
 
-        const reference = 'MC-' + new Date().getUTCFullYear() + '-' + rand6();
+        const reference = 'MC-' + rand6();
         const customer = {
           email: str(c.email, 254), name: (str(c.first, 60) + ' ' + str(c.last, 60)).trim(),
           first: str(c.first, 60), last: str(c.last, 60), tel: str(c.tel, 30),

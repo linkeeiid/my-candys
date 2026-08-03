@@ -545,7 +545,7 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
     if (!elForm.reportValidity()) return;
     if (stripeCk) return; // formulaire déjà affiché
     payErr('');
-    var items = MCCart.items().map(function (l) { return { id: l.id, qty: l.qty, name: l.name }; });
+    var items = MCCart.items().map(function (l) { var _pp = (window.MC && MC.byId) ? MC.byId(l.id) : null; return { id: l.id, qty: l.qty, name: l.name, img: (_pp && _pp.img) || l.img || '' }; });
     if (!items.length) return;
     var api = (window.MC_API || '').replace(/\/$/, '');
     if (!api) { payErr('Paiement momentanément indisponible. Réessaie plus tard.'); return; }
