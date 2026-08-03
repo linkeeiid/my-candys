@@ -12,21 +12,23 @@
      GET  /admin/data       → dump newsletter/messages/orders (admin)
      POST /newsletter       → { email }
      POST /contact          → { name, email, message }
-     POST /order            → (LEGACY) commande sans paiement — remplacé par le flux SumUp
-     POST /create-checkout  → { items:[{id,qty,name}], shipping, customer }
-                              → recalcule le montant CÔTÉ SERVEUR, crée le checkout SumUp,
-                                enregistre la commande "en_attente_paiement" dans Firebase
-                              → renvoie { checkoutId, reference, amount }
-     POST /confirm          → { checkoutId, reference } → vérifie PAID chez SumUp,
-                                marque la commande payée + email client (idempotent)
-     POST /sumup-webhook    → callback SumUp (return_url) → même finalisation (filet)
+     POST /order            → (LEGACY) commande sans paiement
+     POST /create-checkout  → { items:[{id,qty,name}], shipping, customer, promo }
+                              → recalcule le montant CÔTÉ SERVEUR, crée la session Stripe Checkout
+                                (CB + Apple Pay + Google Pay), enregistre la commande "en_attente_paiement"
+                              → renvoie { url, reference, amount } (le site redirige vers url)
+     POST /stripe/verify    → { session_id, reference } → interroge Stripe ; si payé, finalise
+                                la commande + email client (idempotent) — vérif au retour
+     POST /stripe/webhook   → événement Stripe signé (checkout.session.completed) → finalise
+                                (filet si le client ferme l'onglet avant le retour)
 
    VARIABLES (Cloudflare → Settings → Variables and Secrets) :
      BREVO_API_KEY (secret) · BREVO_LIST_ID · SENDER_EMAIL · SENDER_NAME · TO_EMAIL
      FIREBASE_DB_URL · FIREBASE_SECRET (secret) · ADMIN_KEY (secret) · ALLOW_ORIGIN (opt)
-     >>> À AJOUTER pour le paiement :
-     SUMUP_SECRET_KEY    (secret)  ta clé API SumUp (sup_sk_…)
-     SUMUP_MERCHANT_CODE (var)     code marchand SumUp (ex: M6HM189G)
+     VAPID_PRIVATE_JWK (secret) — notifications push
+     >>> À AJOUTER pour le paiement Stripe :
+     STRIPE_SECRET_KEY     (secret)  clé secrète Stripe (sk_test_… puis sk_live_…)
+     STRIPE_WEBHOOK_SECRET (secret)  secret de signature du webhook (whsec_…)
    ============================================================================= */
 
 /* Prix de BASE (source de vérité serveur, tiré de products.js). Le prix facturé =
@@ -791,27 +793,71 @@ async function fbGet(env, path) {
   try { return await r.json(); } catch (e) { return null; }
 }
 
-/* ---- SumUp Online Payments ---- */
-async function sumupCreateCheckout(env, { reference, amount, description, returnUrl }) {
-  const r = await fetch('https://api.sumup.com/v0.1/checkouts', {
+/* ---- Stripe Checkout (page de paiement hébergée : CB + Apple Pay + Google Pay) ---- */
+// Crée une session Checkout. Les moyens de paiement (carte, wallets) sont ceux activés dans le dashboard Stripe.
+async function stripeCreateSession(env, { reference, order, successUrl, cancelUrl, couponId }) {
+  const p = [];
+  p.push(['mode', 'payment']);
+  p.push(['success_url', successUrl]);
+  p.push(['cancel_url', cancelUrl]);
+  p.push(['client_reference_id', reference]);
+  p.push(['metadata[reference]', reference]);
+  p.push(['locale', 'fr']);
+  if (order.customer && order.customer.email) p.push(['customer_email', order.customer.email]);
+  let i = 0;
+  for (const l of order.items) {
+    p.push(['line_items[' + i + '][price_data][currency]', 'eur']);
+    p.push(['line_items[' + i + '][price_data][product_data][name]', l.name]);
+    p.push(['line_items[' + i + '][price_data][unit_amount]', String(Math.round(l.price * 100))]);
+    p.push(['line_items[' + i + '][quantity]', String(l.qty)]);
+    i++;
+  }
+  if (order.shippingCost > 0) {
+    p.push(['line_items[' + i + '][price_data][currency]', 'eur']);
+    p.push(['line_items[' + i + '][price_data][product_data][name]', 'Livraison (' + (order.shipping === 'domicile' ? 'à domicile' : 'point relais') + ')']);
+    p.push(['line_items[' + i + '][price_data][unit_amount]', String(Math.round(order.shippingCost * 100))]);
+    p.push(['line_items[' + i + '][quantity]', '1']);
+    i++;
+  }
+  if (couponId) p.push(['discounts[0][coupon]', couponId]);
+  const bodyStr = p.map(function (kv) { return encodeURIComponent(kv[0]) + '=' + encodeURIComponent(kv[1]); }).join('&');
+  const r = await fetch('https://api.stripe.com/v1/checkout/sessions', {
     method: 'POST',
-    headers: { 'Authorization': 'Bearer ' + env.SUMUP_SECRET_KEY, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      checkout_reference: reference,
-      amount: amount,
-      currency: 'EUR',
-      merchant_code: env.SUMUP_MERCHANT_CODE,
-      description: description || undefined,
-      return_url: returnUrl || undefined
-    })
+    headers: { 'Authorization': 'Bearer ' + env.STRIPE_SECRET_KEY, 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: bodyStr
   });
   try { return await r.json(); } catch (e) { return null; }
 }
-async function sumupGetCheckout(env, id) {
-  const r = await fetch('https://api.sumup.com/v0.1/checkouts/' + encodeURIComponent(id), {
-    headers: { 'Authorization': 'Bearer ' + env.SUMUP_SECRET_KEY }
+// Coupon « montant fixe » à usage unique pour appliquer exactement la remise calculée côté serveur.
+async function stripeCreateCoupon(env, amountOffCents) {
+  const bodyStr = 'amount_off=' + amountOffCents + '&currency=eur&duration=once&max_redemptions=1&name=' + encodeURIComponent('Reduction My Candys');
+  const r = await fetch('https://api.stripe.com/v1/coupons', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + env.STRIPE_SECRET_KEY, 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: bodyStr
   });
   try { return await r.json(); } catch (e) { return null; }
+}
+async function stripeGetSession(env, id) {
+  const r = await fetch('https://api.stripe.com/v1/checkout/sessions/' + encodeURIComponent(id), {
+    headers: { 'Authorization': 'Bearer ' + env.STRIPE_SECRET_KEY }
+  });
+  try { return await r.json(); } catch (e) { return null; }
+}
+// Vérifie la signature d'un webhook Stripe (HMAC-SHA256 sur "<t>.<raw>").
+async function verifyStripeSig(raw, sigHeader, secret) {
+  if (!secret || !sigHeader) return false;
+  const parts = {};
+  sigHeader.split(',').forEach(function (kv) { const i = kv.indexOf('='); if (i > 0) { const k = kv.slice(0, i).trim(); (parts[k] = parts[k] || []).push(kv.slice(i + 1).trim()); } });
+  const t = parts.t && parts.t[0];
+  const v1 = parts.v1 || [];
+  if (!t || !v1.length) return false;
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey('raw', enc.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const mac = await crypto.subtle.sign('HMAC', key, enc.encode(t + '.' + raw));
+  const bytes = new Uint8Array(mac);
+  let hex = ''; for (let i = 0; i < bytes.length; i++) hex += bytes[i].toString(16).padStart(2, '0');
+  return v1.some(function (sig) { return sig === hex; });
 }
 
 /* ---- Brevo : contact (newsletter) ---- */
@@ -932,25 +978,15 @@ function relanceEmailHtml(name) {
 }
 
 /* Finalise une commande si le paiement SumUp est bien PAID. Idempotent. */
-async function finalizeIfPaid(env, reference, checkoutId) {
-  // Petit retry : juste après le widget, le statut peut mettre 1 instant à passer PAID.
-  let co = null;
-  for (let i = 0; i < 3; i++) {
-    co = await sumupGetCheckout(env, checkoutId);
-    if (co && co.status && co.status !== 'PENDING') break;
-    await new Promise(function (r) { setTimeout(r, 700); });
-  }
-  if (!co || co.status !== 'PAID') return { ok: false, status: (co && co.status) || 'unknown' };
-
+// Finalise une commande DÉJÀ vérifiée payée (webhook Stripe ou retour vérifié). Idempotent.
+async function finalizeOrder(env, reference, paymentIntent) {
   const order = await fbGet(env, 'orders/' + reference);
   if (!order) return { ok: false, error: 'order_not_found' };
   if (order.paid) return { ok: true, already: true, reference: reference, total: order.total };
 
-  const tx = (co.transactions && co.transactions[0]) || {};
   await fbPatch(env, 'orders/' + reference, {
     paid: true, status: 'nouvelle',
-    transaction_code: tx.transaction_code || null,
-    transaction_id: tx.id || null,
+    payment_intent: paymentIntent || null,
     paidTs: Date.now()
   });
   order.paid = true;
@@ -992,6 +1028,20 @@ export default {
     if (path === '/catalog' && request.method === 'GET') {
       const cat = await fbGet(env, 'catalog');
       return json({ ok: true, overrides: cat || {} }, 200, allow);
+    }
+
+    // --- Webhook Stripe (body BRUT requis pour la signature → traité avant le parse JSON) ---
+    if (path === '/stripe/webhook' && request.method === 'POST') {
+      const raw = await request.text();
+      const okSig = await verifyStripeSig(raw, request.headers.get('stripe-signature') || '', env.STRIPE_WEBHOOK_SECRET);
+      if (!okSig) return json({ ok: false, error: 'bad_signature' }, 400, allow);
+      let evt = {}; try { evt = JSON.parse(raw); } catch (e) {}
+      if (evt.type === 'checkout.session.completed' || evt.type === 'checkout.session.async_payment_succeeded') {
+        const s = (evt.data && evt.data.object) || {};
+        const ref = (s.metadata && s.metadata.reference) || s.client_reference_id;
+        if (ref && s.payment_status === 'paid') { try { await finalizeOrder(env, ref, s.payment_intent); } catch (e) {} }
+      }
+      return json({ ok: true }, 200, allow);
     }
 
     if (request.method !== 'POST') return json({ ok: false, error: 'method_not_allowed' }, 405, allow);
@@ -1051,7 +1101,7 @@ export default {
         return json({ ok: true }, 200, allow);
       }
 
-      // ------------------------- PAIEMENT SUMUP -------------------------
+      // ------------------------- PAIEMENT STRIPE -------------------------
 
       if (path === '/create-checkout') {
         const items = Array.isArray(body.items) ? body.items : [];
@@ -1059,7 +1109,7 @@ export default {
         const c = body.customer || {};
         if (!items.length) return json({ ok: false, error: 'panier_vide' }, 400, allow);
         if (!isEmail(c.email)) return json({ ok: false, error: 'email_invalide' }, 400, allow);
-        if (!env.SUMUP_SECRET_KEY || !env.SUMUP_MERCHANT_CODE) return json({ ok: false, error: 'sumup_non_configure' }, 500, allow);
+        if (!env.STRIPE_SECRET_KEY) return json({ ok: false, error: 'stripe_non_configure' }, 500, allow);
 
         // Prix qui font autorité = base products.js + overrides Firebase.
         const ov = (await fbGet(env, 'catalog')) || {};
@@ -1069,18 +1119,17 @@ export default {
           const qty = Math.max(1, Math.min(99, parseInt(it.qty, 10) || 1));
           const o = ov[id] || {};
           if (o.deleted || o.available === false) return json({ ok: false, error: 'produit_indisponible', id: id }, 400, allow);
-          const base = BASE_PRICES[id];
+          const basePrice = BASE_PRICES[id];
           // prix = override console (Firebase) s'il existe, sinon prix de base products.js
-          const price = (o.price != null && !isNaN(o.price)) ? Number(o.price) : base;
+          const price = (o.price != null && !isNaN(o.price)) ? Number(o.price) : basePrice;
           if (price == null || isNaN(price)) return json({ ok: false, error: 'produit_inconnu', id: id }, 400, allow);
           sub += price * qty;
-          lines.push({ id: id, name: str(it.name, 80) || id, price: round2(price), qty: qty });
+          lines.push({ id: id, name: (o.name || str(it.name, 80) || id), price: round2(price), qty: qty });
         }
         sub = round2(sub);
-        // Code promo fidélité : MCFIDxx-XXXX validé contre l'e-mail du client (recalcul serveur)
+        // Codes promo (source de vérité serveur) : codes fixes + code fidélité MCFIDxx-XXXX validé contre l'e-mail
         let discount = 0, promoCode = '';
         const promo = str(body.promo, 32).toUpperCase();
-        // Codes à pourcentage fixe (source de vérité serveur)
         const FIXED_PROMOS = { 'CANDYSUMMER26': 26, 'BIENVENUE10': 10, 'TAGADA10': 10 };
         if (FIXED_PROMOS[promo] != null) {
           discount = round2(sub * FIXED_PROMOS[promo] / 100); promoCode = promo;
@@ -1112,33 +1161,37 @@ export default {
         };
         await fbSet(env, 'orders/' + reference, order);
 
-        const co = await sumupCreateCheckout(env, {
-          reference: reference, amount: total, description: "My Candy's " + reference,
-          returnUrl: url.origin + '/sumup-webhook'
+        // Remise → coupon Stripe "montant fixe" à usage unique (applique EXACTEMENT la remise calculée serveur)
+        let couponId = null;
+        if (discount > 0) {
+          const coup = await stripeCreateCoupon(env, Math.round(discount * 100));
+          if (coup && coup.id) couponId = coup.id;
+        }
+        const originBase = env.ALLOW_ORIGIN || url.origin;
+        const session = await stripeCreateSession(env, {
+          reference: reference, order: order,
+          successUrl: originBase + '/checkout?paid=1&ref=' + reference + '&session_id={CHECKOUT_SESSION_ID}',
+          cancelUrl: originBase + '/checkout?canceled=1&ref=' + reference,
+          couponId: couponId
         });
-        if (!co || !co.id) {
-          return json({ ok: false, error: 'sumup_checkout_failed', detail: co && (co.message || co.error_code || co.error_message) }, 502, allow);
+        if (!session || !session.url) {
+          return json({ ok: false, error: 'stripe_checkout_failed', detail: session && session.error && session.error.message }, 502, allow);
         }
-        return json({ ok: true, checkoutId: co.id, reference: reference, amount: total }, 200, allow);
+        return json({ ok: true, url: session.url, reference: reference, amount: total }, 200, allow);
       }
 
-      if (path === '/confirm') {
+      // Vérification au retour de Stripe (page de confirmation) : on interroge Stripe et on finalise si payé.
+      if (path === '/stripe/verify') {
+        const sessionId = str(body.session_id, 120);
         const reference = str(body.reference, 90);
-        const checkoutId = str(body.checkoutId, 80);
-        if (!reference || !checkoutId) return json({ ok: false, error: 'params_manquants' }, 400, allow);
-        const res = await finalizeIfPaid(env, reference, checkoutId);
+        if (!sessionId) return json({ ok: false, error: 'params_manquants' }, 400, allow);
+        const s = await stripeGetSession(env, sessionId);
+        if (!s || !s.id) return json({ ok: false, error: 'session_introuvable' }, 404, allow);
+        const ref = (s.metadata && s.metadata.reference) || s.client_reference_id;
+        if (reference && ref && reference !== ref) return json({ ok: false, error: 'reference_mismatch' }, 400, allow);
+        if (s.payment_status !== 'paid') return json({ ok: false, status: s.payment_status || 'unpaid' }, 402, allow);
+        const res = await finalizeOrder(env, ref, s.payment_intent);
         return json(res, res.ok ? 200 : 402, allow);
-      }
-
-      if (path === '/sumup-webhook') {
-        // SumUp appelle return_url avec l'id (ou la ref) du checkout. On revérifie et on finalise.
-        let id = str(body.id || body.checkout_id || (body.payload && body.payload.id), 80);
-        if (!id) id = str(url.searchParams.get('id'), 80);
-        if (id) {
-          const co = await sumupGetCheckout(env, id);
-          if (co && co.checkout_reference) await finalizeIfPaid(env, co.checkout_reference, id);
-        }
-        return json({ ok: true }, 200, allow);
       }
 
       if (path === '/order') {

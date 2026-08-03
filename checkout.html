@@ -90,7 +90,6 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
 }
 .co-pay-hint{font-size:12.5px;color:#8A6076;margin:0 2px 2px}
 .co-pay-err{margin-top:12px;font-size:13.5px;color:#C62A22;background:#FDECEC;border:1px solid #F6C9C4;border-radius:12px;padding:11px 14px;font-weight:600}
-#sumup-card{margin-top:6px}
 
 /* ---------- Récapitulatif ---------- */
 .co-sum{background:#FFF6FB;border:1px solid #F3D9E9;border-radius:20px;padding:20px 22px;box-shadow:0 10px 26px rgba(122,14,74,.1)}
@@ -271,8 +270,7 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
           <div class="co-paytrust-txt"><b>Paiement 100&nbsp;% sécurisé</b><span>Tes données bancaires sont chiffrées et ne transitent jamais par notre site.</span></div>
           <div class="co-paytrust-cards"><span class="c-visa">VISA</span><span class="c-mc">Mastercard</span><span class="c-cb">CB</span></div>
         </div>
-        <div id="co-pay-hint" class="co-pay-hint">Remplis tes infos ci-dessus, puis clique sur <b>« Payer »</b> — le paiement sécurisé s'affiche juste ici. 👇</div>
-        <div id="sumup-card"></div>
+        <div id="co-pay-hint" class="co-pay-hint">Remplis tes infos ci-dessus, puis clique sur <b>« Payer »</b> — tu seras redirigé vers la page de paiement 100&nbsp;% sécurisée (carte, Apple&nbsp;Pay, Google&nbsp;Pay). 🔒</div>
         <div id="co-pay-err" class="co-pay-err" hidden></div>
       </section>
 
@@ -335,7 +333,6 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
 <script src="chrome.js"></script>
 <script src="app.js"></script>
 <script src="catalog-overrides.js"></script>
-<script src="https://gateway.sumup.com/gateway/ecom/card/v2/sdk.js"></script>
 <script>
 (function () {
   'use strict';
@@ -462,9 +459,8 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
     sumToggle.setAttribute('aria-expanded', String(!collapsed));
   });
 
-  /* ---------- Paiement SumUp (widget sécurisé) ---------- */
+  /* ---------- Paiement Stripe (page hébergée : CB + Apple Pay + Google Pay) ---------- */
   var payBtn = $('#co-pay');
-  var checkout = null; // { reference, checkoutId, total } une fois le checkout créé
 
   function payErr(msg) {
     var e = $('#co-pay-err'); if (!e) return;
@@ -476,7 +472,7 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
     var M = {
       panier_vide: 'ton panier est vide', email_invalide: 'email invalide',
       produit_indisponible: "un produit n'est plus disponible", produit_inconnu: 'un produit est introuvable',
-      sumup_non_configure: 'paiement non configuré', sumup_checkout_failed: "le paiement n'a pas pu être créé",
+      stripe_non_configure: 'paiement non configuré', stripe_checkout_failed: "le paiement n'a pas pu être créé",
       montant_invalide: 'montant invalide'
     };
     return M[code] || 'paiement indisponible';
@@ -491,27 +487,29 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
     };
   }
 
-  function showDone(total) {
-    $('#co-num').textContent = checkout ? checkout.reference : 'MC';
+  // Écran de confirmation
+  function renderDone(ref, total, email, modeLabel) {
+    $('#co-num').textContent = ref || 'MC';
     $('#co-done-recap').innerHTML = '' +
-      '<div class="co-recap-row"><span>Email</span><span>' + MC.esc(collectCustomer().email) + '</span></div>' +
-      '<div class="co-recap-row"><span>Livraison</span><span>' + MC.esc(MODES[mode].label) + '</span></div>' +
+      '<div class="co-recap-row"><span>Email</span><span>' + MC.esc(email || '') + '</span></div>' +
+      '<div class="co-recap-row"><span>Livraison</span><span>' + MC.esc(modeLabel || '') + '</span></div>' +
       '<div class="co-recap-row co-recap-tot"><span>Total payé</span><b>' + money(total) + '</b></div>';
     elForm.hidden = true; elEmpty.hidden = true; elDone.hidden = false;
-    // Capture la commande AVANT de vider le panier (pour l'historique « Mes commandes » du compte)
+    try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (err) { window.scrollTo(0, 0); }
+  }
+  // Effets APRÈS paiement confirmé (une seule fois) : historique commande + vidage panier + points fidélité
+  function applyPostPayment(ref, total, modeLabel) {
     var _order = null;
     try {
       var _its = MCCart.items().map(function (l) { return { name: l.name, qty: l.qty, price: l.price, id: l.id }; });
-      _order = { num: (checkout ? checkout.reference : 'MC'), date: new Date().toISOString(), total: total, count: _its.reduce(function (n, l) { return n + l.qty; }, 0), items: _its, mode: MODES[mode].label };
+      _order = { num: ref, date: new Date().toISOString(), total: total, count: _its.reduce(function (n, l) { return n + l.qty; }, 0), items: _its, mode: modeLabel };
     } catch (e0) {}
     MCCart.clear();
-    // Mémorise coordonnées + livraison → plus besoin de les ressaisir la prochaine fois
-    // (enregistré dans le compte connecté + repli local générique).
     try {
       var _info = collectCustomer(); _info.ship = mode;
-      localStorage.setItem('mcCheckoutInfoV1', JSON.stringify(_info));
+      if (_info.email) localStorage.setItem('mcCheckoutInfoV1', JSON.stringify(_info));
     } catch (e) {}
-    // Fidélité : 1 € dépensé = 1 point (+1 commande). Le palier atteint déclenche le code + l'email à la prochaine ouverture de « Mon compte ».
+    // Fidélité : 1 € dépensé = 1 point (+1 commande)
     try {
       var _u = JSON.parse(localStorage.getItem('mcUserV1') || 'null');
       if (_u && (_u.email || _u.provider)) {
@@ -520,75 +518,67 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
         try { _u.ship = collectCustomer(); _u.ship.ship = mode; } catch (e2) {}
         if (_order) { _u.orderHistory = (_u.orderHistory || []); _u.orderHistory.unshift(_order); if (_u.orderHistory.length > 20) _u.orderHistory.length = 20; }
         localStorage.setItem('mcUserV1', JSON.stringify(_u));
+        try { window.dispatchEvent(new Event('mc-auth-change')); } catch (e3) {}
       }
     } catch (e) {}
-    try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (err) { window.scrollTo(0, 0); }
   }
 
-  // Après un "success" du widget : on revérifie côté serveur (source de vérité).
-  function verifyAndFinish() {
-    var api = (window.MC_API || '').replace(/\/$/, '');
-    fetch(api + '/confirm', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ reference: checkout.reference, checkoutId: checkout.checkoutId })
-    }).then(function (r) { return r.json(); }).then(function (d) {
-      if (d && d.ok) showDone(checkout.total);
-      else payErr('Paiement reçu, confirmation en cours. Tu recevras un email — réf ' + checkout.reference + '.');
-    }).catch(function () {
-      // Paiement validé par le widget ; le webhook serveur finalisera même si /confirm échoue.
-      showDone(checkout.total);
-    });
-  }
-
-  function mountWidget(checkoutId) {
-    var hint = $('#co-pay-hint'); if (hint) hint.hidden = true;
-    payBtn.style.display = 'none';
-    var host = document.getElementById('sumup-card');
-    try { host.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
-    if (typeof SumUpCard === 'undefined') {
-      payErr("Le module de paiement n'a pas pu se charger. Recharge la page et réessaie.");
-      payBtn.style.display = ''; if (hint) hint.hidden = false; checkout = null; return;
-    }
-    SumUpCard.mount({
-      id: 'sumup-card',
-      checkoutId: checkoutId,
-      locale: 'fr-FR',
-      onResponse: function (type) {
-        if (type === 'success') verifyAndFinish();
-        else if (type === 'error') payErr('Le paiement a échoué. Vérifie ta carte et réessaie.');
-      }
-    });
-  }
-
-  // Soumission : crée le checkout côté Worker (montant recalculé serveur) → affiche le widget
+  // Soumission : crée la session Stripe (montant recalculé serveur) → redirige vers la page de paiement
   elForm.addEventListener('submit', function (e) {
     e.preventDefault();
     if (!elForm.reportValidity()) return;
-    if (checkout) return; // widget déjà monté
     payErr('');
-
     var items = MCCart.items().map(function (l) { return { id: l.id, qty: l.qty, name: l.name }; });
     if (!items.length) return;
-
     var api = (window.MC_API || '').replace(/\/$/, '');
     if (!api) { payErr('Paiement momentanément indisponible. Réessaie plus tard.'); return; }
-
     payBtn.disabled = true;
-    payBtn.firstElementChild.textContent = 'Préparation du paiement…';
-
+    payBtn.firstElementChild.textContent = 'Redirection vers le paiement…';
+    var cust = collectCustomer();
     fetch(api + '/create-checkout', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: items, shipping: mode, customer: collectCustomer(), promo: (promo ? promo.code : '') })
+      body: JSON.stringify({ items: items, shipping: mode, customer: cust, promo: (promo ? promo.code : '') })
     }).then(function (r) { return r.json(); }).then(function (d) {
-      if (!d || !d.ok || !d.checkoutId) throw new Error(d && d.error ? errMsg(d.error) : 'paiement indisponible');
-      checkout = { reference: d.reference, checkoutId: d.checkoutId, total: d.amount };
-      mountWidget(d.checkoutId);
+      if (!d || !d.ok || !d.url) throw new Error(d && d.error ? errMsg(d.error) : 'paiement indisponible');
+      try {
+        localStorage.setItem('mcPendingOrderV1', JSON.stringify({ reference: d.reference, total: d.amount, email: cust.email, modeLabel: (MODES[mode] && MODES[mode].label) || '' }));
+      } catch (e2) {}
+      window.location.href = d.url; // → page de paiement sécurisée Stripe
     }).catch(function (err) {
       payBtn.disabled = false;
       render(); // restaure le libellé "Payer X€"
       payErr(err.message || 'Une erreur est survenue. Réessaie.');
     });
   });
+
+  // Retour depuis Stripe : ?paid=1&ref=…&session_id=…  (succès) · ?canceled=1 (annulé)
+  (function handleReturn() {
+    var qs = new URLSearchParams(location.search);
+    if (qs.get('canceled')) {
+      try { history.replaceState({}, '', 'checkout'); } catch (e) {}
+      payErr('Paiement annulé — ton panier est intact, tu peux réessayer quand tu veux.');
+      return;
+    }
+    if (!qs.get('paid')) return;
+    var ref = qs.get('ref') || '';
+    var sid = qs.get('session_id') || '';
+    var pend = null; try { pend = JSON.parse(localStorage.getItem('mcPendingOrderV1') || 'null'); } catch (e) {}
+    var total = (pend && pend.total) || 0, email = (pend && pend.email) || '', modeLabel = (pend && pend.modeLabel) || '';
+    try { history.replaceState({}, '', 'checkout'); } catch (e) {}
+    function finish() {
+      renderDone(ref, total, email, modeLabel);
+      if (pend) { applyPostPayment(ref, total, modeLabel); try { localStorage.removeItem('mcPendingOrderV1'); } catch (e) {} }
+    }
+    var api = (window.MC_API || '').replace(/\/$/, '');
+    if (!sid || !api) { finish(); return; }
+    fetch(api + '/stripe/verify', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: sid, reference: ref })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      if (d && d.ok) { if (!total && d.total) total = d.total; finish(); }
+      else payErr('Paiement en cours de confirmation. Tu recevras un email dès validation — réf ' + (ref || '') + '.');
+    }).catch(function () { finish(); }); // réseau : le webhook a finalisé côté serveur
+  })();
 
   // Re-render si le panier change ailleurs (autre onglet) — mais pas après confirmation
   window.addEventListener('mc-cart-change', function () { if (!elDone.hidden) return; render(); });
