@@ -250,12 +250,21 @@ h1,h2,h3{font-weight:800;letter-spacing:-.5px;margin:0}
   .mc-tl{font-size:8px}
   .mc-tsep{font-size:14px;margin-top:-6px}
   .mc-code{font-size:10.5px;padding:5px 11px;border-radius:9px}
-  .mc-foot{padding:26px 20px 18px;gap:22px 14px;text-align:center}
+  /* Footer mobile épuré : logo centré en haut → texte → réseaux → 3 colonnes côte à côte */
+  .mc-foot{flex-direction:column;align-items:center;padding:26px 16px 18px;gap:16px;text-align:center}
+  .mc-fbrand-logo{order:-1}
+  .mc-fbrand-logo img{height:58px}
   .mc-fbrand{flex-basis:100%;text-align:center}
-  .mc-fbrand p{margin-left:auto;margin-right:auto}
+  .mc-fbrand p{margin:0 auto 14px;max-width:340px;font-size:13.5px}
   .mc-fsocial{justify-content:center}
-  .mc-fcol{flex:1 1 40%;min-width:0;text-align:center}
-  .mc-fbar{flex-direction:column-reverse;justify-content:center;text-align:center;gap:12px}
+  .mc-fcols{flex-basis:100%;flex-wrap:nowrap;justify-content:center;gap:6px}
+  .mc-fcol{flex:1 1 0;min-width:0;text-align:center}
+  .mc-fcols .mc-fcol:nth-child(1){order:3}
+  .mc-fcols .mc-fcol:nth-child(2){order:1}
+  .mc-fcols .mc-fcol:nth-child(3){order:2}
+  .mc-fcol-title{font-size:13px;margin-bottom:9px}
+  .mc-fcol-links{gap:8px;font-size:12px}
+  .mc-fbar{flex-direction:column;justify-content:center;text-align:center;gap:10px}
   .mc-fpay{justify-content:center}
 }
 @media (max-width:400px){

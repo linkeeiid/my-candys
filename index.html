@@ -148,8 +148,8 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .mc-mbox-img{position:relative;height:150px;background:#fff}
 .mc-mbox-body{padding:11px 12px 12px;display:flex;flex-direction:column;flex:1}
 .mc-mbox-body b{font-weight:700;font-size:14px;line-height:1.15}
-.mc-mbox-add{display:block;text-align:center;margin-top:auto;width:100%;background:#2A0A1C;color:#fff;font-weight:600;font-size:12.5px;padding:9px;border-radius:11px}
-.mc-mbox-add:hover{background:#E01784}
+.mc-mbox-add{display:block;text-align:center;margin-top:auto;width:100%;background:linear-gradient(135deg,#FF2E9A,#E01784);color:#fff;font-weight:700;font-size:13px;padding:10px 12px;border-radius:12px;box-shadow:0 6px 14px rgba(255,46,154,.28);white-space:nowrap}
+.mc-mbox-add:hover{filter:brightness(1.06)}
 .mc-white-h{color:#fff}
 .mc-rev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
 .mc-rev{background:#fff;border-radius:20px;padding:22px;box-shadow:0 10px 24px rgba(122,14,74,.14)}
@@ -192,6 +192,15 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
   .mc-h2{font-size:24px}.mc-k{font-size:17px}
   .mc-myst{flex-direction:column;padding:18px;gap:16px}
   .mc-myst-gift{width:100%}
+  /* Mystery Box mobile : 1 box par ligne, carte horizontale (image gauche / infos droite) */
+  .mc-myst-grid{grid-template-columns:1fr;gap:14px}
+  .mc-mbox{flex-direction:row}
+  .mc-mbox-img{width:142px;height:auto;flex:none}
+  .mc-mbox-body{flex:1;padding:14px 16px;justify-content:center;gap:5px}
+  .mc-mbox-body b{font-size:17px}
+  .mc-mbox-add{margin-top:12px;width:auto;align-self:flex-start;padding:11px 24px;font-size:14px}
+  /* Avis : cartes pleine largeur pour occuper tout l'écran */
+  .mc-rev-track .mc-rev{width:calc(100vw - 44px)}
   .mc-news{padding:28px 20px}
   .mc-news form{flex-direction:column}
   .mc-news input{min-width:0;width:100%}
@@ -290,7 +299,7 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
   <div class="mc-myst">
     <div class="mc-myst-gift"><a href="mystery-box" aria-label="Voir toutes les Mystery Box" style="display:block"><img src="assets/boxes/mega.png" alt="Méga Box My Candy's — pleine de snacks" class="mc-myst-photo" loading="lazy" decoding="async"></a></div>
     <div class="mc-myst-body">
-      <h2 class="mc-h2" style="font-size:36px">Nos Mystery Box 🎉</h2>
+      <h2 class="mc-h2" style="font-size:36px">Nos Mystery Box</h2>
       <p style="font-size:16px;color:#7A5468;margin:10px 0 0;max-width:460px">Le mélange ultime de nos univers : bonbons, sodas et snacks viraux du monde entier, pour bien plus que leur valeur. Le cadeau parfait à unboxer sur les réseaux.</p>
       <div class="mc-myst-grid" id="mc-boxes"></div>
     </div>
