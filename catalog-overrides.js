@@ -14,7 +14,31 @@
     for (var nid in ov) {
       var no = ov[nid];
       if (no && no['new'] && !no.deleted && MC.byId && !MC.byId(nid)) {
-        MC.PRODUCTS.push({ id: nid, name: no.name || nid, price: (no.price != null ? no.price : null), old: (no.old != null ? no.old : null), cat: no.cat || 'Bonbons', brand: no.brand || null, tint: no.tint || (MC.T && MC.T.pink) || '#FFD1E8', img: no.img || null, sub: (no.sub || null), stock: no.stock, available: no.available !== false, reviews: 0, nouveau: true });
+        if (no.box && MC.BOXES) {
+          MC.BOXES.push({ id: nid, name: no.name || nid, price: (no.price != null ? no.price : null), old: (no.old != null ? no.old : null), reviews: (no.reviews || 0), tint: no.tint || (MC.T && MC.T.pink) || '#FFD1E8', box: true, img: no.img || null, ribbon: (no.ribbon || ''), pop: !!no.pop, desc: (no.desc || ''), worth: (no.worth || 'Valeur toujours supérieure au prix payé'), available: no.available !== false });
+        } else {
+          MC.PRODUCTS.push({ id: nid, name: no.name || nid, price: (no.price != null ? no.price : null), old: (no.old != null ? no.old : null), cat: no.cat || 'Bonbons', brand: no.brand || null, tint: no.tint || (MC.T && MC.T.pink) || '#FFD1E8', img: no.img || null, sub: (no.sub || null), stock: no.stock, available: no.available !== false, reviews: 0, nouveau: true });
+        }
+      }
+    }
+    // surcharges des box existantes (prix, photo, ruban, description…)
+    if (MC.BOXES) {
+      MC.BOXES.forEach(function (b) {
+        var o = ov[b.id]; if (!o) return;
+        if (o.name) b.name = o.name;
+        if (o.price != null && !isNaN(o.price)) b.price = o.price;
+        if (o.old !== undefined) b.old = (o.old === null ? null : o.old);
+        if (o.desc) b.desc = o.desc;
+        if (o.img !== undefined) b.img = (o.img === null ? null : o.img);
+        if (o.ribbon !== undefined) b.ribbon = o.ribbon;
+        if (o.pop !== undefined) b.pop = o.pop;
+        if (o.worth) b.worth = o.worth;
+        if (o.reviews !== undefined) b.reviews = o.reviews;
+        if (o.available !== undefined) b.available = o.available;
+      });
+      for (var bi = MC.BOXES.length - 1; bi >= 0; bi--) {
+        var bod = ov[MC.BOXES[bi].id];
+        if (bod && bod.deleted) MC.BOXES.splice(bi, 1);
       }
     }
     MC.PRODUCTS.forEach(function (p) {

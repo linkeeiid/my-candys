@@ -1305,6 +1305,12 @@ export default {
         if (body.img !== undefined) { const im = String(body.img || ''); if (im === '') patch.img = null; else if (im.length < 900000) patch.img = im; }
         if (body.old !== undefined) { if (body.old === null || body.old === '') patch.old = null; else { const od = Number(body.old); if (!isNaN(od) && od >= 0 && od < 10000) patch.old = Math.round(od * 100) / 100; } }
         if (body.sub !== undefined) patch.sub = (body.sub === null || body.sub === '') ? null : String(body.sub).slice(0, 40);
+        // Champs spécifiques aux box mystères
+        if (body.box !== undefined) patch.box = !!body.box;
+        if (body.ribbon !== undefined) patch.ribbon = (body.ribbon === null || body.ribbon === '') ? '' : String(body.ribbon).slice(0, 40);
+        if (body.pop !== undefined) patch.pop = !!body.pop;
+        if (body.worth !== undefined) patch.worth = (body.worth === null || body.worth === '') ? '' : String(body.worth).slice(0, 120);
+        if (body.reviews !== undefined) { const rv = parseInt(body.reviews, 10); if (!isNaN(rv)) patch.reviews = Math.max(0, Math.min(999999, rv)); }
         if (body.deleted !== undefined) patch.deleted = !!body.deleted;
         await fetch(fbUrl(env, 'catalog/' + encodeURIComponent(id)), { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(patch) });
         return json({ ok: true }, 200, allow);

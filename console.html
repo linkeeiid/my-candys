@@ -381,6 +381,7 @@
       <button class="navlink" data-view="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 21h18"/><rect x="5" y="11" width="3.4" height="7" rx="1"/><rect x="10.3" y="6" width="3.4" height="12" rx="1"/><rect x="15.6" y="13" width="3.4" height="5" rx="1"/></svg> Statistiques</button>
       <div class="grp">Boutique</div>
       <button class="navlink" data-view="products"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 01-2.8 0l-7-7A1.9 1.9 0 013 12.2V4a2 2 0 012-2h8.2c.5 0 1 .2 1.4.6l6 6a2 2 0 010 2.8z"/><circle cx="7.5" cy="7.5" r="1.3"/></svg> Produits</button>
+      <button class="navlink" data-view="boxes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg> Box mystères</button>
       <button class="navlink" data-view="orders"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/></svg> Commandes <span class="nbadge zero" id="navBadge">0</span></button>
       <button class="navlink" data-view="promos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9a2 2 0 012-2h14a2 2 0 012 2v1.5a1.7 1.7 0 000 3.4V15a2 2 0 01-2 2H5a2 2 0 01-2-2v-1.1a1.7 1.7 0 000-3.4z"/><path d="M9.5 9.5l5 5M9.6 9.6h.01M14.4 14.4h.01"/></svg> Promotions</button>
       <div class="grp">Relation client</div>
@@ -487,6 +488,20 @@
           <tbody id="prodBody"></tbody>
         </table></div></div>
         <button class="btn btn-ghost" id="prodMore" style="margin-top:.8rem;width:100%;justify-content:center;display:none">Afficher plus de produits</button>
+      </section>
+
+      <!-- ===== BOX MYSTÈRES ===== -->
+      <section class="view" id="view-boxes">
+        <div class="toolbar">
+          <h2 class="secttl">Box mystères <span class="sub" id="boxCount"></span></h2>
+          <div class="tools">
+            <span class="badge-soft b-wait" id="bEditState" style="font-weight:700">🔒 Lecture seule</span>
+            <button class="btn btn-ghost" id="bAdd">＋ Ajouter une box</button>
+            <button class="btn btn-primary" id="bUnlock">🔓 Activer l'édition</button>
+          </div>
+        </div>
+        <div class="autonote">🎁 Ces box s'affichent sur la page <b>Mystery Box</b> et sur l'accueil. Modifie le <b>prix</b>, la <b>photo</b>, le <b>ruban</b> ou la <b>description</b> : c'est en ligne <b>tout de suite</b>, sans rien pousser.</div>
+        <div id="boxGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:1rem"></div>
       </section>
 
       <!-- ===== CLIENTS ===== -->
@@ -815,7 +830,16 @@
     if(o.sub!==undefined)p.sub=(o.sub===null?null:o.sub);
     if(o.img!==undefined)p.img=(o.img===null?null:o.img);
     if(o.stock!==undefined)p.stock=o.stock;if(o.available!==undefined)p.available=o.available;});
-    for(var i=MC.PRODUCTS.length-1;i>=0;i--){var od=pOverrides[MC.PRODUCTS[i].id];if(od&&od.deleted)MC.PRODUCTS.splice(i,1);}}
+    for(var i=MC.PRODUCTS.length-1;i>=0;i--){var od=pOverrides[MC.PRODUCTS[i].id];if(od&&od.deleted)MC.PRODUCTS.splice(i,1);}
+    // ----- box mystères -----
+    if(MC.BOXES){
+      for(var nb in pOverrides){var nbo=pOverrides[nb];if(nbo&&nbo['new']&&nbo.box&&!nbo.deleted&&MC.byId&&!MC.byId(nb)){MC.BOXES.push({id:nb,name:nbo.name||nb,price:(nbo.price!=null?nbo.price:null),old:(nbo.old!=null?nbo.old:null),reviews:(nbo.reviews||0),tint:nbo.tint||T.pink,box:true,img:nbo.img||null,ribbon:(nbo.ribbon||''),pop:!!nbo.pop,desc:(nbo.desc||''),worth:(nbo.worth||'Valeur toujours supérieure au prix payé'),available:nbo.available!==false});}}
+      MC.BOXES.forEach(function(b){var o=pOverrides[b.id];if(!o)return;
+        if(o.name)b.name=o.name;if(o.price!=null&&!isNaN(o.price))b.price=o.price;if(o.old!==undefined)b.old=(o.old===null?null:o.old);
+        if(o.desc)b.desc=o.desc;if(o.img!==undefined)b.img=(o.img===null?null:o.img);if(o.ribbon!==undefined)b.ribbon=o.ribbon;
+        if(o.pop!==undefined)b.pop=o.pop;if(o.worth)b.worth=o.worth;if(o.reviews!==undefined)b.reviews=o.reviews;if(o.available!==undefined)b.available=o.available;});
+      for(var bx=MC.BOXES.length-1;bx>=0;bx--){var bod=pOverrides[MC.BOXES[bx].id];if(bod&&bod.deleted)MC.BOXES.splice(bx,1);}
+    }}
   function pLoadOverrides(){fetch(MCAPI+'/catalog').then(function(r){return r.json();}).then(function(d){if(d&&d.ok&&d.overrides){pOverrides=d.overrides;pApplyOv();}if(curView==='products')renderProducts();}).catch(function(){});}
   function pResize(file,cb){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var M=620,w=im.width,h=im.height,s=Math.min(1,M/Math.max(w,h));var cv=document.createElement('canvas');cv.width=Math.round(w*s);cv.height=Math.round(h*s);var cx=cv.getContext('2d');cx.fillStyle='#fff';cx.fillRect(0,0,cv.width,cv.height);cx.drawImage(im,0,0,cv.width,cv.height);cb(cv.toDataURL('image/jpeg',0.82));};im.onerror=function(){cb(null);};im.src=r.result;};r.readAsDataURL(file);}
   function pSave(id,patch,cb){if(!ADMINKEY){toast('Active l\'édition d\'abord','warn');return;}
@@ -906,6 +930,69 @@
         pSave(id,{old:ref,price:np},function(ok){if(ok){closeModal();renderProducts();toast('Promo appliquée ✓ — dans « Promos »','good');}});});
       var pRem=$('modalBody').querySelector('.pPromoRemove');
       if(pRem)pRem.addEventListener('click',function(){pSave(id,{price:(p.old!=null?p.old:p.price),old:null},function(ok){if(ok){closeModal();renderProducts();toast('Promo retirée','good');}});});}
+  }
+  /* ---------- BOX MYSTÈRES ---------- */
+  function renderBoxes(){
+    if(!hasMC||!MC.BOXES){$('boxGrid').innerHTML='<div style="color:var(--muted);padding:1rem">Catalogue indisponible (products.js non chargé).</div>';return;}
+    if($('bEditState')){$('bEditState').className=ADMINKEY?'badge-soft b-on':'badge-soft b-wait';$('bEditState').style.fontWeight='700';$('bEditState').innerHTML=ADMINKEY?'🔓 Édition activée':'🔒 Lecture seule';}
+    if($('bUnlock'))$('bUnlock').style.display=ADMINKEY?'none':'';
+    if($('boxCount'))$('boxCount').textContent='· '+MC.BOXES.length+' box';
+    var lock=!!ADMINKEY;
+    $('boxGrid').innerHTML=MC.BOXES.map(function(b){
+      var pct=(b.old&&b.old>0&&b.price!=null)?Math.round((b.old-b.price)/b.old*100):0;
+      var img=b.img?'<div style="height:152px;background:#fff url(\''+esc(b.img)+'\') center/contain no-repeat;border-bottom:1px solid var(--line-soft)"></div>':'<div style="height:152px;background:var(--line-soft);display:grid;place-items:center;font-size:2.1rem">🎁</div>';
+      var plain=esc((b.desc||'').replace(/<[^>]+>/g,'').replace(/&nbsp;/g,' ').replace(/&amp;/g,'&'));
+      return '<div class="card" style="overflow:hidden;display:flex;flex-direction:column">'+img+
+        '<div style="padding:.8rem .9rem;display:flex;flex-direction:column;flex:1">'+
+          '<div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-bottom:.35rem">'+
+            (b.ribbon?'<span class="badge-soft" style="background:var(--pink-tint);color:var(--pink)">'+esc(b.ribbon)+'</span>':'')+
+            (b.pop?'<span class="badge-soft b-on">★ En avant</span>':'')+'</div>'+
+          '<div style="font-family:var(--disp);font-weight:600;font-size:1.06rem;line-height:1.1">'+esc(b.name)+'</div>'+
+          '<div style="margin:.3rem 0 .2rem;font-weight:800;font-size:1rem">'+money(b.price!=null?b.price:0)+(b.old?' <s style="color:var(--muted);font-weight:600;font-size:.82rem">'+money(b.old)+'</s>':'')+(pct?' <span style="color:var(--pink);font-size:.76rem;font-weight:800">-'+pct+'%</span>':'')+'</div>'+
+          '<div style="font-size:.77rem;color:var(--muted);line-height:1.4;margin:.15rem 0 .7rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">'+plain+'</div>'+
+          '<div style="display:flex;gap:.4rem;margin-top:auto"><button class="mini" data-bedit="'+esc(b.id)+'" style="flex:1;justify-content:center">✎ Éditer</button>'+(lock?'<button class="mini pdel" data-bdel="'+esc(b.id)+'" title="Supprimer cette box">🗑</button>':'')+'</div>'+
+        '</div></div>';
+    }).join('');
+  }
+  function bModal(id){
+    if(!ADMINKEY){pUnlockModal();return;}
+    var isNew=!id,b=isNew?{name:'',ribbon:'',price:null,old:null,desc:'',img:'',pop:false}:(MC.byId?MC.byId(id):null);
+    if(!b)return;
+    var prev=b.img?'<img src="'+esc(b.img)+'" class="bPrev" style="width:120px;height:120px;object-fit:contain;border:1px solid var(--line);border-radius:12px;background:#fff;padding:6px">':'<div class="bPrev" style="width:120px;height:120px;border:1px dashed var(--line);border-radius:12px;display:grid;place-items:center;font-size:1.7rem">🎁</div>';
+    openModal(isNew?'Ajouter une box':'Éditer — '+b.name,
+      '<form>'+
+      '<div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-start">'+
+        '<div style="text-align:center">'+prev+
+          '<div style="margin-top:.5rem"><button type="button" class="btn btn-ghost bFile" style="font-size:.74rem;padding:.35rem .6rem">📷 Choisir</button></div>'+
+          '<input type="file" accept="image/*" class="bFileIn" style="display:none">'+
+        '</div>'+
+        '<div style="flex:1;min-width:200px">'+
+          '<div class="form-row"><label>Nom de la box</label><input name="name" value="'+esc(b.name||'')+'" placeholder="Ex. Blue Box"></div>'+
+          '<div class="form-row"><label>Ruban / badge (optionnel)</label><input name="ribbon" value="'+esc(b.ribbon||'')+'" placeholder="Ex. LA PLUS POP"></div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="form-2"><div class="form-row"><label>Prix (€)</label><input name="price" type="number" step="0.01" min="0" value="'+(b.price!=null?b.price:'')+'" placeholder="29.90"></div>'+
+      '<div class="form-row"><label>Ancien prix (€, optionnel)</label><input name="old" type="number" step="0.01" min="0" value="'+(b.old!=null?b.old:'')+'" placeholder="39.90"></div></div>'+
+      '<div class="form-row"><label>Description</label><textarea name="desc" rows="4" style="width:100%;resize:vertical;font-family:inherit;border:1px solid var(--line);border-radius:9px;padding:.55rem .7rem;font-size:.85rem" placeholder="Décris l\'ambiance de la box (sans lister le contenu)…">'+esc(b.desc||'')+'</textarea></div>'+
+      '<div class="form-row"><label>URL de la photo</label><input name="img" value="'+esc(b.img||'')+'" placeholder="assets/boxes/… ou une URL"></div>'+
+      '<label style="display:flex;align-items:center;gap:.5rem;font-size:.85rem;font-weight:700;margin:.1rem 0 .8rem;cursor:pointer"><input type="checkbox" name="pop" '+(b.pop?'checked':'')+' style="width:auto;accent-color:var(--pink)"> Mettre en avant (badge « populaire »)</label>'+
+      '<button class="btn btn-primary" type="submit" style="width:100%;justify-content:center">'+(isNew?'Ajouter la box (en ligne)':'Enregistrer')+'</button>'+
+      '</form>',
+      function(f){
+        var name=f.elements['name'].value.trim();if(!name){toast('Donne un nom à la box','warn');return;}
+        var price=parseFloat(f.price.value);if(isNaN(price)||price<0){toast('Renseigne un prix valide','warn');return;}
+        var oldv=parseFloat(f.old.value);
+        var patch={name:name,ribbon:f.ribbon.value.trim(),price:price,desc:f.desc.value.trim(),img:f.elements['img'].value.trim(),pop:f.pop.checked,box:true};
+        patch.old=(!isNaN(oldv)&&oldv>0)?oldv:null;
+        var bid=id;
+        if(isNew){bid='box-'+Date.now().toString(36)+Math.floor(Math.random()*900+100);patch['new']=true;patch.worth='Valeur toujours supérieure au prix payé';patch.reviews=0;patch.tint=T.pink;}
+        pSave(bid,patch,function(ok){if(!ok)return;
+          if(isNew&&MC.byId&&!MC.byId(bid))MC.BOXES.push({id:bid,name:name,price:price,old:patch.old,reviews:0,tint:T.pink,box:true,img:patch.img||null,ribbon:patch.ribbon,pop:patch.pop,desc:patch.desc,worth:patch.worth});
+          closeModal();renderBoxes();toast(isNew?'Box ajoutée ✓ — en ligne':'Box enregistrée ✓','good');});
+      });
+    var fb=$('modalBody').querySelector('.bFile'),fin=$('modalBody').querySelector('.bFileIn');
+    if(fb)fb.addEventListener('click',function(){fin.click();});
+    if(fin)fin.addEventListener('change',function(){var file=fin.files[0];if(!file)return;fb.textContent='Compression…';pResize(file,function(data){fb.textContent='📷 Choisir';if(!data){toast('Image illisible','warn');return;}var im=$('modalBody').querySelector('[name=img]');if(im)im.value=data;var pv=$('modalBody').querySelector('.bPrev');if(pv&&pv.tagName==='IMG')pv.src=data;else if(pv){var ni=document.createElement('img');ni.className='bPrev';ni.src=data;ni.style.cssText='width:120px;height:120px;object-fit:contain;border:1px solid var(--line);border-radius:12px;background:#fff;padding:6px';pv.parentNode.replaceChild(ni,pv);}toast('Photo prête — clique Enregistrer');});});
   }
   /* ---------- STATISTIQUES ---------- */
   function renderStats(){
@@ -1059,7 +1146,7 @@
   /* ---------- render orchestration ---------- */
   function refresh(){renderStock();renderOrders();
     if(curView==='dash')renderDash();else if(curView==='stats')renderStats();else if(curView==='clients')renderClients();else if(curView==='products')renderProducts();else if(curView==='restock')renderRestock();else if(curView==='reports')renderReports();}
-  function renderAll(){renderStock();renderOrders();renderInbox();renderDash();renderProducts();renderStats();renderClients();renderPromos();renderRestock();renderReports();renderLoyalty();renderReviews();}
+  function renderAll(){renderStock();renderOrders();renderInbox();renderDash();renderProducts();renderBoxes();renderStats();renderClients();renderPromos();renderRestock();renderReports();renderLoyalty();renderReviews();}
 
   /* ---------- journal / toast ---------- */
   function clearLog(){$('log').innerHTML='<div class="empty">En attente d\'une première opération…</div>';$('logCnt').textContent='';}
@@ -1074,14 +1161,14 @@
 
   /* ---------- routing ---------- */
   var curView='dash';
-  var TITLES={dash:['Tableau de bord','Vue d\'ensemble de l\'activité'],stats:['Statistiques','Analyse des ventes et du catalogue'],products:['Produits','Gérer le catalogue de la boutique'],stock:['Stock & synchro','Réconciliation caisse ↔ site en temps réel'],orders:['Commandes','Traiter et expédier les commandes en ligne'],clients:['Clients','Fichier clients et historique'],inbox:['Boîte de réception','Inscrits newsletter & messages de contact'],promos:['Promotions','Codes de réduction et campagnes'],restock:['Réapprovisionnement','Ce qu\'il faut recommander aux fournisseurs'],reports:['Rapports & export','Bilans, exports comptables et clôture'],loyalty:['Fidélité','Programme de points et paliers'],reviews:['Avis clients','Modérer les avis produits']};
+  var TITLES={dash:['Tableau de bord','Vue d\'ensemble de l\'activité'],stats:['Statistiques','Analyse des ventes et du catalogue'],products:['Produits','Gérer le catalogue de la boutique'],boxes:['Box mystères','Prix, photo, description des box surprise'],stock:['Stock & synchro','Réconciliation caisse ↔ site en temps réel'],orders:['Commandes','Traiter et expédier les commandes en ligne'],clients:['Clients','Fichier clients et historique'],inbox:['Boîte de réception','Inscrits newsletter & messages de contact'],promos:['Promotions','Codes de réduction et campagnes'],restock:['Réapprovisionnement','Ce qu\'il faut recommander aux fournisseurs'],reports:['Rapports & export','Bilans, exports comptables et clôture'],loyalty:['Fidélité','Programme de points et paliers'],reviews:['Avis clients','Modérer les avis produits']};
   function setView(v){
     curView=v;
     document.querySelectorAll('.navlink').forEach(function(n){n.classList.toggle('active',n.getAttribute('data-view')===v);});
     document.querySelectorAll('.view').forEach(function(s){s.classList.remove('active');});
     $('view-'+v).classList.add('active');
     $('pageTitle').textContent=TITLES[v][0];$('pageSub').textContent=TITLES[v][1];
-    if(v==='dash')renderDash();else if(v==='stats')renderStats();else if(v==='products')renderProducts();else if(v==='clients')renderClients();else if(v==='promos')renderPromos();else if(v==='restock')renderRestock();else if(v==='reports')renderReports();else if(v==='loyalty')renderLoyalty();else if(v==='reviews')renderReviews();
+    if(v==='dash')renderDash();else if(v==='stats')renderStats();else if(v==='products')renderProducts();else if(v==='boxes')renderBoxes();else if(v==='clients')renderClients();else if(v==='promos')renderPromos();else if(v==='restock')renderRestock();else if(v==='reports')renderReports();else if(v==='loyalty')renderLoyalty();else if(v==='reviews')renderReviews();
   }
 
   /* ---------- events ---------- */
@@ -1097,6 +1184,16 @@
   // produits — catalogue réel
   $('pUnlock').addEventListener('click',pUnlockModal);
   $('pAdd').addEventListener('click',openProductModal);
+  // box mystères
+  if($('bUnlock'))$('bUnlock').addEventListener('click',pUnlockModal);
+  if($('bAdd'))$('bAdd').addEventListener('click',function(){bModal(null);});
+  if($('boxGrid'))$('boxGrid').addEventListener('click',function(e){
+    var ed=e.target.closest('[data-bedit]');if(ed){bModal(ed.getAttribute('data-bedit'));return;}
+    var dl=e.target.closest('[data-bdel]');if(dl){if(!ADMINKEY){toast('Active l\'édition d\'abord','warn');return;}
+      var did=dl.getAttribute('data-bdel'),dp=MC.byId?MC.byId(did):null;
+      if(!confirm('Supprimer la box « '+(dp?dp.name:did)+' » ?\n\nElle disparaîtra de la page Mystery Box et de l\'accueil.'))return;
+      pSave(did,{deleted:true},function(ok){if(ok){for(var i=MC.BOXES.length-1;i>=0;i--){if(MC.BOXES[i].id===did){MC.BOXES.splice(i,1);break;}}renderBoxes();toast('Box supprimée ✓','good');}});return;}
+  });
   /* ===== Notifications push « nouvelle commande » (activées depuis le logiciel de gestion) ===== */
   var VAPID_PUBLIC='BAr4-ARxYqECbfUR34jmYYDy9d_vV02ERaI4AFyuAGhbljREhyLG1fhng6feKRSd-gNilsYUEIPI2CuAvAFSvao';
   function _u8(b64){var pad='='.repeat((4-b64.length%4)%4);var s=(b64+pad).replace(/-/g,'+').replace(/_/g,'/');var raw=atob(s);var a=new Uint8Array(raw.length);for(var i=0;i<raw.length;i++)a[i]=raw.charCodeAt(i);return a;}
