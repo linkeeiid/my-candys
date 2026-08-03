@@ -436,9 +436,10 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
     var inp = $('#co-promo-in'), msg = $('#co-promo-msg');
     var code = (inp.value || '').trim().toUpperCase();
     if (!code) { promo = null; msg.textContent = ''; render(); return; }
-    if (code === 'BIENVENUE10') {
-      promo = { code: code, pct: 10, welcome: true };
-      msg.style.color = '#1B8A57'; msg.textContent = '✅ Code de bienvenue appliqué : -10% sur tes articles.';
+    var FIXED = { CANDYSUMMER26: 26, BIENVENUE10: 10, TAGADA10: 10 };
+    if (FIXED[code] != null) {
+      promo = { code: code, pct: FIXED[code], welcome: true };
+      msg.style.color = '#1B8A57'; msg.textContent = '✅ Code appliqué : -' + FIXED[code] + '% sur tes articles.';
       render(); return;
     }
     var m = code.match(/^MCFID(5|10|15)-[A-Z0-9]{4}$/);

@@ -2,6 +2,11 @@
 <meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="assets/logo.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/assets/logo.png">
+<meta name="theme-color" content="#FF2E9A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MC Gestion">
 <style>
   :root{
     --ink:#241019;--ink-2:#5A3B4C;--muted:#8A7580;
@@ -374,11 +379,8 @@
       <div class="grp">Pilotage</div>
       <button class="navlink active" data-view="dash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg> Tableau de bord</button>
       <button class="navlink" data-view="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 21h18"/><rect x="5" y="11" width="3.4" height="7" rx="1"/><rect x="10.3" y="6" width="3.4" height="12" rx="1"/><rect x="15.6" y="13" width="3.4" height="5" rx="1"/></svg> Statistiques</button>
-      <button class="navlink" data-view="reports"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"><path d="M6 2h8l5 5v14a1 1 0 01-1 1H6a1 1 0 01-1-1V3a1 1 0 011-1z"/><path d="M14 2v5h5"/><path d="M9 13v4M12 11v6M15 15v2"/></svg> Rapports</button>
       <div class="grp">Boutique</div>
       <button class="navlink" data-view="products"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 01-2.8 0l-7-7A1.9 1.9 0 013 12.2V4a2 2 0 012-2h8.2c.5 0 1 .2 1.4.6l6 6a2 2 0 010 2.8z"/><circle cx="7.5" cy="7.5" r="1.3"/></svg> Produits</button>
-      <button class="navlink" data-view="stock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/><path d="M4 7.5l8 4.5 8-4.5"/><path d="M12 12v9"/></svg> Stock &amp; synchro</button>
-      <button class="navlink" data-view="restock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 01-15.5 6.3M3 12A9 9 0 0118.5 5.7"/><path d="M18.5 3v2.7h-2.7M5.5 21v-2.7h2.7"/></svg> Réappro</button>
       <button class="navlink" data-view="orders"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/></svg> Commandes <span class="nbadge zero" id="navBadge">0</span></button>
       <button class="navlink" data-view="promos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9a2 2 0 012-2h14a2 2 0 012 2v1.5a1.7 1.7 0 000 3.4V15a2 2 0 01-2 2H5a2 2 0 01-2-2v-1.1a1.7 1.7 0 000-3.4z"/><path d="M9.5 9.5l5 5M9.6 9.6h.01M14.4 14.4h.01"/></svg> Promotions</button>
       <div class="grp">Relation client</div>
@@ -400,6 +402,7 @@
     <header class="topbar">
       <div class="tt"><h1 id="pageTitle">Tableau de bord</h1><p id="pageSub">Vue d'ensemble de l'activité</p></div>
       <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input id="search" placeholder="Rechercher un produit, un client…"></div>
+      <button class="btn btn-ghost" id="notifBtn" style="white-space:nowrap;font-size:.8rem;padding:.42rem .7rem">🔔 Activer les notifs</button>
       <button class="icobtn" id="bell" title="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg><span class="nb zero" id="bellBadge">0</span></button>
       <span class="status ok" id="syncStatus"><span class="dot"></span> Synchronisé</span>
     </header>
@@ -409,19 +412,11 @@
       <!-- ===== DASHBOARD ===== -->
       <section class="view active" id="view-dash">
         <div class="kpis" id="dashKpis"></div>
-        <div class="grid2">
-          <div class="card">
-            <div class="card-h"><h3>Ventes des 7 derniers jours</h3>
-              <div class="legend"><span class="lg"><span class="sw" style="background:var(--pink)"></span>Boutique</span><span class="lg"><span class="sw" style="background:var(--teal)"></span>En ligne</span></div>
-            </div>
-            <div class="card-b"><div class="chartwrap" id="chartWrap"></div></div>
-          </div>
-          <div class="card">
-            <div class="card-h"><h3>Alertes stock</h3><span class="pill p-low" id="alertCount" style="margin-left:auto">0</span></div>
-            <div class="card-b"><div class="mini-list" id="alerts"></div></div>
-          </div>
-        </div>
         <div class="card">
+          <div class="card-h"><h3>🏆 Top produits</h3><button class="btn btn-ghost" data-goto="stats" style="margin-left:auto;padding:.35rem .7rem">Voir les stats</button></div>
+          <div class="card-b"><div id="dashTop"></div></div>
+        </div>
+        <div class="card" style="margin-top:1rem">
           <div class="card-h"><h3>Commandes récentes</h3><button class="btn btn-ghost" data-goto="orders" style="margin-left:auto;padding:.35rem .7rem">Voir tout</button></div>
           <div class="tscroll"><table><thead><tr><th>Commande</th><th>Client</th><th>Articles</th><th class="r">Total</th><th>Statut</th></tr></thead><tbody id="recentOrders"></tbody></table></div>
         </div>
@@ -455,9 +450,11 @@
         <div class="kpis" id="okpis"></div>
         <div class="ofilters" id="ofilters">
           <button class="chip active" data-f="all">Toutes</button>
-          <button class="chip" data-f="nouvelle">À expédier</button>
+          <button class="chip" data-f="nouvelle">Nouvelles</button>
+          <button class="chip" data-f="en_traitement">En cours</button>
+          <button class="chip" data-f="traitee">Traitées</button>
           <button class="chip" data-f="expediee">Expédiées</button>
-          <button class="chip" data-f="attente">En attente paiement</button>
+          <button class="chip" data-f="attente">Attente paiement</button>
         </div>
         <div class="orders" id="orders"></div>
       </section>
@@ -496,11 +493,8 @@
       <section class="view" id="view-stats">
         <div class="kpis" id="statKpis"></div>
         <div class="grid2">
-          <div class="card"><div class="card-h"><h3>Meilleures ventes (7 j)</h3></div><div class="card-b"><div class="rank" id="topSellers"></div></div></div>
-          <div class="card"><div class="card-h"><h3>Canaux de vente</h3></div><div class="card-b">
-            <div class="prop" id="propBar"></div><div class="proplg" id="propLg"></div>
-            <div class="subttl">Rotation faible — à surveiller</div><div class="rank" id="lowRot"></div>
-          </div></div>
+          <div class="card"><div class="card-h"><h3>🏆 Meilleures ventes</h3></div><div class="card-b"><div id="statTop"></div></div></div>
+          <div class="card"><div class="card-h"><h3>💰 CA par catégorie</h3></div><div class="card-b"><div id="statCat"></div></div></div>
         </div>
       </section>
 
@@ -511,6 +505,7 @@
           <h2 class="secttl">Catalogue <span class="sub" id="prodCount"></span></h2>
           <div class="tools">
             <span class="badge-soft b-wait" id="pEditState" style="font-weight:700">🔒 Lecture seule</span>
+            <button class="btn btn-ghost" id="pAdd">＋ Ajouter un produit</button>
             <button class="btn btn-primary" id="pUnlock">🔓 Activer l'édition</button>
           </div>
         </div>
@@ -533,9 +528,9 @@
 
       <!-- ===== PROMOTIONS ===== -->
       <section class="view" id="view-promos">
-        <div class="toolbar"><h2 class="secttl">Codes de réduction</h2><div class="tools"><button class="btn btn-primary" id="addPromo">＋ Créer un code</button></div></div>
+        <div class="toolbar"><h2 class="secttl">Codes de réduction actifs</h2><div class="tools"><span style="font-size:.8rem;color:var(--muted)">Codes appliqués automatiquement au paiement</span></div></div>
         <div class="tablecard"><div class="tscroll"><table>
-          <thead><tr><th>Code</th><th>Réduction</th><th class="r">Utilisations</th><th>Note</th><th class="r">Actif</th></tr></thead>
+          <thead><tr><th>Code</th><th>Réduction</th><th>Utilisation</th><th class="r">Statut</th></tr></thead>
           <tbody id="promoBody"></tbody>
         </table></div></div>
       </section>
@@ -609,11 +604,11 @@
   CATALOG.forEach(function(p){p.cat=CATS[p.id]||'Autres';p.active=true;});
   var SOLD0={'prime-blue':42,'takis-fuego':57,'monster-ultra':63,'fanta-grape':20,'kinder-bueno':15,'sourpatch':38,'samyang':29,'nerds':12,'chamoy':8};
   var soldUnits={},prodSeq=1;
+  /* Vrais codes actifs (source = Worker /create-checkout FIXED_PROMOS) */
   var promos=[
-    {code:'BIENVENUE10',type:'%',val:10,active:true,uses:34,note:'1re commande'},
-    {code:'TIKTOK15',type:'%',val:15,active:true,uses:128,note:'Story TikTok'},
-    {code:'LIVRAISON',type:'free',val:0,active:true,uses:56,note:'Frais offerts dès 25 €'},
-    {code:'HALLOWEEN20',type:'%',val:20,active:false,uses:210,note:'Campagne terminée'}
+    {code:'CANDYSUMMER26',val:26,note:'-26% sur tout le site (bandeau d\'accueil)'},
+    {code:'BIENVENUE10',val:10,note:'Envoyé à l\'inscription newsletter'},
+    {code:'TAGADA10',val:10,note:'Relance client (bouton « Relancer »)'}
   ];
   var add=function(a,b){return a+b;};
   var SUPPLIERS={Sodas:'US Drinks Import',Snacks:'Spicy Wholesale',Chocolats:'Kinder Distrib',Bonbons:'Candy Bulk FR','Épicé':'Chamoy & Co',Desserts:'Asia Sweets',Autres:'Grossiste général'};
@@ -666,26 +661,30 @@
   function updateSyncStatus(){var d=counts().desync;var el=$('syncStatus');if(d>0){el.className='status sync';el.innerHTML='<span class="dot"></span> '+d+' réf. en synchro';}else{el.className='status ok';el.innerHTML='<span class="dot"></span> Synchronisé';}}
 
   /* ---------- DASHBOARD ---------- */
+  /* Agrégations RÉELLES à partir des commandes (hors non payées) */
+  function aggProducts(){var m={};orders.forEach(function(o){if(o.status==='attente')return;(o.items||[]).forEach(function(i){var k=i.id||i.name;if(!m[k])m[k]={id:i.id,name:i.name,units:0,ca:0};m[k].units+=i.qty;m[k].ca+=(i.price||0)*i.qty;});});return Object.keys(m).map(function(k){return m[k];}).sort(function(a,b){return b.units-a.units;});}
+  function prodImg(id){var p=(window.MC&&MC.byId)?MC.byId(id):null;return (p&&p.img)||'';}
+  function prodThumb(id){var img=prodImg(id);return img?'<span style="width:34px;height:34px;border-radius:8px;background:#fff url(\''+esc(img)+'\') center/contain no-repeat;border:1px solid var(--line);flex:none;display:inline-block"></span>':'<span style="width:34px;height:34px;border-radius:8px;background:#FFE3F1;display:inline-flex;align-items:center;justify-content:center;flex:none">🍬</span>';}
+  /* Famille du menu du site (Sucrés/Salés/Boissons/Asie) pour un produit — même logique que la boutique */
+  function famOf(id){var p=(window.MC&&MC.byId)?MC.byId(id):null;if(!p)return 'Autres';if(p.asie)return 'Asie';var c=p.cat;if(c==='Bonbons'||c==='Chocolats'||c==='Desserts')return 'Sucrés';if(c==='Snacks'||c==='Épicé')return 'Salés';if(c==='Sodas')return 'Boissons';return 'Autres';}
+  var FAM_EMO={'Sucrés':'🍬','Salés':'🌶️','Boissons':'🥤','Asie':'🍜','Autres':'📦'};
   function renderDash(){
-    var c=counts();
-    var ca=orders.reduce(function(s,o){return s+oTotal(o);},0);
+    var paid=orders.filter(function(o){return o.paid;});
+    var ca=paid.reduce(function(s,o){return s+oTotal(o);},0);
     var nw=orders.filter(function(o){return o.status==='nouvelle';}).length;
-    $('dashKpis').innerHTML=
-      tile('CA du jour',money(ca).replace(' €',''),' €','accent','')+
-      tile('Commandes',orders.length,'','','dont '+nw+' nouvelle'+(nw>1?'s':''))+
-      tile('Stock bas',c.low,'','warn',c.out+' épuisé'+(c.out>1?'s':''))+
-      tile('Valeur du stock',money(c.val).replace(' €',''),' €','good','');
-    renderChart();
-    // alertes
-    var al=CATALOG.filter(function(p){return truth[p.id]<=LOW;}).sort(function(a,b){return truth[a.id]-truth[b.id];});
-    $('alertCount').textContent=al.length;
-    $('alerts').innerHTML=al.length?al.map(function(p){var st=statusOf(truth[p.id]);
-      return '<div class="mli"><span class="th" style="background:'+p.tint+'"></span><span class="nm">'+p.name+'</span><span class="rt"><span class="pill '+st[0]+'">'+(truth[p.id]<=0?'Épuisé':truth[p.id]+' u.')+'</span></span></div>';
-    }).join(''):'<div style="color:var(--muted);font-size:.84rem;padding:.5rem 0">Aucune alerte — tout est bien approvisionné ✓</div>';
-    // recent orders
-    $('recentOrders').innerHTML=orders.slice(0,5).map(function(o){var st=OST[o.status];
-      return '<tr><td class="oid" style="font-family:var(--mono);color:var(--muted);font-weight:700">#'+o.id+'</td>'+
-        '<td><div style="display:flex;align-items:center;gap:.5rem"><span class="avatar" style="background:'+o.cust.c+';width:26px;height:26px;font-size:.66rem">'+initials(o.cust.n)+'</span><b style="font-size:.84rem">'+o.cust.n+'</b></div></td>'+
+    var pm=paid.length?ca/paid.length:0;
+    if($('dashKpis'))$('dashKpis').innerHTML=
+      tile('Chiffre d\'affaires',money(ca).replace(' €',''),' €','accent','')+
+      tile('Commandes',orders.length,'','','dont '+nw+' à expédier')+
+      tile('À expédier',nw,'','warn','')+
+      tile('Panier moyen',money(pm).replace(' €',''),' €','good','');
+    var top=aggProducts().slice(0,6);
+    if($('dashTop'))$('dashTop').innerHTML=top.length?top.map(function(p){
+      return '<div style="display:flex;align-items:center;gap:.7rem;padding:.5rem 0;border-bottom:1px solid var(--line)">'+prodThumb(p.id)+'<span style="flex:1;font-size:.88rem;font-weight:600">'+esc(p.name)+'</span><span style="color:var(--muted);font-size:.82rem">'+p.units+' vendus</span><span style="font-weight:800;min-width:72px;text-align:right">'+money(p.ca)+'</span></div>';
+    }).join(''):'<div style="color:var(--muted);padding:.6rem 0">Aucune vente pour l\'instant.</div>';
+    if($('recentOrders'))$('recentOrders').innerHTML=orders.slice(0,5).map(function(o){var st=OST[o.status]||['st-prep',o.status];
+      return '<tr><td class="oid" style="font-family:var(--mono);color:var(--muted);font-weight:700">'+esc(o.ref||o.id)+'</td>'+
+        '<td><div style="display:flex;align-items:center;gap:.5rem"><span class="avatar" style="background:'+o.cust.c+';width:26px;height:26px;font-size:.66rem">'+initials(o.cust.n)+'</span><b style="font-size:.84rem">'+esc(o.cust.n)+'</b></div></td>'+
         '<td style="font-size:.82rem;color:var(--ink-2)">'+o.items.reduce(function(s,i){return s+i.qty;},0)+' article'+(o.items.reduce(function(s,i){return s+i.qty;},0)>1?'s':'')+'</td>'+
         '<td class="r" style="font-weight:800">'+money(oTotal(o))+'</td>'+
         '<td><span class="pill '+st[0]+'">'+st[1]+'</span></td></tr>';
@@ -749,7 +748,7 @@
   }
 
   /* ---------- ORDERS ---------- */
-  var OST={nouvelle:['st-new','À expédier'],attente:['st-prep','Attente paiement'],expediee:['st-ship','Expédiée'],preparee:['st-prep','À expédier']};
+  var OST={nouvelle:['st-new','Nouvelle'],en_traitement:['st-prep','En cours de traitement'],traitee:['st-new','Traitée'],attente:['st-prep','Attente paiement'],expediee:['st-ship','Expédiée'],preparee:['st-prep','À traiter']};
   /* ===== DONNÉES RÉELLES (commandes / inscrits / messages) via le Worker /admin/data ===== */
   var RSUB=[], RMSG=[];
   var CARRIER_LABELS={laposte:'Colissimo / La Poste',mondialrelay:'Mondial Relay',chronopost:'Chronopost',ups:'UPS',dhl:'DHL',autre:'Transporteur'};
@@ -783,14 +782,16 @@
     if(!list.length){$('orders').innerHTML='<div style="color:var(--muted);padding:1.4rem;text-align:center;background:var(--card);border:1px solid var(--line);border-radius:14px">Aucune commande dans cette vue.</div>';}
     else $('orders').innerHTML=list.map(function(o){
       var st=OST[o.status]||['st-prep',o.status],open=openSet[o.id];
-      var items=o.items.map(function(i){var tint=(byId[i.id]&&byId[i.id].tint)||'#FFD1E8';return '<div class="oitem"><span class="ith" style="background:'+tint+'"></span>'+esc(i.name||(byId[i.id]&&byId[i.id].name)||i.id||'')+'<span class="iq">×'+i.qty+' · '+money((i.price||0)*i.qty)+'</span></div>';}).join('');
+      var items=o.items.map(function(i){return '<div class="oitem" style="display:flex;align-items:center;gap:.55rem;padding:.3rem 0">'+prodThumb(i.id)+'<span style="flex:1;font-size:.85rem">'+esc(i.name||(byId[i.id]&&byId[i.id].name)||i.id||'')+'</span><span class="iq">×'+i.qty+' · '+money((i.price||0)*i.qty)+'</span></div>';}).join('');
       var act;
       if(o.status==='expediee'){act='<span class="track">✓ Expédiée · '+esc(CARRIER_LABELS[o.carrier]||o.carrier||'')+' · suivi '+esc(o.tracking||'')+'</span>';}
       else if(o.status==='attente'){act='<span style="color:var(--muted)">En attente de paiement</span>';}
-      else if(o.ref){act='<div class="ship" data-ref="'+esc(o.ref)+'" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">'+
-        '<input class="pin ship-num" placeholder="N° de suivi" style="width:150px">'+
-        '<select class="pin ship-car"><option value="laposte">Colissimo/La Poste</option><option value="mondialrelay">Mondial Relay</option><option value="chronopost">Chronopost</option><option value="ups">UPS</option><option value="dhl">DHL</option><option value="autre">Autre</option></select>'+
-        '<button class="btn btn-primary" data-ship="'+esc(o.ref)+'">📦 Expédié &amp; prévenir</button></div>';}
+      else if(o.ref){
+        var sb=function(s,label){var on=(o.status===s);return '<button class="mini" data-ostatus="'+s+'" data-ref="'+esc(o.ref)+'"'+(on?' style="background:#E01784;color:#fff;border-color:#E01784"':'')+'>'+label+'</button>';};
+        act='<div style="display:flex;flex-direction:column;gap:.6rem">'+
+          '<div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center"><span style="font-size:.78rem;color:var(--muted)">Statut :</span>'+sb('nouvelle','🆕 Nouvelle')+sb('en_traitement','⏳ En cours de traitement')+sb('traitee','✅ Traitée')+'</div>'+
+          '<div class="ship" data-ref="'+esc(o.ref)+'" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center"><input class="pin ship-num" placeholder="N° de suivi" style="width:150px"><select class="pin ship-car"><option value="laposte">Colissimo/La Poste</option><option value="mondialrelay">Mondial Relay</option><option value="chronopost">Chronopost</option><option value="ups">UPS</option><option value="dhl">DHL</option><option value="autre">Autre</option></select><button class="btn btn-primary" data-ship="'+esc(o.ref)+'">📦 Expédié &amp; prévenir</button></div>'+
+        '</div>';}
       else {act='<span style="color:var(--muted)">—</span>';}
       var summary=o.items.map(function(i){return esc(i.name||(byId[i.id]&&byId[i.id].name)||i.id||'')+' ×'+i.qty;}).join(', ');
       return '<div class="order'+(open?' open':'')+'" data-order="'+esc(o.id)+'">'+
@@ -856,9 +857,10 @@
   function ptile(lbl,num,cls,flag,on){return '<div class="kpi '+cls+(on?' kpi-on':'')+'" data-pflag="'+flag+'"><div class="lbl">'+lbl+'</div><div class="num tnum">'+num+'</div></div>';}
   function pNoPrice(p){return p.price==null||isNaN(p.price);}
   function pStats(){var out=0,nopic=0,noprice=0;if(hasMC)MC.PRODUCTS.forEach(function(p){if(pIsOut(p))out++;if(!p.img)nopic++;if(pNoPrice(p))noprice++;});return{tot:hasMC?MC.PRODUCTS.length:0,out:out,nopic:nopic,noprice:noprice};}
-  function pRenderChips(){if(!hasMC||!$('pCats'))return;var counts={};MC.PRODUCTS.forEach(function(p){counts[p.cat]=(counts[p.cat]||0)+1;});
+  function pRenderChips(){if(!hasMC||!$('pCats'))return;var FAMS=['Sucrés','Salés','Boissons','Asie'];var counts={};MC.PRODUCTS.forEach(function(p){var f=famOf(p.id);counts[f]=(counts[f]||0)+1;});
     var h='<button class="chip'+(pFilter.cat===''?' active':'')+'" data-pcat="">Toutes ('+MC.PRODUCTS.length+')</button>';
-    h+=PCATS.map(function(c){return '<button class="chip'+(pFilter.cat===c?' active':'')+'" data-pcat="'+c+'">'+cmeta(c).e+' '+c+' ('+(counts[c]||0)+')</button>';}).join('');
+    h+=FAMS.map(function(c){return '<button class="chip'+(pFilter.cat===c?' active':'')+'" data-pcat="'+c+'">'+(FAM_EMO[c]||'')+' '+c+' ('+(counts[c]||0)+')</button>';}).join('');
+    if(counts['Autres'])h+='<button class="chip'+(pFilter.cat==='Autres'?' active':'')+'" data-pcat="Autres">📦 Autres ('+counts['Autres']+')</button>';
     $('pCats').innerHTML=h;}
 
   function renderProducts(){
@@ -870,7 +872,7 @@
     if($('pUnlock'))$('pUnlock').style.display=ADMINKEY?'none':'';
     pRenderChips();
     var q=searchQ;
-    pFiltered=MC.PRODUCTS.filter(function(p){if(pFilter.cat&&p.cat!==pFilter.cat)return false;if(pFilter.flag==='out'&&!pIsOut(p))return false;if(pFilter.flag==='nophoto'&&p.img)return false;if(pFilter.flag==='noprice'&&!pNoPrice(p))return false;if(q&&(p.name+' '+(p.brand||'')).toLowerCase().indexOf(q)<0)return false;return true;});
+    pFiltered=MC.PRODUCTS.filter(function(p){if(pFilter.cat&&famOf(p.id)!==pFilter.cat)return false;if(pFilter.flag==='out'&&!pIsOut(p))return false;if(pFilter.flag==='nophoto'&&p.img)return false;if(pFilter.flag==='noprice'&&!pNoPrice(p))return false;if(q&&(p.name+' '+(p.brand||'')).toLowerCase().indexOf(q)<0)return false;return true;});
     var nkey=function(s){return (s||'').replace(/^[^0-9A-Za-zÀ-ÿ]+/,'').toLowerCase();};
     pFiltered.sort(function(a,b){var c=(a.cat||'~').localeCompare(b.cat||'~','fr');if(c)return c;var d=(a.brand||'~~~').localeCompare(b.brand||'~~~','fr');if(d)return d;return nkey(a.name).localeCompare(nkey(b.name),'fr');});
     pLastCat='';pShown=0;$('prodBody').innerHTML='';pMore();
@@ -937,17 +939,22 @@
   }
   /* ---------- STATISTIQUES ---------- */
   function renderStats(){
-    var nb=0,ca=0;CATALOG.forEach(function(p){var u=soldUnits[p.id]||0;nb+=u;ca+=u*p.price;});
-    var chB=salesB.reduce(add,0),chE=salesE.reduce(add,0),tot=chB+chE||1;var onlinePct=Math.round(chE/tot*100);
-    var orders7=Math.max(1,Math.round(nb/2.4));
-    $('statKpis').innerHTML=tile('Articles vendus (7j)',nb,'','accent','')+tile('CA (7j)',money(ca).replace(' €',''),' €','good','')+tile('Panier moyen',money(ca/orders7).replace(' €',''),' €','','~'+orders7+' commandes')+tile('Part en ligne',onlinePct,' %','','boutique '+(100-onlinePct)+' %');
-    var sorted=CATALOG.slice().sort(function(a,b){return (soldUnits[b.id]||0)-(soldUnits[a.id]||0);});
-    var maxU=(soldUnits[sorted[0].id]||1);
-    function bars(arr,grey){return arr.map(function(p){var u=soldUnits[p.id]||0;return '<div class="rk"><span class="rn">'+p.name+'</span><span class="rbar"><span class="rfill" style="width:'+Math.round(u/maxU*100)+'%'+(grey?';background:linear-gradient(90deg,#B9A0B0,#8A6076)':'')+'"></span></span><span class="rv tnum">'+u+'</span></div>';}).join('');}
-    $('topSellers').innerHTML=bars(sorted.slice(0,6),false);
-    $('lowRot').innerHTML=bars(sorted.slice(-4).reverse(),true);
-    $('propBar').innerHTML='<span class="pb" style="width:'+(100-onlinePct)+'%">'+(100-onlinePct)+'%</span><span class="pe" style="width:'+onlinePct+'%">'+onlinePct+'%</span>';
-    $('propLg').innerHTML='<span><span class="sw" style="background:var(--pink)"></span>Boutique · '+chB+' ventes</span><span><span class="sw" style="background:var(--teal)"></span>En ligne · '+chE+' ventes</span>';
+    var agg=aggProducts();
+    var units=agg.reduce(function(s,p){return s+p.units;},0);
+    var paid=orders.filter(function(o){return o.paid;});
+    var ca=paid.reduce(function(s,o){return s+oTotal(o);},0);
+    var pm=paid.length?ca/paid.length:0;
+    if($('statKpis'))$('statKpis').innerHTML=tile('Articles vendus',units,'','accent','')+tile('Chiffre d\'affaires',money(ca).replace(' €',''),' €','good','')+tile('Commandes',paid.length,'','','')+tile('Panier moyen',money(pm).replace(' €',''),' €','','');
+    var top=agg.slice(0,8),maxU=top.length?top[0].units:1;
+    if($('statTop'))$('statTop').innerHTML=top.length?top.map(function(p){
+      return '<div style="display:flex;align-items:center;gap:.7rem;padding:.5rem 0;border-bottom:1px solid var(--line)">'+prodThumb(p.id)+'<div style="flex:1;min-width:0"><div style="font-size:.86rem;font-weight:600">'+esc(p.name)+'</div><div style="height:6px;background:var(--line);border-radius:6px;margin-top:.3rem;overflow:hidden"><span style="display:block;height:100%;width:'+Math.round(p.units/maxU*100)+'%;background:linear-gradient(90deg,#FF2E9A,#E01784)"></span></div></div><div style="text-align:right;min-width:64px"><div style="font-weight:800;font-size:.85rem">'+p.units+'</div><div style="font-size:.72rem;color:var(--muted)">'+money(p.ca)+'</div></div></div>';
+    }).join(''):'<div style="color:var(--muted);padding:.6rem 0">Aucune vente pour l\'instant.</div>';
+    var cats={};agg.forEach(function(p){var f=famOf(p.id);cats[f]=(cats[f]||0)+p.ca;});
+    var carr=Object.keys(cats).map(function(k){return {cat:k,ca:cats[k]};}).sort(function(a,b){return b.ca-a.ca;});
+    var maxCA=carr.length?carr[0].ca:1;
+    if($('statCat'))$('statCat').innerHTML=carr.length?carr.map(function(c){
+      return '<div style="padding:.5rem 0;border-bottom:1px solid var(--line)"><div style="display:flex;justify-content:space-between;font-size:.86rem;font-weight:600"><span>'+(FAM_EMO[c.cat]||'📦')+' '+esc(c.cat)+'</span><span style="font-weight:800">'+money(c.ca)+'</span></div><div style="height:6px;background:var(--line);border-radius:6px;margin-top:.3rem;overflow:hidden"><span style="display:block;height:100%;width:'+Math.round(c.ca/maxCA*100)+'%;background:linear-gradient(90deg,#2AA7E0,#0E9AAC)"></span></div></div>';
+    }).join(''):'<div style="color:var(--muted);padding:.6rem 0">Aucune donnée pour l\'instant.</div>';
   }
   /* ---------- CLIENTS ---------- */
   function renderClients(){
@@ -961,13 +968,13 @@
         '<td class="r tnum" style="font-weight:700">'+c.n+'</td>'+
         '<td class="r" style="font-weight:800">'+money(c.total)+'</td>'+
         '<td style="font-size:.82rem;color:var(--muted)">'+c.last+'</td>'+
-        '<td class="r"><button class="mini" data-relance="'+encodeURIComponent(c.cust.n)+'">✉️ Relancer</button></td></tr>';
+        '<td class="r"><button class="mini" data-relance="'+encodeURIComponent(c.cust.e||'')+'" data-relname="'+encodeURIComponent(c.cust.n||'')+'">✉️ Relancer</button></td></tr>';
     }).join(''):'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.4rem">Aucun client pour l\'instant.</td></tr>';
   }
   /* ---------- PROMOTIONS ---------- */
   function renderPromos(){
-    $('promoBody').innerHTML=promos.map(function(pr,idx){var red=pr.type==='%'?'-'+pr.val+' %':pr.type==='free'?'Livraison offerte':'-'+money(pr.val);
-      return '<tr'+(pr.active?'':' style="opacity:.55"')+'><td><span class="code">'+esc(pr.code)+'</span></td><td style="font-weight:700;font-size:.85rem">'+red+'</td><td class="r tnum">'+pr.uses+'</td><td style="font-size:.82rem;color:var(--muted)">'+esc(pr.note)+'</td><td class="r"><span class="switch sm'+(pr.active?'':' off')+'" data-promotoggle="'+idx+'" role="switch"></span></td></tr>';
+    $('promoBody').innerHTML=promos.map(function(pr){
+      return '<tr><td><span class="code">'+esc(pr.code)+'</span></td><td style="font-weight:700;font-size:.85rem;color:var(--pink)">-'+pr.val+' %</td><td style="font-size:.82rem;color:var(--muted)">'+esc(pr.note)+'</td><td class="r"><span class="pill st-ship">✅ Actif</span></td></tr>';
     }).join('');
   }
   /* ---------- MODAL ---------- */
@@ -975,17 +982,25 @@
     var f=$('modalBody').querySelector('form');if(f){f.addEventListener('submit',function(e){e.preventDefault();onSubmit(f);});var fi=f.querySelector('input');if(fi)fi.focus();}}
   function closeModal(){$('modal').classList.remove('show');}
   function openProductModal(){
+    if(!ADMINKEY){pUnlockModal();return;}
     openModal('Ajouter un produit',
       '<form><div class="form-row"><label>Nom du produit</label><input name="name" required placeholder="Ex. Oreo Mega Stuf"></div>'+
-      '<div class="form-2"><div class="form-row"><label>Catégorie</label><select name="cat"><option>Sodas</option><option>Snacks</option><option>Chocolats</option><option>Bonbons</option><option>Épicé</option><option>Desserts</option></select></div>'+
-      '<div class="form-row"><label>Prix (€)</label><input name="price" type="number" step="0.01" min="0" required placeholder="3.90"></div></div>'+
-      '<div class="form-row"><label>Stock initial</label><input name="stock" type="number" min="0" value="10"></div>'+
-      '<button class="btn btn-primary" type="submit" style="width:100%;justify-content:center;margin-top:.3rem">Ajouter au catalogue</button></form>',
-      function(f){var name=f.elements['name'].value.trim(),price=parseFloat(f.price.value),stock=parseInt(f.stock.value,10)||0;if(!name||isNaN(price)){toast('Renseigne au moins un nom et un prix','warn');return;}
-        var tints=[T.blue,T.orange,T.pink,T.green,T.yellow,T.purple,T.red,T.cyan,T.brown];var id='new-'+(prodSeq++);
-        var p={id:id,name:name,price:price,tint:tints[Math.floor(Math.random()*tints.length)],init:stock,cat:f.cat.value,active:true};
-        CATALOG.push(p);byId[id]=p;truth[id]=stock;site[id]=stock;soldUnits[id]=0;
-        closeModal();renderProducts();renderStock();renderDash();toast('Produit ajouté : '+name,'good');});
+      '<div class="form-2"><div class="form-row"><label>Catégorie</label><select name="cat"><option>Bonbons</option><option>Snacks</option><option>Sodas</option><option>Chocolats</option><option>Desserts</option><option>Épicé</option></select></div>'+
+      '<div class="form-row"><label>Prix (€)</label><input name="price" type="number" step="0.01" min="0" placeholder="3.90"></div></div>'+
+      '<div class="form-row"><label>Marque (optionnel)</label><input name="brand" placeholder="Ex. Oreo"></div>'+
+      '<div class="form-row"><label>URL de la photo (optionnel)</label><input name="img" placeholder="Coller une URL d\'image…"></div>'+
+      '<button class="btn btn-primary" type="submit" style="width:100%;justify-content:center;margin-top:.3rem">Ajouter au catalogue (en ligne)</button></form>',
+      function(f){
+        var name=f.elements['name'].value.trim(),price=parseFloat(f.price.value),cat=f.cat.value,brand=f.elements['brand'].value.trim(),img=f.elements['img'].value.trim();
+        if(!name){toast('Renseigne au moins un nom','warn');return;}
+        var tints=[T.blue,T.orange,T.pink,T.green,T.yellow,T.purple,T.red,T.cyan,T.brown];var tint=tints[Math.floor(Math.random()*tints.length)];
+        var id='new-'+Date.now().toString(36)+Math.floor(Math.random()*900+100);
+        var patch={name:name,cat:cat,tint:tint,'new':true};
+        if(!isNaN(price))patch.price=price; if(brand)patch.brand=brand; if(img)patch.img=img;
+        pSave(id,patch,function(ok){if(!ok)return;
+          if(MC.byId&&!MC.byId(id))MC.PRODUCTS.push({id:id,name:name,cat:cat,tint:tint,price:(isNaN(price)?null:price),brand:brand||null,img:img||null,old:null,sub:null,reviews:0,nouveau:true,available:true});
+          closeModal();renderProducts();renderStats();renderDash();toast('Produit ajouté ✓ — en ligne sur le site','good');});
+      });
   }
   function openPromoModal(){
     openModal('Créer un code promo',
@@ -1104,11 +1119,39 @@
   document.addEventListener('click',function(e){var g=e.target.closest('[data-goto]');if(g)setView(g.getAttribute('data-goto'));});
   $('tbody').addEventListener('click',function(e){var s=e.target.closest('[data-sell]');if(s){sellInStore(s.getAttribute('data-sell'));return;}var b=e.target.closest('[data-buy]');if(b)buyOnline(b.getAttribute('data-buy'));});
   $('orders').addEventListener('click',function(e){var a=e.target.closest('[data-advance]');if(a){advanceOrder(a.getAttribute('data-advance'));return;}var s=e.target.closest('[data-ship]');if(s){shipOrder(s.getAttribute('data-ship'));return;}var h=e.target.closest('.order-head');if(h)toggleOrder(h.parentElement.getAttribute('data-order'));});
+  $('orders').addEventListener('click',function(e){var b=e.target.closest('[data-ostatus]');if(!b)return;var ref=b.getAttribute('data-ref'),st=b.getAttribute('data-ostatus');if(!ADMINKEY)return;b.disabled=true;
+    fetch(MCAPI+'/order/status',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+ADMINKEY},body:JSON.stringify({reference:ref,status:st})}).then(function(r){return r.json();}).then(function(d){if(d&&d.ok){loadReal();toast('Statut : '+((OST[st]&&OST[st][1])||st),'good');}else{b.disabled=false;toast('Erreur','warn');}}).catch(function(){b.disabled=false;});});
   $('ofilters').addEventListener('click',function(e){var c=e.target.closest('[data-f]');if(!c)return;document.querySelectorAll('#ofilters .chip').forEach(function(x){x.classList.remove('active');});c.classList.add('active');filterVal=c.getAttribute('data-f');renderOrders();});
   $('search').addEventListener('input',function(){searchQ=this.value.trim().toLowerCase();if(curView==='products'){renderProducts();return;}renderStock();renderOrders();});
   $('bell').addEventListener('click',function(){setView('orders');});
   // produits — catalogue réel
   $('pUnlock').addEventListener('click',pUnlockModal);
+  $('pAdd').addEventListener('click',openProductModal);
+  /* ===== Notifications push « nouvelle commande » (activées depuis le logiciel de gestion) ===== */
+  var VAPID_PUBLIC='BAr4-ARxYqECbfUR34jmYYDy9d_vV02ERaI4AFyuAGhbljREhyLG1fhng6feKRSd-gNilsYUEIPI2CuAvAFSvao';
+  function _u8(b64){var pad='='.repeat((4-b64.length%4)%4);var s=(b64+pad).replace(/-/g,'+').replace(/_/g,'/');var raw=atob(s);var a=new Uint8Array(raw.length);for(var i=0;i<raw.length;i++)a[i]=raw.charCodeAt(i);return a;}
+  function notifSupported(){return ('serviceWorker' in navigator)&&('PushManager' in window)&&('Notification' in window);}
+  async function refreshNotifBtn(){var b=$('notifBtn');if(!b)return;if(!notifSupported()){b.style.display='none';return;}
+    try{var reg=await navigator.serviceWorker.getRegistration();var sub=reg&&await reg.pushManager.getSubscription();if(sub&&Notification.permission==='granted'){b.textContent='🔔 Notifs activées ✓';b.disabled=true;b.style.opacity=.7;}else{b.textContent='🔔 Activer les notifs';b.disabled=false;b.style.opacity=1;}}catch(e){}}
+  async function enableNotifs(){
+    if(!notifSupported()){toast('Notifications non supportées ici. Sur iPhone : « Partager → Sur l\'écran d\'accueil », puis rouvre depuis l\'icône.','warn');return;}
+    var key=ADMINKEY||(function(){try{return sessionStorage.getItem('mcAdminKey');}catch(e){return null;}})();
+    if(!key){pUnlockModal();return;}
+    try{
+      var perm=await Notification.requestPermission();
+      if(perm!=='granted'){toast('Notifications refusées dans le navigateur','warn');return;}
+      var reg=await navigator.serviceWorker.register('/sw.js');
+      await navigator.serviceWorker.ready;
+      var sub=await reg.pushManager.getSubscription();
+      if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:_u8(VAPID_PUBLIC)});
+      var r=await fetch(MCAPI+'/push/subscribe',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify(sub.toJSON?sub.toJSON():sub)});
+      var d=await r.json();
+      if(d&&d.ok){toast('🔔 Notifications activées ! Tu seras prévenu à chaque commande.','good');refreshNotifBtn();}
+      else toast('Erreur : '+((d&&d.error)||'?'),'warn');
+    }catch(e){toast('Impossible d\'activer les notifications','warn');}
+  }
+  if($('notifBtn'))$('notifBtn').addEventListener('click',enableNotifs);
+  refreshNotifBtn();
   $('prodMore').addEventListener('click',pMore);
   $('pCats').addEventListener('click',function(e){var c=e.target.closest('[data-pcat]');if(!c)return;pFilter.cat=c.getAttribute('data-pcat');renderProducts();});
   $('prodKpis').addEventListener('click',function(e){var k=e.target.closest('[data-pflag]');if(!k)return;var f=k.getAttribute('data-pflag');pFilter.flag=(pFilter.flag===f?'':f);renderProducts();});
@@ -1122,10 +1165,10 @@
     var dl=e.target.closest('[data-pdel]');if(dl){if(!ADMINKEY){toast('Active l\'édition d\'abord','warn');return;}var did=dl.getAttribute('data-pdel'),dp=MC.byId?MC.byId(did):null;if(!confirm('Supprimer « '+(dp?dp.name:did)+' » du catalogue ?\n\nLe produit disparaîtra de la boutique.'))return;pSave(did,{deleted:true},function(ok){if(ok){for(var di=MC.PRODUCTS.length-1;di>=0;di--){if(MC.PRODUCTS[di].id===did){MC.PRODUCTS.splice(di,1);break;}}renderProducts();toast('Produit supprimé ✓','good');}});return;}
     var sw=e.target.closest('[data-pavail]');if(sw){if(!ADMINKEY){toast('Active l\'édition d\'abord','warn');return;}var id=sw.getAttribute('data-pavail'),willBe=sw.classList.contains('off');sw.classList.toggle('off');pSave(id,{available:willBe},function(ok){if(ok)toast(willBe?'Marqué disponible':'Marqué épuisé');else sw.classList.toggle('off');});return;}});
   // promos
-  $('addPromo').addEventListener('click',openPromoModal);
-  $('promoBody').addEventListener('click',function(e){var t=e.target.closest('[data-promotoggle]');if(t){var pr=promos[+t.getAttribute('data-promotoggle')];pr.active=!pr.active;renderPromos();toast('Code '+pr.code+(pr.active?' activé':' désactivé'));}});
+  /* Promotions : codes réels gérés dans le Worker, plus de création/toggle démo. */
   // clients
-  $('clientBody').addEventListener('click',function(e){var r=e.target.closest('[data-relance]');if(r){toast('📧 Relance envoyée à '+decodeURIComponent(r.getAttribute('data-relance'))+' (simulé)','good');}});
+  $('clientBody').addEventListener('click',function(e){var r=e.target.closest('[data-relance]');if(!r)return;var email=decodeURIComponent(r.getAttribute('data-relance')||'');var name=decodeURIComponent(r.getAttribute('data-relname')||'');if(!email){toast('Ce client n\'a pas d\'email enregistré','warn');return;}if(!ADMINKEY)return;if(!confirm('Envoyer une relance -10% (TAGADA10) à '+(name||email)+' ?'))return;r.disabled=true;var old=r.innerHTML;r.textContent='…';
+    fetch(MCAPI+'/client/relance',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+ADMINKEY},body:JSON.stringify({email:email,name:name})}).then(function(x){return x.json();}).then(function(d){if(d&&d.ok){r.textContent='✓ Relancé';toast('📧 Relance envoyée à '+(name||email),'good');}else{r.disabled=false;r.innerHTML=old;toast('Erreur : '+((d&&d.error)||'?'),'warn');}}).catch(function(){r.disabled=false;r.innerHTML=old;toast('Erreur réseau','warn');});});
   // modal close
   $('modalX').addEventListener('click',closeModal);
   $('modal').addEventListener('click',function(e){if(e.target===$('modal'))closeModal();});
@@ -1154,12 +1197,7 @@
   autoBtn.addEventListener('click',function(){autoOn?stopAuto():startAuto();});
   // switches (settings)
   document.querySelectorAll('.switch').forEach(function(sw){sw.addEventListener('click',function(){sw.classList.toggle('off');});});
-  // chart tooltip
-  var chartWrap=$('chartWrap');
-  chartWrap.addEventListener('mousemove',function(e){var r=e.target.closest('.bar');var tip=$('ctip');if(!r||!tip){if(tip)tip.style.opacity=0;return;}
-    var wr=chartWrap.getBoundingClientRect();tip.innerHTML='<div>'+r.getAttribute('data-d')+'</div><div class="cs"><span class="sw" style="background:'+r.getAttribute('fill')+'"></span>'+r.getAttribute('data-s')+' : '+r.getAttribute('data-v')+' ventes</div>';
-    tip.style.left=(e.clientX-wr.left)+'px';tip.style.top=(e.clientY-wr.top-10)+'px';tip.style.opacity=1;});
-  chartWrap.addEventListener('mouseleave',function(){var tip=$('ctip');if(tip)tip.style.opacity=0;});
+  /* (graphique 7 jours retiré du tableau de bord) */
 
   document.addEventListener('click',function(e){if(e.target.closest('[data-opsunlock]'))pUnlockModal();});
   reset();pLoadOverrides();loadReal();var _v=(location.hash||'').replace(/^#/,'');setView(TITLES[_v]?_v:'dash');

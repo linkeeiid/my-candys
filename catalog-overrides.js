@@ -10,6 +10,13 @@
 
   function apply(ov) {
     if (!ov) return;
+    // créations : nouveaux produits ajoutés depuis l'admin (new:true, absents du catalogue de base)
+    for (var nid in ov) {
+      var no = ov[nid];
+      if (no && no['new'] && !no.deleted && MC.byId && !MC.byId(nid)) {
+        MC.PRODUCTS.push({ id: nid, name: no.name || nid, price: (no.price != null ? no.price : null), old: (no.old != null ? no.old : null), cat: no.cat || 'Bonbons', brand: no.brand || null, tint: no.tint || (MC.T && MC.T.pink) || '#FFD1E8', img: no.img || null, sub: (no.sub || null), stock: no.stock, available: no.available !== false, reviews: 0, nouveau: true });
+      }
+    }
     MC.PRODUCTS.forEach(function (p) {
       var o = ov[p.id]; if (!o) return;
       if (o.cat) p.cat = o.cat;

@@ -1,0 +1,12 @@
+{
+  "name": "My Candy's — Gestion",
+  "short_name": "MC Gestion",
+  "start_url": "/console.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#1a0510",
+  "theme_color": "#FF2E9A",
+  "icons": [
+    { "src": "/assets/logo.png", "sizes": "300x236", "type": "image/png", "purpose": "any" }
+  ]
+}

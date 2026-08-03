@@ -842,6 +842,35 @@ async function brevoSendEmail(env, { toEmail, toName, subject, html, replyTo }) 
   });
 }
 
+/* ===== WEB PUSH — notifications « nouvelle commande » au gérant (comme Blade Society) =====
+   Clé publique VAPID en clair (elle est publique). Clé privée = variable Cloudflare VAPID_PRIVATE_JWK. */
+const VAPID_PUBLIC = 'BAr4-ARxYqECbfUR34jmYYDy9d_vV02ERaI4AFyuAGhbljREhyLG1fhng6feKRSd-gNilsYUEIPI2CuAvAFSvao';
+function _b64url(buf) { var a = new Uint8Array(buf), b = ''; for (var i = 0; i < a.length; i++) b += String.fromCharCode(a[i]); return btoa(b).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+function _utf8(s) { return new TextEncoder().encode(s); }
+async function vapidJWT(env, aud) {
+  var enc = function (o) { return _b64url(_utf8(JSON.stringify(o))); };
+  var signingInput = enc({ typ: 'JWT', alg: 'ES256' }) + '.' + enc({ aud: aud, exp: Math.floor(Date.now() / 1000) + 43200, sub: 'mailto:hello@mycandys.fr' });
+  var key = await crypto.subtle.importKey('jwk', JSON.parse(env.VAPID_PRIVATE_JWK), { name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign']);
+  var sig = await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, key, _utf8(signingInput));
+  return signingInput + '.' + _b64url(sig);
+}
+async function sendPush(env, sub) {
+  try {
+    var jwt = await vapidJWT(env, new URL(sub.endpoint).origin);
+    var r = await fetch(sub.endpoint, { method: 'POST', headers: { 'TTL': '86400', 'Authorization': 'vapid t=' + jwt + ', k=' + VAPID_PUBLIC } });
+    return r.status; // 201 = OK ; 404/410 = abonnement expiré
+  } catch (e) { return 0; }
+}
+async function notifyNewOrder(env) {
+  if (!env.VAPID_PRIVATE_JWK) return;
+  try {
+    var subs = await fbGet(env, 'push_subs');
+    if (!subs) return;
+    var list = Object.keys(subs).map(function (k) { return subs[k]; }).filter(function (s) { return s && s.endpoint; });
+    await Promise.all(list.map(function (s) { return sendPush(env, s); }));
+  } catch (e) {}
+}
+
 /* En-tête logo des emails — URL absolue (obligatoire en email ; le domaine est en ligne). */
 function logoHdr() {
   return '<div style="text-align:center;padding:4px 0 16px"><img src="https://mycandys.fr/assets/logo.png" alt="My Candy\'s" width="150" style="width:150px;max-width:62%;height:auto"></div>';
@@ -892,6 +921,16 @@ function welcomeEmailHtml() {
     '<p style="color:#8A6076;font-size:12.5px">Code à saisir au moment du paiement. À très vite ! 💌</p></div>';
 }
 
+/* Email de relance client (bouton « Relancer » du back-office) — code -10% TAGADA10. */
+function relanceEmailHtml(name) {
+  return '<div style="font-family:Arial,sans-serif;color:#2A0A1C">' + logoHdr() +
+    '<h2 style="color:#E01784">Tu nous manques' + (name ? ', ' + esc(name) : '') + ' ! 🍬</h2>' +
+    '<p>Ça fait un moment… De nouveaux snacks viraux viennent d\'arriver chez My Candy\'s, et on t\'a gardé une petite douceur :</p>' +
+    '<div style="text-align:center;margin:20px 0"><div style="display:inline-block;border:2px dashed #FF2E9A;border-radius:14px;padding:16px 28px"><div style="font-size:13px;color:#8A6076">-10% sur ta prochaine commande</div><div style="font-size:26px;font-weight:800;color:#E01784;letter-spacing:1px">TAGADA10</div></div></div>' +
+    '<p style="text-align:center;margin:22px 0 6px"><a href="https://mycandys.fr/boutique.html" style="background:#E01784;color:#fff;text-decoration:none;font-weight:700;padding:13px 26px;border-radius:12px;display:inline-block">Je reviens faire le plein →</a></p>' +
+    '<p style="color:#8A6076;font-size:12.5px">Code à saisir au paiement. À très vite ! 💌</p></div>';
+}
+
 /* Finalise une commande si le paiement SumUp est bien PAID. Idempotent. */
 async function finalizeIfPaid(env, reference, checkoutId) {
   // Petit retry : juste après le widget, le statut peut mettre 1 instant à passer PAID.
@@ -921,6 +960,7 @@ async function finalizeIfPaid(env, reference, checkoutId) {
       subject: "Ta commande My Candy's 🍬 — " + reference, html: orderEmailHtml(order)
     });
   }
+  await notifyNewOrder(env); // 🔔 notification push au gérant (logiciel de gestion)
   return { ok: true, reference: reference, total: order.total };
 }
 
@@ -998,12 +1038,14 @@ export default {
         for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = (h * 16777619) >>> 0; }
         const expected = 'MCFID' + pct + '-' + ('000' + h.toString(36).toUpperCase()).slice(-4);
         if (code !== expected) return json({ ok: false, error: 'code_invalide' }, 400, allow);
-        const html = '<div style="font-family:Arial,sans-serif;color:#2A0A1C;max-width:520px;margin:auto">' +
-          '<h2 style="color:#E01784;margin:0 0 6px">Bravo ' + esc(first || '') + ' ! 🎉</h2>' +
-          '<p style="font-size:15px;line-height:1.6">Tu viens d\'atteindre <b>' + pts + ' points</b> de fidélité My Candy\'s — tu débloques <b>-' + pct + '% sur ta prochaine commande.</b></p>' +
-          '<p style="font-size:14px;margin:18px 0 8px">Ton code de réduction personnel :</p>' +
+        const tierName = pct === 15 ? 'Platine 💎' : (pct === 10 ? 'Or 🥇' : 'Argent 🥈');
+        const html = '<div style="font-family:Arial,sans-serif;color:#2A0A1C;max-width:520px;margin:auto">' + logoHdr() +
+          '<div style="text-align:center;margin:0 0 8px"><span style="display:inline-block;background:#FFF1F8;color:#E01784;font-weight:800;font-size:12px;letter-spacing:.5px;padding:5px 12px;border-radius:999px">🎁 PALIER ' + tierName + '</span></div>' +
+          '<h2 style="color:#E01784;margin:0 0 6px;text-align:center">Bravo ' + esc(first || '') + ' ! 🎉</h2>' +
+          '<p style="font-size:15px;line-height:1.6;text-align:center">Tu viens d\'atteindre <b>' + pts + ' points</b> de fidélité My Candy\'s — tu débloques <b>-' + pct + '% sur ta prochaine commande.</b></p>' +
+          '<p style="font-size:14px;margin:18px 0 8px;text-align:center">Ton code de réduction personnel :</p>' +
           '<div style="font-family:monospace;font-size:22px;font-weight:800;letter-spacing:2px;color:#E01784;background:#FFF1F8;border:2px dashed #F3A9D0;border-radius:12px;padding:14px;text-align:center">' + esc(code) + '</div>' +
-          '<p style="font-size:13px;color:#8A6076;margin-top:14px">À saisir dans le champ « Code promo » au moment du paiement. Un seul code par commande. Merci de faire partie du club ! 🍬</p></div>';
+          '<p style="font-size:13px;color:#8A6076;margin-top:14px;text-align:center">À saisir dans le champ « Code promo » au moment du paiement. Un seul code par commande. Merci de faire partie du club ! 🍬</p></div>';
         await brevoSendEmail(env, { toEmail: email, toName: first, subject: 'Ta récompense fidélité : -' + pct + '% 🎁', html: html });
         await fbPush(env, 'loyalty', { email: email, pct: pct, pts: pts, code: code, ts: Date.now() });
         return json({ ok: true }, 200, allow);
@@ -1038,9 +1080,10 @@ export default {
         // Code promo fidélité : MCFIDxx-XXXX validé contre l'e-mail du client (recalcul serveur)
         let discount = 0, promoCode = '';
         const promo = str(body.promo, 32).toUpperCase();
-        if (promo === 'BIENVENUE10') {
-          // Code de bienvenue newsletter : -10% (première commande)
-          discount = round2(sub * 10 / 100); promoCode = promo;
+        // Codes à pourcentage fixe (source de vérité serveur)
+        const FIXED_PROMOS = { 'CANDYSUMMER26': 26, 'BIENVENUE10': 10, 'TAGADA10': 10 };
+        if (FIXED_PROMOS[promo] != null) {
+          discount = round2(sub * FIXED_PROMOS[promo] / 100); promoCode = promo;
         } else if (promo) {
           const m = promo.match(/^MCFID(5|10|15)-[A-Z0-9]{4}$/);
           if (m) {
@@ -1141,6 +1184,40 @@ export default {
         return json({ ok: true, reference: reference, mailed: mailed }, 200, allow);
       }
 
+      if (path === '/order/status') {
+        // Back-office : change le statut interne d'une commande (en cours / traitée). (protégé ADMIN_KEY)
+        const auth = request.headers.get('Authorization') || '';
+        if (!env.ADMIN_KEY || auth !== ('Bearer ' + env.ADMIN_KEY)) return json({ ok: false, error: 'unauthorized' }, 401, allow);
+        const reference = str(body.reference, 90);
+        const status = str(body.status, 20);
+        if (!reference || ['nouvelle', 'en_traitement', 'traitee'].indexOf(status) < 0) return json({ ok: false, error: 'params_invalides' }, 400, allow);
+        const order = await fbGet(env, 'orders/' + reference);
+        if (!order) return json({ ok: false, error: 'order_not_found' }, 404, allow);
+        await fbPatch(env, 'orders/' + reference, { status: status });
+        return json({ ok: true, reference: reference, status: status }, 200, allow);
+      }
+
+      if (path === '/push/subscribe') {
+        // Le gérant active les notifications depuis le logiciel de gestion → on stocke son abonnement. (protégé ADMIN_KEY)
+        const auth = request.headers.get('Authorization') || '';
+        if (!env.ADMIN_KEY || auth !== ('Bearer ' + env.ADMIN_KEY)) return json({ ok: false, error: 'unauthorized' }, 401, allow);
+        if (!body || !body.endpoint) return json({ ok: false, error: 'sub_invalide' }, 400, allow);
+        let h = 2166136261; const s = String(body.endpoint); for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = (h * 16777619) >>> 0; }
+        await fetch(fbUrl(env, 'push_subs/' + h.toString(36)), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        return json({ ok: true }, 200, allow);
+      }
+
+      if (path === '/client/relance') {
+        // Back-office : relance un client par email (code -10% TAGADA10). (protégé ADMIN_KEY)
+        const auth = request.headers.get('Authorization') || '';
+        if (!env.ADMIN_KEY || auth !== ('Bearer ' + env.ADMIN_KEY)) return json({ ok: false, error: 'unauthorized' }, 401, allow);
+        const email = str(body.email, 254); const name = str(body.name, 80);
+        if (!isEmail(email)) return json({ ok: false, error: 'email_invalide' }, 400, allow);
+        let mailed = false;
+        try { await brevoSendEmail(env, { toEmail: email, toName: name, subject: "On t'a gardé -10% chez My Candy's 🍬", html: relanceEmailHtml(name) }); mailed = true; } catch (e) {}
+        return json({ ok: true, mailed: mailed }, 200, allow);
+      }
+
       if (path === '/catalog') {
         // écriture protégée : surcharge produit depuis l'admin
         const auth = request.headers.get('Authorization') || '';
@@ -1149,6 +1226,9 @@ export default {
         if (!id) return json({ ok: false, error: 'id_manquant' }, 400, allow);
         const patch = {};
         if (body.cat !== undefined) patch.cat = String(body.cat).slice(0, 40);
+        if (body.name !== undefined) patch.name = String(body.name).slice(0, 80);
+        if (body.tint !== undefined) patch.tint = String(body.tint).slice(0, 40);
+        if (body['new'] !== undefined) patch['new'] = !!body['new'];
         if (body.brand !== undefined) patch.brand = (body.brand === null || body.brand === '') ? null : String(body.brand).slice(0, 40);
         if (body.price !== undefined) { const pr = Number(body.price); if (!isNaN(pr) && pr >= 0 && pr < 10000) patch.price = Math.round(pr * 100) / 100; }
         if (body.desc !== undefined) patch.desc = String(body.desc).slice(0, 600);
