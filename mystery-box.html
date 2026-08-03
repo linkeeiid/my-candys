@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Mystery Box 🎁 — My Candy's</title>
-<meta name="description" content="Nos Mystery Box de snacks viraux : un mélange surprise de bonbons US, sodas TikTok et pépites introuvables, toujours d'une valeur supérieure au prix. Parfait à unboxer sur TikTok.">
+<meta name="description" content="Nos Mystery Box de snacks viraux : un mélange surprise de bonbons US, sodas rares et pépites introuvables, toujours d'une valeur supérieure au prix. Parfait à unboxer sur les réseaux.">
 <meta name="theme-color" content="#FF2E9A">
 <link rel="icon" href="assets/logo.png">
 <link rel="canonical" href="https://mycandys.fr/mystery-box">
@@ -12,14 +12,14 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="My Candy's">
 <meta property="og:title" content="Mystery Box 🎁 — My Candy's">
-<meta property="og:description" content="Nos Mystery Box de snacks viraux : un mélange surprise de bonbons US, sodas TikTok et pépites introuvables, toujours d'une valeur supérieure au prix. Parfait à unboxer sur TikTok.">
+<meta property="og:description" content="Nos Mystery Box de snacks viraux : un mélange surprise de bonbons US, sodas rares et pépites introuvables, toujours d'une valeur supérieure au prix. Parfait à unboxer sur les réseaux.">
 <meta property="og:url" content="https://mycandys.fr/mystery-box">
 <meta property="og:image" content="https://mycandys.fr/assets/banners/promo-site.png">
 <meta property="og:locale" content="fr_FR">
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Mystery Box 🎁 — My Candy's">
-<meta name="twitter:description" content="Nos Mystery Box de snacks viraux : un mélange surprise de bonbons US, sodas TikTok et pépites introuvables, toujours d'une valeur supérieure au prix. Parfait à unboxer sur TikTok.">
+<meta name="twitter:description" content="Nos Mystery Box de snacks viraux : un mélange surprise de bonbons US, sodas rares et pépites introuvables, toujours d'une valeur supérieure au prix. Parfait à unboxer sur les réseaux.">
 <meta name="twitter:image" content="https://mycandys.fr/assets/banners/promo-site.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -45,6 +45,7 @@
 .mb-btn-ghost{background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.55);color:#fff}
 .mb-btn-ghost:hover{background:rgba(255,255,255,.2);color:#fff}
 .mb-hero-gift{flex:none;width:290px;max-width:100%}
+.mb-hero-photo{display:block;width:100%;border-radius:24px;background:#fff;padding:10px;animation:bob 6s ease-in-out infinite;box-shadow:0 20px 44px rgba(42,10,28,.35)}
 .mb-giftbox{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.4);border-radius:30px;height:270px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#fff;animation:bob 6s ease-in-out infinite;box-shadow:0 20px 44px rgba(42,10,28,.28)}
 .mb-giftbox span{font-size:118px;line-height:1;filter:drop-shadow(0 10px 12px rgba(0,0,0,.25))}
 .mb-giftbox small{font-family:ui-monospace,Menlo,monospace;font-size:11px;opacity:.85}
@@ -75,7 +76,7 @@
 .mb-step p{font-size:13.5px;line-height:1.5;color:#7A5468;margin:0}
 
 /* ---------- Cartes box ---------- */
-.mb-boxes{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:26px;align-items:stretch}
+.mb-boxes{display:grid;grid-template-columns:repeat(auto-fit,minmax(238px,1fr));gap:18px;margin-top:26px;align-items:stretch}
 .mb-card{background:#FFF7EE;border:1px solid #F1DAE7;border-radius:26px;overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:0 14px 34px rgba(122,14,74,.13);transition:transform .2s,box-shadow .2s}
 .mb-card:hover{transform:translateY(-5px);box-shadow:0 22px 46px rgba(122,14,74,.2)}
 .mb-card.pop{border:2px solid #FF2E9A;box-shadow:0 20px 44px rgba(255,46,154,.26)}
@@ -164,14 +165,14 @@
       <div class="mb-crumb"><a href="/">Accueil</a> › <span style="color:#fff;font-weight:600">Mystery Box</span></div>
       <span class="mb-tagline">🎉 Surprise garantie · valeur &gt; prix</span>
       <h1>Nos Mystery Box 🎉</h1>
-      <p>Un mélange surprise de nos snacks les plus viraux — bonbons US, sodas TikTok et pépites introuvables — pour une valeur toujours supérieure à ce que tu paies. Le colis parfait à unboxer devant la caméra. 📦✨</p>
+      <p>Un mélange surprise de nos snacks les plus viraux — bonbons US, sodas rares et pépites introuvables — pour une valeur toujours supérieure à ce que tu paies. Le colis parfait à unboxer devant la caméra. 📦✨</p>
       <div class="mb-hero-cta">
         <a href="#box" class="mb-btn mb-btn-solid">Choisir ma box →</a>
         <a href="#comment" class="mb-btn mb-btn-ghost">Comment ça marche ?</a>
       </div>
     </div>
     <div class="mb-hero-gift">
-      <div class="mb-giftbox"><span>🎁</span><small>photo · Mystery Box</small></div>
+      <img src="assets/boxes/mega.jpg" alt="Méga Box My Candy's — pleine de snacks viraux" class="mb-hero-photo" loading="lazy" decoding="async">
     </div>
   </div>
   <div class="mb-wave"><svg viewBox="0 0 1440 96" preserveAspectRatio="none"><path d="M0,40 C180,90 340,92 520,60 C700,28 820,10 1000,34 C1160,55 1300,80 1440,52 L1440,96 L0,96 Z" fill="#E9F5FB"></path></svg></div>
@@ -246,7 +247,7 @@
     <h2 class="mb-h2">FAQ Mystery Box ❓</h2>
   </div>
   <div class="mb-faq">
-    <details class="mb-q"><summary>Qu'est-ce qu'il y a dans une Mystery Box ?</summary><p>Une sélection surprise de nos snacks et boissons les plus viraux : bonbons US, sodas TikTok, chips épicées, chocolats introuvables et parfois des éditions limitées. Le contenu change à chaque box, mais la valeur des produits dépasse toujours le prix payé.</p></details>
+    <details class="mb-q"><summary>Qu'est-ce qu'il y a dans une Mystery Box ?</summary><p>Une sélection surprise de nos snacks et boissons les plus viraux : bonbons US, sodas rares, chips épicées, chocolats introuvables et parfois des éditions limitées. Le contenu change à chaque box, mais la valeur des produits dépasse toujours le prix payé.</p></details>
     <details class="mb-q"><summary>Puis-je choisir les produits à l'intérieur ?</summary><p>Non — et c'est justement tout le fun ! 😄 En revanche on garantit un mix équilibré sucré / salé / boisson, aucun doublon dans une même box, et uniquement des produits qui cartonnent en ce moment.</p></details>
     <details class="mb-q"><summary>Et si je suis allergique à quelque chose ?</summary><p>Nos box peuvent contenir arachides, fruits à coque, lait, gluten et soja. Indique-nous tes allergies en commentaire de commande : on adapte ta box et on remplace les produits concernés.</p></details>
     <details class="mb-q"><summary>Je peux l'offrir en cadeau ?</summary><p>Carrément, c'est le cadeau parfait 🎁. Ajoute un petit mot au moment du paiement et on le glisse dans le colis. Effet waouh garanti à l'ouverture.</p></details>
@@ -297,7 +298,7 @@
       desc: 'Le best-of ultime : le meilleur rapport surprise / prix pour un unboxing de folie.',
       worth: 'Contenu d\'une valeur de ~45 €',
       items: [
-        ['🍭', '15 produits surprise, best of TikTok'],
+        ['🍭', '15 produits surprise, best of'],
         ['🥤', '3 boissons dont 1 énergisante Monster'],
         ['🍫', 'Bonbons US, chocolats &amp; chips épicées'],
         ['✨', '2 éditions limitées introuvables'],
@@ -323,30 +324,24 @@
   var host = document.getElementById('mb-boxes');
   if (host && window.MC) {
     host.innerHTML = MC.BOXES.map(function (p) {
-      var m = META[p.id] || { emoji: '🎁', desc: '', worth: '', items: [], ribbon: '' };
       var b = MC.badge(p);
-      var items = m.items.map(function (it) {
-        return '<li><span>' + it[0] + '</span><span>' + it[1] + '</span></li>';
-      }).join('');
       return '' +
-        '<article class="mb-card' + (m.pop ? ' pop' : '') + '">' +
-          '<div class="mb-card-img" style="background:' + p.tint + '">' +
-            '<div class="mc-stripes"></div>' +
-            (m.ribbon ? '<div class="mb-ribbon">' + m.ribbon + '</div>' : '') +
+        '<article class="mb-card' + (p.pop ? ' pop' : '') + '">' +
+          '<div class="mb-card-img" style="background:#fff">' +
+            (p.img ? '<img src="' + p.img + '" alt="' + MC.esc(p.name) + '" loading="lazy" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain">' : '<div class="mc-stripes"></div>') +
+            (p.ribbon ? '<div class="mb-ribbon">' + p.ribbon + '</div>' : '') +
             '<div class="mb-pricepill">' + MC.money(p.price) + '</div>' +
-            '<div class="mb-card-emoji">' + m.emoji + '</div>' +
           '</div>' +
           '<div class="mb-card-body">' +
             '<div class="mb-card-name">' + MC.esc(p.name) + '</div>' +
-            '<div class="mb-card-desc">' + m.desc + '</div>' +
-            '<div class="mb-stars"><span class="s">★★★★★</span><span>4,8 · (' + p.reviews + ' avis)</span></div>' +
+            '<div class="mb-card-desc">' + (p.desc || '') + '</div>' +
+            '<div class="mb-stars"><span class="s">★★★★★</span><span>4,8 · (' + (p.reviews || 0) + ' avis)</span></div>' +
             '<div class="mb-valrow">' +
               '<span class="mb-price">' + MC.money(p.price) + '</span>' +
               (p.old ? '<span class="mb-old">' + MC.money(p.old) + '</span>' : '') +
               (b ? '<span class="mb-badge" style="background:' + b.bg + ';color:' + b.color + '">' + b.text + '</span>' : '') +
             '</div>' +
-            (m.worth ? '<div class="mb-worth">🎯 ' + m.worth + '</div>' : '') +
-            '<ul class="mb-list">' + items + '</ul>' +
+            (p.worth ? '<div class="mb-worth">🎯 ' + p.worth + '</div>' : '') +
             '<button class="mb-add" data-add="' + MC.esc(p.id) + '">Ajouter au panier 🛒</button>' +
           '</div>' +
         '</article>';
