@@ -202,13 +202,10 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
   .mc-mbox-body b{font-size:17px}
   .mc-mbox-add{margin-top:12px;width:auto;align-self:flex-start;padding:11px 24px;font-size:14px}
   /* Avis : cartes pleine largeur pour occuper tout l'écran */
-  /* Avis mobile : carrousel à swipe natif (fluide) au lieu du marquee animé (saccadé) */
-  .mc-revwrap{-webkit-mask-image:none;mask-image:none;margin-left:-22px;margin-right:-22px}
-  .mc-rev-track{animation:none;width:auto;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;scrollbar-width:none}
-  .mc-rev-track::-webkit-scrollbar{display:none}
-  .mc-rev-track > div{gap:12px;padding-left:12px;padding-right:12px}
-  .mc-rev-track > div:nth-child(2){display:none}
-  .mc-rev-track .mc-rev{width:calc(100vw - 24px);scroll-snap-align:center}
+  /* Avis mobile : défilement auto (marquee) conservé + cartes larges + fondu aux bords.
+     On garde des cartes ~82vw (pas plein écran) pour que le rail animé reste fluide sur iPhone. */
+  .mc-rev-track > div{gap:12px}
+  .mc-rev-track .mc-rev{width:82vw}
   .mc-news{padding:28px 20px}
   .mc-news form{flex-direction:column}
   .mc-news input{min-width:0;width:100%}
@@ -458,7 +455,9 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
     { t: "Des prix corrects pour de l'import et un choix de dingue. C'est ma commande mensuelle maintenant !", n: "Noah C.", av: "N", c: "#1B8A57" },
     { t: "Parfait pour les cadeaux : j'ai offert une Box XXL à ma sœur, elle était folle 🎁", n: "Camille F.", av: "C", c: "#8B3FD1" }
   ];
-  var rone = REVIEWS.map(function (r) {
+  // Sur mobile : moins d'avis (rail animé plus court) → défilement fluide même avec cartes larges.
+  var revList = (window.innerWidth && window.innerWidth <= 768) ? REVIEWS.slice(0, 5) : REVIEWS;
+  var rone = revList.map(function (r) {
     return '<div class="mc-rev">' +
       '<div style="display:flex;align-items:center;gap:6px"><span style="color:#FFB800;letter-spacing:1px">★★★★★</span><span style="background:#EAFBF3;color:#1B8A57;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px">✓ Vérifié</span></div>' +
       '<p>« ' + MC.esc(r.t) + ' »</p>' +
