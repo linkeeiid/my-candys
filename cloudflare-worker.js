@@ -857,7 +857,35 @@ function orderEmailHtml(o) {
     '<tr><td style="padding-top:8px;border-top:1px solid #eee"><b>Total payé</b></td>' +
     '<td style="padding-top:8px;border-top:1px solid #eee;text-align:right"><b>' + money(o.total) + '</b></td></tr></table>' +
     '<p style="color:#8A6076;font-size:13px">Comme certains produits sont réapprovisionnés à la commande, ' +
-    'compte quelques jours de préparation. Tu recevras un email dès l\'expédition. 💌</p></div>';
+    'compte quelques jours de préparation. Tu recevras ton numéro de suivi par email dès l\'expédition. 💌</p>' +
+    '<p style="text-align:center;margin:22px 0 6px"><a href="https://mycandys.fr/suivi-commande.html" style="background:#E01784;color:#fff;text-decoration:none;font-weight:700;padding:12px 24px;border-radius:12px;display:inline-block">Suivre ma commande →</a></p>' +
+    '</div>';
+}
+
+/* Email « colis expédié » — vrai numéro de suivi + lien direct pré-rempli vers la page de suivi. */
+function shippingEmailHtml(o, tracking, carrier) {
+  var CARRIERS = { laposte: 'Colissimo / La Poste', mondialrelay: 'Mondial Relay', chronopost: 'Chronopost', ups: 'UPS', dhl: 'DHL', autre: 'Transporteur' };
+  var cname = CARRIERS[carrier] || 'Transporteur';
+  var link = 'https://mycandys.fr/suivi-commande.html?num=' + encodeURIComponent(tracking || '') + (carrier ? '&carrier=' + encodeURIComponent(carrier) : '');
+  return '<div style="font-family:Arial,sans-serif;color:#2A0A1C">' +
+    '<h2 style="color:#E01784">Ton colis est en route ! 🚚</h2>' +
+    '<p>Bonne nouvelle : ta commande <b>' + esc(o.reference || '') + '</b> vient d\'être expédiée.</p>' +
+    '<table style="width:100%;border-collapse:collapse;font-size:14px;margin:10px 0">' +
+    '<tr><td style="padding:6px 0;color:#8A6076">Transporteur</td><td style="padding:6px 0;text-align:right"><b>' + esc(cname) + '</b></td></tr>' +
+    '<tr><td style="padding:6px 0;color:#8A6076">N° de suivi</td><td style="padding:6px 0;text-align:right"><b>' + esc(tracking || '') + '</b></td></tr></table>' +
+    '<p style="text-align:center;margin:22px 0 6px"><a href="' + link + '" style="background:#E01784;color:#fff;text-decoration:none;font-weight:700;padding:13px 26px;border-radius:12px;display:inline-block">Suivre mon colis →</a></p>' +
+    '<p style="color:#8A6076;font-size:13px">Le suivi peut mettre 24-48 h à s\'activer, le temps que le transporteur scanne ton colis. Merci pour ta confiance et régale-toi ! 🍬</p></div>';
+}
+
+/* Email de bienvenue newsletter — code -10% (BIENVENUE10) valable sur la 1re commande. */
+function welcomeEmailHtml() {
+  return '<div style="font-family:Arial,sans-serif;color:#2A0A1C">' +
+    '<h2 style="color:#E01784">Bienvenue chez My Candy\'s ! 🍬</h2>' +
+    '<p>Merci de rejoindre la famille ! Tu seras au premier rang pour les <b>nouveautés</b>, les <b>drops</b> et les <b>méga-promos</b>.</p>' +
+    '<p>Et comme promis, voici ton cadeau de bienvenue :</p>' +
+    '<div style="text-align:center;margin:20px 0"><div style="display:inline-block;border:2px dashed #FF2E9A;border-radius:14px;padding:16px 28px"><div style="font-size:13px;color:#8A6076">-10% sur ta 1re commande</div><div style="font-size:26px;font-weight:800;color:#E01784;letter-spacing:1px">BIENVENUE10</div></div></div>' +
+    '<p style="text-align:center;margin:22px 0 6px"><a href="https://mycandys.fr/boutique.html" style="background:#E01784;color:#fff;text-decoration:none;font-weight:700;padding:13px 26px;border-radius:12px;display:inline-block">Je découvre la boutique →</a></p>' +
+    '<p style="color:#8A6076;font-size:12.5px">Code à saisir au moment du paiement. À très vite ! 💌</p></div>';
 }
 
 /* Finalise une commande si le paiement SumUp est bien PAID. Idempotent. */
@@ -934,6 +962,8 @@ export default {
         if (!isEmail(email) || email.length > 254) return json({ ok: false, error: 'email_invalide' }, 400, allow);
         await brevoAddContact(env, email, { SOURCE: 'site-newsletter' });
         await fbPush(env, 'newsletter', { email: email, ts: Date.now() });
+        // Email de bienvenue automatique (avec le code -10% BIENVENUE10)
+        try { await brevoSendEmail(env, { toEmail: email, subject: "Bienvenue chez My Candy's 🍬 — ton code -10%", html: welcomeEmailHtml() }); } catch (e) {}
         return json({ ok: true }, 200, allow);
       }
 
@@ -1004,7 +1034,10 @@ export default {
         // Code promo fidélité : MCFIDxx-XXXX validé contre l'e-mail du client (recalcul serveur)
         let discount = 0, promoCode = '';
         const promo = str(body.promo, 32).toUpperCase();
-        if (promo) {
+        if (promo === 'BIENVENUE10') {
+          // Code de bienvenue newsletter : -10% (première commande)
+          discount = round2(sub * 10 / 100); promoCode = promo;
+        } else if (promo) {
           const m = promo.match(/^MCFID(5|10|15)-[A-Z0-9]{4}$/);
           if (m) {
             const pctP = parseInt(m[1], 10);
@@ -1077,6 +1110,31 @@ export default {
           });
         }
         return json({ ok: true, orderId: res && res.name }, 200, allow);
+      }
+
+      if (path === '/order/ship') {
+        // Back-office : marque une commande expédiée + n° de suivi → email au client. (protégé ADMIN_KEY)
+        const auth = request.headers.get('Authorization') || '';
+        if (!env.ADMIN_KEY || auth !== ('Bearer ' + env.ADMIN_KEY)) return json({ ok: false, error: 'unauthorized' }, 401, allow);
+        const reference = str(body.reference, 90);
+        const tracking = str(body.tracking, 80);
+        const carrier = str(body.carrier, 20);
+        if (!reference || !tracking) return json({ ok: false, error: 'params_manquants' }, 400, allow);
+        const order = await fbGet(env, 'orders/' + reference);
+        if (!order) return json({ ok: false, error: 'order_not_found' }, 404, allow);
+        await fbPatch(env, 'orders/' + reference, { status: 'expediee', tracking: tracking, carrier: carrier || null, shippedTs: Date.now() });
+        order.reference = order.reference || reference;
+        let mailed = false;
+        if (isEmail(order.customer && order.customer.email)) {
+          try {
+            await brevoSendEmail(env, {
+              toEmail: order.customer.email, toName: order.customer.name,
+              subject: "Ton colis My Candy's est parti ! 🚚 — " + reference, html: shippingEmailHtml(order, tracking, carrier)
+            });
+            mailed = true;
+          } catch (e) {}
+        }
+        return json({ ok: true, reference: reference, mailed: mailed }, 200, allow);
       }
 
       if (path === '/catalog') {

@@ -161,10 +161,29 @@ tr:last-child td{border-bottom:none}
       : '<div class="empty">Aucun message pour le moment.</div>';
 
     $('#ord-wrap').innerHTML = ords.length
-      ? '<table><thead><tr><th>Client</th><th>Total</th><th>Statut</th><th style="text-align:right">Date</th></tr></thead><tbody>' +
-        ords.map(function(o){ var c=o.customer||{}; return '<tr><td>'+esc(c.name||c.email||'—')+'</td><td>'+(Number(o.total||0).toFixed(2).replace('.',','))+' €</td><td>'+esc(o.status||'')+'</td><td style="text-align:right;color:#8A6076">'+fmtDate(o.ts)+'</td></tr>'; }).join('') +
+      ? '<table><thead><tr><th>Client</th><th>Réf.</th><th>Total</th><th>Statut</th><th>Expédition / Suivi</th><th style="text-align:right">Date</th></tr></thead><tbody>' +
+        ords.map(function(o){
+          var c=o.customer||{}; var ref=esc(o.reference||''); var shipped=(o.status==='expediee');
+          var statut = shipped ? '<span style="color:#1B8A57;font-weight:700">✅ Expédiée</span>'
+            : (o.paid ? '<span style="color:#E01784;font-weight:700">🆕 À expédier</span>' : '<span style="color:#B06089">'+esc(o.status||'—')+'</span>');
+          var action;
+          if(!o.reference){ action='<span style="color:#B7A0AC">—</span>'; }
+          else if(shipped){ action='<span style="color:#1B8A57">N° '+esc(o.tracking||'')+'</span> <span style="color:#8A6076;font-size:12px">('+esc(o.carrier||'')+')</span>'; }
+          else if(o.paid){ action=''+
+            '<div class="ship" data-ref="'+ref+'" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">'+
+              '<input class="ship-num" placeholder="N° de suivi" style="border:1px solid #E7C9DA;border-radius:8px;padding:6px 8px;font-size:12.5px;font-family:inherit;width:120px">'+
+              '<select class="ship-car" style="border:1px solid #E7C9DA;border-radius:8px;padding:6px;font-size:12.5px;font-family:inherit"><option value="laposte">Colissimo/La Poste</option><option value="mondialrelay">Mondial Relay</option><option value="chronopost">Chronopost</option><option value="ups">UPS</option><option value="dhl">DHL</option><option value="autre">Autre</option></select>'+
+              '<button class="ship-btn" style="background:#E01784;color:#fff;font-weight:700;font-size:12px;padding:6px 11px;border-radius:8px;cursor:pointer">Expédié ✓</button>'+
+            '</div>'; }
+          else { action='<span style="color:#B7A0AC;font-size:12px">en attente paiement</span>'; }
+          return '<tr><td>'+esc(c.name||c.email||'—')+'<div style="color:#8A6076;font-size:12px">'+esc(c.email||'')+'</div></td>'+
+            '<td style="font-size:12px;color:#8A6076">'+ref+'</td>'+
+            '<td>'+(Number(o.total||0).toFixed(2).replace('.',','))+' €</td>'+
+            '<td>'+statut+'</td><td>'+action+'</td>'+
+            '<td style="text-align:right;color:#8A6076">'+fmtDate(o.ts)+'</td></tr>';
+        }).join('') +
         '</tbody></table>'
-      : '<div class="soon">🛒 Les commandes apparaîtront ici dès que le <b>paiement en ligne (SumUp)</b> sera branché. La plomberie est prête côté serveur.</div>';
+      : '<div class="soon">🛒 Les commandes apparaîtront ici dès le premier paiement.</div>';
 
     $('#updated').textContent = 'Mis à jour à ' + new Date().toLocaleTimeString('fr-FR');
   }
@@ -176,6 +195,23 @@ tr:last-child td{border-bottom:none}
       if(err.code===401){ sessionStorage.removeItem(KEY_STORE); showDash(false); $('#login-err').textContent='Session expirée, reconnecte-toi.'; }
     });
   }
+
+  // Marquer une commande expédiée → enregistre le suivi + envoie l'email au client
+  $('#ord-wrap').addEventListener('click', function(e){
+    var btn = e.target.closest('.ship-btn'); if(!btn) return;
+    var box = btn.closest('.ship'); if(!box) return;
+    var ref = box.getAttribute('data-ref');
+    var num = box.querySelector('.ship-num').value.trim();
+    var car = box.querySelector('.ship-car').value;
+    if(!num){ box.querySelector('.ship-num').focus(); return; }
+    var key = sessionStorage.getItem(KEY_STORE); if(!key) return;
+    if(!confirm('Marquer la commande '+ref+' comme expédiée et prévenir le client par email ?')) return;
+    btn.disabled=true; var old=btn.textContent; btn.textContent='…';
+    fetch(API.replace(/\/$/,'')+'/order/ship', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+key}, body: JSON.stringify({reference:ref, tracking:num, carrier:car}) })
+      .then(function(r){return r.json();})
+      .then(function(d){ if(d && d.ok){ refresh(); } else { btn.disabled=false; btn.textContent=old; alert('Erreur : '+((d&&d.error)||'inconnue')); } })
+      .catch(function(){ btn.disabled=false; btn.textContent=old; alert('Erreur réseau'); });
+  });
 
   // Login
   $('#login-form').addEventListener('submit', function(e){
