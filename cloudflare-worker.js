@@ -831,6 +831,7 @@ async function stripeCreateSession(env, { reference, order, couponId }) {
   p.push(['client_reference_id', reference]);
   p.push(['metadata[reference]', reference]);
   p.push(['locale', 'fr']);
+  p.push(['adaptive_pricing[enabled]', 'false']); // pas de choix de devise (CHF, etc.) → EUR uniquement
   if (order.customer && order.customer.email) p.push(['customer_email', order.customer.email]);
   let i = 0;
   for (const l of order.items) {
