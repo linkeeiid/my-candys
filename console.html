@@ -297,14 +297,41 @@
   :focus-visible{outline:2px solid var(--pink);outline-offset:2px;border-radius:8px}
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
   @media (max-width:900px){
-    .app{grid-template-columns:1fr}
-    .sidebar{position:static;height:auto;flex-direction:row;align-items:center;overflow-x:auto}
-    .brand{border-bottom:none;border-right:1px solid var(--side-line)}
+    .app{grid-template-columns:1fr;grid-template-rows:auto 1fr} /* sidebar = hauteur du contenu, pas étirée */
+    .sidebar{position:sticky;top:0;z-index:30;height:auto;min-height:0;flex-direction:row;align-items:center;overflow-x:auto}
+    .brand{border-bottom:none;border-right:1px solid var(--side-line);flex:none}
     .nav{flex-direction:row;padding:.5rem;gap:.2rem}
     .nav .grp,.side-foot{display:none}
     .navlink{white-space:nowrap}
     .grid2,.setgrid{grid-template-columns:1fr}
     .kpis{grid-template-columns:repeat(2,1fr)}
+    /* Topbar compacte : titre + notifs sur la 1re ligne, recherche pleine largeur en dessous */
+    .topbar{flex-wrap:wrap;gap:.5rem;padding:.6rem .9rem}
+    .topbar .tt{flex:1 1 auto;min-width:0}
+    .topbar .tt h1{font-size:1.05rem}
+    .topbar .tt p{display:none}
+    #notifBtn{order:2;flex:none}
+    #bell{display:none} /* cloche décorative masquée sur mobile → place pour le bouton Notifs */
+    .topbar .status{display:none}
+    .search{order:5;margin-left:0;width:100%}
+    .content{padding:1rem .9rem}
+    /* Barres d'outils : boutons alignés à gauche, sur toute la largeur */
+    .toolbar{gap:.6rem}
+    .tools{margin-left:0;width:100%;gap:.5rem}
+    /* Modale : jamais coupée hors écran, le corps défile jusqu'au bouton Enregistrer */
+    .modal{width:100%;max-height:calc(100dvh - 1.5rem);display:flex;flex-direction:column}
+    .modal-h{flex:none}
+    .modal-b{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  }
+  @media (max-width:560px){
+    .kpis{grid-template-columns:repeat(2,1fr);gap:.55rem}
+    .kpi{padding:.7rem .8rem}
+    .kpi .num{font-size:1.3rem}
+    .secttl{font-size:1.05rem}
+    .modal-ov{padding:.75rem}
+    .form-2{grid-template-columns:1fr}
+    .tools .btn{flex:1 1 auto;justify-content:center}
+    .autonote{font-size:.78rem}
   }
   .pin{border:1px solid var(--line);border-radius:8px;padding:.34rem .5rem;font-family:inherit;font-size:.82rem;background:var(--card);color:var(--ink);width:100%;max-width:168px}
   .pin:focus{outline:none;border-color:var(--pink);box-shadow:0 0 0 3px rgba(255,46,154,.12)}
@@ -515,9 +542,17 @@
 
       <!-- ===== PROMOTIONS ===== -->
       <section class="view" id="view-promos">
-        <div class="toolbar"><h2 class="secttl">Codes de réduction actifs</h2><div class="tools"><span style="font-size:.8rem;color:var(--muted)">Codes appliqués automatiquement au paiement</span></div></div>
+        <div class="toolbar">
+          <h2 class="secttl">Codes de réduction <span class="sub" id="promoCount"></span></h2>
+          <div class="tools">
+            <span class="badge-soft b-wait" id="pmEditState" style="font-weight:700">🔒 Lecture seule</span>
+            <button class="btn btn-ghost" id="promoAdd">＋ Ajouter un code</button>
+            <button class="btn btn-primary" id="pmUnlock">🔓 Activer l'édition</button>
+          </div>
+        </div>
+        <div class="autonote">🎟️ Les codes que tu crées ici sont <b>appliqués automatiquement</b> au paiement, sur tout le site. Le compteur <b>« Utilisations »</b> indique combien de fois chaque code a servi dans une <b>commande payée</b>.</div>
         <div class="tablecard"><div class="tscroll"><table>
-          <thead><tr><th>Code</th><th>Réduction</th><th>Utilisation</th><th class="r">Statut</th></tr></thead>
+          <thead><tr><th>Code</th><th>Réduction</th><th>Utilisations</th><th class="r">Action</th></tr></thead>
           <tbody id="promoBody"></tbody>
         </table></div></div>
       </section>
@@ -592,11 +627,13 @@
   var SOLD0={'prime-blue':42,'takis-fuego':57,'monster-ultra':63,'fanta-grape':20,'kinder-bueno':15,'sourpatch':38,'samyang':29,'nerds':12,'chamoy':8};
   var soldUnits={},prodSeq=1;
   /* Vrais codes actifs (source = Worker /create-checkout FIXED_PROMOS) */
-  var promos=[
+  /* Codes système (câblés à des fonctions du site) : compteur affiché, non supprimables. */
+  var PROMO_SYS=[
     {code:'CANDYSUMMER26',val:26,note:'-26% sur tout le site (bandeau d\'accueil)'},
     {code:'BIENVENUE10',val:10,note:'Envoyé à l\'inscription newsletter'},
     {code:'TAGADA10',val:10,note:'Relance client (bouton « Relancer »)'}
   ];
+  var fbPromos={}; /* codes créés par le gérant + compteurs d'usage (chargés via /admin/data) */
   var add=function(a,b){return a+b;};
   var SUPPLIERS={Sodas:'US Drinks Import',Snacks:'Spicy Wholesale',Chocolats:'Kinder Distrib',Bonbons:'Candy Bulk FR','Épicé':'Chamoy & Co',Desserts:'Asia Sweets',Autres:'Grossiste général'};
   var TARGET=24,RP=6,revFilter='all';
@@ -753,7 +790,8 @@
       var od=d.orders||{};orders=Object.keys(od).map(function(k){return mapOrder(od[k],k);}).sort(function(a,b){return b.ts-a.ts;});
       var ns=d.newsletter||{};RSUB=Object.keys(ns).map(function(k){return ns[k];}).sort(function(a,b){return (b.ts||0)-(a.ts||0);});
       var ms=d.messages||{};RMSG=Object.keys(ms).map(function(k){return ms[k];}).sort(function(a,b){return (b.ts||0)-(a.ts||0);});
-      renderDash();renderOrders();renderInbox();
+      fbPromos=d.promos||{};
+      renderDash();renderOrders();renderInbox();renderPromos();
     }).catch(function(){});
   }
   function renderOrderKpis(){var nw=0,sh=0,ca=0;orders.forEach(function(o){if(o.status==='expediee')sh++;else if(o.status==='nouvelle')nw++;if(o.paid)ca+=oTotal(o);});
@@ -859,7 +897,8 @@
   function renderProducts(){
     if(!hasMC){$('prodBody').innerHTML='<tr><td colspan="7" style="padding:1.4rem;text-align:center;color:var(--muted)">Catalogue indisponible (products.js non chargé).</td></tr>';return;}
     var st=pStats();
-    $('prodKpis').innerHTML=tile('Références',st.tot,'','accent','')+ptile('En rupture',st.out,'warn','out',pFilter.flag==='out')+ptile('Sans photo',st.nopic,'','nophoto',pFilter.flag==='nophoto')+ptile('À prixer',st.noprice,'warn','noprice',pFilter.flag==='noprice')+tile('Édition',ADMINKEY?'ON':'OFF','',ADMINKEY?'good':'',ADMINKEY?'activée':'verrouillée');
+    var allOn=(!pFilter.flag&&!pFilter.cat&&!searchQ);
+    $('prodKpis').innerHTML='<div class="kpi accent'+(allOn?' kpi-on':'')+'" data-pall="1" style="cursor:pointer" title="Voir tous les produits"><div class="lbl">Références</div><div class="num tnum">'+st.tot+'</div></div>'+ptile('En rupture',st.out,'warn','out',pFilter.flag==='out')+ptile('Sans photo',st.nopic,'','nophoto',pFilter.flag==='nophoto')+ptile('À prixer',st.noprice,'warn','noprice',pFilter.flag==='noprice')+tile('Édition',ADMINKEY?'ON':'OFF','',ADMINKEY?'good':'',ADMINKEY?'activée':'verrouillée');
     $('prodCount').textContent='· '+st.tot+' références';
     if($('pEditState')){$('pEditState').className=ADMINKEY?'badge-soft b-on':'badge-soft b-wait';$('pEditState').style.fontWeight='700';$('pEditState').innerHTML=ADMINKEY?'🔓 Édition activée':'🔒 Lecture seule';}
     if($('pUnlock'))$('pUnlock').style.display=ADMINKEY?'none':'';
@@ -1030,9 +1069,21 @@
   }
   /* ---------- PROMOTIONS ---------- */
   function renderPromos(){
-    $('promoBody').innerHTML=promos.map(function(pr){
-      return '<tr><td><span class="code">'+esc(pr.code)+'</span></td><td style="font-weight:700;font-size:.85rem;color:var(--pink)">-'+pr.val+' %</td><td style="font-size:.82rem;color:var(--muted)">'+esc(pr.note)+'</td><td class="r"><span class="pill st-ship">✅ Actif</span></td></tr>';
-    }).join('');
+    if($('pmEditState')){$('pmEditState').className=ADMINKEY?'badge-soft b-on':'badge-soft b-wait';$('pmEditState').style.fontWeight='700';$('pmEditState').innerHTML=ADMINKEY?'🔓 Édition activée':'🔒 Lecture seule';}
+    if($('pmUnlock'))$('pmUnlock').style.display=ADMINKEY?'none':'';
+    var fb=fbPromos||{},seen={},rows=[];
+    PROMO_SYS.forEach(function(s){seen[s.code]=1;var f=fb[s.code]||{};rows.push({code:s.code,pct:(!isNaN(Number(f.pct))?Number(f.pct):s.val),note:s.note,uses:(parseInt(f.uses,10)||0),sys:true});});
+    Object.keys(fb).forEach(function(code){if(seen[code])return;var p=fb[code]||{};if(p.pct==null||isNaN(Number(p.pct)))return;rows.push({code:code,pct:Number(p.pct),note:p.note||'',uses:(parseInt(p.uses,10)||0),sys:false,active:p.active!==false});});
+    $('promoBody').innerHTML=rows.map(function(pr){
+      var act=pr.sys
+        ? '<span class="pill st-ship">Système</span>'
+        : '<button class="mini" data-pmedit="'+esc(pr.code)+'">✎ Modifier</button>'+(ADMINKEY?' <button class="mini pdel" data-pmdel="'+esc(pr.code)+'" title="Supprimer ce code">🗑</button>':'');
+      return '<tr><td><span class="code">'+esc(pr.code)+'</span>'+(pr.note?'<div style="font-size:.72rem;color:var(--muted);margin-top:2px">'+esc(pr.note)+'</div>':'')+(pr.sys?'':(pr.active?'':' <span class="badge-soft b-wait">désactivé</span>'))+'</td>'+
+        '<td style="font-weight:700;font-size:.85rem;color:var(--pink)">-'+pr.pct+' %</td>'+
+        '<td style="font-weight:800">'+pr.uses+' <span style="font-weight:400;color:var(--muted);font-size:.75rem">fois</span></td>'+
+        '<td class="r">'+act+'</td></tr>';
+    }).join('')||'<tr><td colspan="4" style="color:var(--muted);padding:1rem">Aucun code pour le moment.</td></tr>';
+    if($('promoCount'))$('promoCount').textContent='· '+rows.length+' code'+(rows.length>1?'s':'');
   }
   /* ---------- MODAL ---------- */
   function openModal(title,body,onSubmit){$('modalTitle').textContent=title;$('modalBody').innerHTML=body;$('modal').classList.add('show');
@@ -1045,30 +1096,40 @@
       '<div class="form-2"><div class="form-row"><label>Catégorie</label><select name="cat"><option>Bonbons</option><option>Snacks</option><option>Sodas</option><option>Chocolats</option><option>Desserts</option><option>Épicé</option></select></div>'+
       '<div class="form-row"><label>Prix (€)</label><input name="price" type="number" step="0.01" min="0" placeholder="3.90"></div></div>'+
       '<div class="form-row"><label>Marque (optionnel)</label><input name="brand" placeholder="Ex. Oreo"></div>'+
-      '<div class="form-row"><label>URL de la photo (optionnel)</label><input name="img" placeholder="Coller une URL d\'image…"></div>'+
-      '<button class="btn btn-primary" type="submit" style="width:100%;justify-content:center;margin-top:.3rem">Ajouter au catalogue (en ligne)</button></form>',
+      '<p style="font-size:.75rem;color:var(--muted);margin:.1rem 0 .6rem">Étape suivante : la <b>fiche produit</b> s\'ouvre pour ajouter la <b>photo</b>, la <b>description</b> et le <b>rayon</b>.</p>'+
+      '<button class="btn btn-primary" type="submit" style="width:100%;justify-content:center;margin-top:.3rem">Créer et compléter la fiche →</button></form>',
       function(f){
-        var name=f.elements['name'].value.trim(),price=parseFloat(f.price.value),cat=f.cat.value,brand=f.elements['brand'].value.trim(),img=f.elements['img'].value.trim();
+        var name=f.elements['name'].value.trim(),price=parseFloat(f.price.value),cat=f.cat.value,brand=f.elements['brand'].value.trim();
         if(!name){toast('Renseigne au moins un nom','warn');return;}
         var tints=[T.blue,T.orange,T.pink,T.green,T.yellow,T.purple,T.red,T.cyan,T.brown];var tint=tints[Math.floor(Math.random()*tints.length)];
         var id='new-'+Date.now().toString(36)+Math.floor(Math.random()*900+100);
         var patch={name:name,cat:cat,tint:tint,'new':true};
-        if(!isNaN(price))patch.price=price; if(brand)patch.brand=brand; if(img)patch.img=img;
-        pSave(id,patch,function(ok){if(!ok)return;
-          if(MC.byId&&!MC.byId(id))MC.PRODUCTS.push({id:id,name:name,cat:cat,tint:tint,price:(isNaN(price)?null:price),brand:brand||null,img:img||null,old:null,sub:null,reviews:0,nouveau:true,available:true});
-          closeModal();renderProducts();renderStats();renderDash();toast('Produit ajouté ✓ — en ligne sur le site','good');});
+        if(!isNaN(price))patch.price=price; if(brand)patch.brand=brand;
+        pSave(id,patch,function(ok){if(!ok){toast('Erreur d\'enregistrement','warn');return;}
+          if(MC.byId&&!MC.byId(id))MC.PRODUCTS.push({id:id,name:name,cat:cat,tint:tint,price:(isNaN(price)?null:price),brand:brand||null,img:null,old:null,sub:null,reviews:0,nouveau:true,available:true});
+          renderProducts();renderStats();renderDash();toast('Produit créé ✓ — complète sa fiche','good');pFicheModal(id);});
       });
   }
-  function openPromoModal(){
-    openModal('Créer un code promo',
-      '<form><div class="form-row"><label>Code</label><input name="code" required placeholder="Ex. TIKTOK20" style="text-transform:uppercase"></div>'+
-      '<div class="form-2"><div class="form-row"><label>Type</label><select name="type"><option value="%">Pourcentage (%)</option><option value="€">Montant (€)</option><option value="free">Livraison offerte</option></select></div>'+
-      '<div class="form-row"><label>Valeur</label><input name="val" type="number" min="0" value="10"></div></div>'+
-      '<div class="form-row"><label>Note (optionnel)</label><input name="note" placeholder="Ex. Promo de lancement"></div>'+
-      '<button class="btn btn-primary" type="submit" style="width:100%;justify-content:center;margin-top:.3rem">Créer le code</button></form>',
-      function(f){var code=f.code.value.trim().toUpperCase();if(!code){toast('Renseigne un code','warn');return;}
-        promos.unshift({code:code,type:f.type.value,val:parseFloat(f.val.value)||0,active:true,uses:0,note:f.note.value.trim()||'—'});
-        closeModal();renderPromos();toast('Code créé : '+code,'good');});
+  function pmSave(code,patch,cb){if(!ADMINKEY){pUnlockModal();return;}
+    fetch(MCAPI+'/promos',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+ADMINKEY},body:JSON.stringify(Object.assign({code:code},patch))})
+      .then(function(r){return r.json();}).then(function(d){cb&&cb(d&&d.ok,d);}).catch(function(){cb&&cb(false);});}
+  function openPromoModal(editCode){
+    if(!ADMINKEY){pUnlockModal();return;}
+    var ex=editCode?(fbPromos[editCode]||{}):null;
+    openModal(editCode?'Modifier — '+editCode:'Créer un code promo',
+      '<form><div class="form-row"><label>Code</label><input name="code" required placeholder="Ex. TIKTOK20" style="text-transform:uppercase"'+(editCode?' value="'+esc(editCode)+'" readonly':'')+'></div>'+
+      '<div class="form-row"><label>Réduction (%)</label><input name="pct" type="number" min="1" max="90" required value="'+(ex&&ex.pct?ex.pct:10)+'"></div>'+
+      '<div class="form-row"><label>Note interne (optionnel)</label><input name="note" placeholder="Ex. Promo TikTok" value="'+(ex&&ex.note?esc(ex.note):'')+'"></div>'+
+      '<button class="btn btn-primary" type="submit" style="width:100%;justify-content:center;margin-top:.3rem">'+(editCode?'Enregistrer':'Créer le code')+'</button></form>',
+      function(f){
+        var code=(f.code.value||'').trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+        var pct=parseInt(f.pct.value,10),note=(f.note.value||'').trim();
+        if(!code){toast('Renseigne un code (lettres/chiffres)','warn');return;}
+        if(isNaN(pct)||pct<1||pct>90){toast('Réduction entre 1 et 90 %','warn');return;}
+        pmSave(code,{pct:pct,note:note},function(ok){if(!ok){toast('Erreur d\'enregistrement','warn');return;}
+          if(!fbPromos[code])fbPromos[code]={};fbPromos[code].pct=pct;fbPromos[code].note=note;fbPromos[code].active=true;
+          closeModal();renderPromos();toast(editCode?'Code modifié ✓':'Code créé : '+code+' ✓','good');});
+      });
   }
 
   /* ---------- RÉAPPRO ---------- */
@@ -1198,10 +1259,17 @@
   var VAPID_PUBLIC='BAr4-ARxYqECbfUR34jmYYDy9d_vV02ERaI4AFyuAGhbljREhyLG1fhng6feKRSd-gNilsYUEIPI2CuAvAFSvao';
   function _u8(b64){var pad='='.repeat((4-b64.length%4)%4);var s=(b64+pad).replace(/-/g,'+').replace(/_/g,'/');var raw=atob(s);var a=new Uint8Array(raw.length);for(var i=0;i<raw.length;i++)a[i]=raw.charCodeAt(i);return a;}
   function notifSupported(){return ('serviceWorker' in navigator)&&('PushManager' in window)&&('Notification' in window);}
-  async function refreshNotifBtn(){var b=$('notifBtn');if(!b)return;if(!notifSupported()){b.style.display='none';return;}
+  function isIOS(){return /iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);}
+  function isStandalone(){return (window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone===true;}
+  async function refreshNotifBtn(){var b=$('notifBtn');if(!b)return;b.style.display='';
+    if(!notifSupported()){b.textContent='🔔 Activer les notifs';b.disabled=false;b.style.opacity=1;return;} // on garde le bouton visible → le tap explique quoi faire
     try{var reg=await navigator.serviceWorker.getRegistration();var sub=reg&&await reg.pushManager.getSubscription();if(sub&&Notification.permission==='granted'){b.textContent='🔔 Notifs activées ✓';b.disabled=true;b.style.opacity=.7;}else{b.textContent='🔔 Activer les notifs';b.disabled=false;b.style.opacity=1;}}catch(e){}}
   async function enableNotifs(){
-    if(!notifSupported()){toast('Notifications non supportées ici. Sur iPhone : « Partager → Sur l\'écran d\'accueil », puis rouvre depuis l\'icône.','warn');return;}
+    if(!notifSupported()){
+      if(isIOS()&&!isStandalone()){toast('📲 Sur iPhone : appuie sur « Partager » (carré avec flèche) → « Sur l\'écran d\'accueil ». Rouvre l\'app depuis sa nouvelle icône, puis réappuie ici pour activer les notifs.','warn');}
+      else{toast('Notifications non disponibles sur ce navigateur. Installe l\'app sur l\'écran d\'accueil, ou utilise Chrome/Safari à jour.','warn');}
+      return;
+    }
     var key=ADMINKEY||(function(){try{return sessionStorage.getItem('mcAdminKey');}catch(e){return null;}})();
     if(!key){pUnlockModal();return;}
     try{
@@ -1221,7 +1289,9 @@
   refreshNotifBtn();
   $('prodMore').addEventListener('click',pMore);
   $('pCats').addEventListener('click',function(e){var c=e.target.closest('[data-pcat]');if(!c)return;pFilter.cat=c.getAttribute('data-pcat');renderProducts();});
-  $('prodKpis').addEventListener('click',function(e){var k=e.target.closest('[data-pflag]');if(!k)return;var f=k.getAttribute('data-pflag');pFilter.flag=(pFilter.flag===f?'':f);renderProducts();});
+  $('prodKpis').addEventListener('click',function(e){
+    if(e.target.closest('[data-pall]')){pFilter.flag='';pFilter.cat='';searchQ='';if($('search'))$('search').value='';renderProducts();return;}
+    var k=e.target.closest('[data-pflag]');if(!k)return;var f=k.getAttribute('data-pflag');pFilter.flag=(pFilter.flag===f?'':f);renderProducts();});
   $('prodBody').addEventListener('change',function(e){var tr=e.target.closest('[data-pid]');if(!tr)return;var id=tr.getAttribute('data-pid');if(e.target.classList.contains('pe-cat'))pSave(id,{cat:e.target.value},function(ok){if(ok)toast('Catégorie mise à jour','good');});});
   $('prodBody').addEventListener('input',function(e){var tr=e.target.closest('[data-pid]');if(!tr)return;var id=tr.getAttribute('data-pid');
     if(e.target.classList.contains('pe-brand')){clearTimeout(pTimer);var v=e.target.value.trim();pTimer=setTimeout(function(){pSave(id,{brand:v===''?null:v});},700);}
@@ -1232,7 +1302,14 @@
     var dl=e.target.closest('[data-pdel]');if(dl){if(!ADMINKEY){toast('Active l\'édition d\'abord','warn');return;}var did=dl.getAttribute('data-pdel'),dp=MC.byId?MC.byId(did):null;if(!confirm('Supprimer « '+(dp?dp.name:did)+' » du catalogue ?\n\nLe produit disparaîtra de la boutique.'))return;pSave(did,{deleted:true},function(ok){if(ok){for(var di=MC.PRODUCTS.length-1;di>=0;di--){if(MC.PRODUCTS[di].id===did){MC.PRODUCTS.splice(di,1);break;}}renderProducts();toast('Produit supprimé ✓','good');}});return;}
     var sw=e.target.closest('[data-pavail]');if(sw){if(!ADMINKEY){toast('Active l\'édition d\'abord','warn');return;}var id=sw.getAttribute('data-pavail'),willBe=sw.classList.contains('off');sw.classList.toggle('off');pSave(id,{available:willBe},function(ok){if(ok)toast(willBe?'Marqué disponible':'Marqué épuisé');else sw.classList.toggle('off');});return;}});
   // promos
-  /* Promotions : codes réels gérés dans le Worker, plus de création/toggle démo. */
+  if($('promoAdd'))$('promoAdd').addEventListener('click',function(){openPromoModal(null);});
+  if($('pmUnlock'))$('pmUnlock').addEventListener('click',pUnlockModal);
+  if($('promoBody'))$('promoBody').addEventListener('click',function(e){
+    var ed=e.target.closest('[data-pmedit]');if(ed){openPromoModal(ed.getAttribute('data-pmedit'));return;}
+    var dl=e.target.closest('[data-pmdel]');if(dl){if(!ADMINKEY){toast('Active l\'édition d\'abord','warn');return;}
+      var c=dl.getAttribute('data-pmdel');if(!confirm('Supprimer le code « '+c+' » ?\n\nIl ne sera plus accepté au paiement.'))return;
+      pmSave(c,{deleted:true},function(ok){if(ok){delete fbPromos[c];renderPromos();toast('Code supprimé ✓','good');}else toast('Erreur','warn');});return;}
+  });
   // clients
   $('clientBody').addEventListener('click',function(e){var r=e.target.closest('[data-relance]');if(!r)return;var email=decodeURIComponent(r.getAttribute('data-relance')||'');var name=decodeURIComponent(r.getAttribute('data-relname')||'');if(!email){toast('Ce client n\'a pas d\'email enregistré','warn');return;}if(!ADMINKEY)return;if(!confirm('Envoyer une relance -10% (TAGADA10) à '+(name||email)+' ?'))return;r.disabled=true;var old=r.innerHTML;r.textContent='…';
     fetch(MCAPI+'/client/relance',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+ADMINKEY},body:JSON.stringify({email:email,name:name})}).then(function(x){return x.json();}).then(function(d){if(d&&d.ok){r.textContent='✓ Relancé';toast('📧 Relance envoyée à '+(name||email),'good');}else{r.disabled=false;r.innerHTML=old;toast('Erreur : '+((d&&d.error)||'?'),'warn');}}).catch(function(){r.disabled=false;r.innerHTML=old;toast('Erreur réseau','warn');});});

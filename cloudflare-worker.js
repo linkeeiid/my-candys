@@ -1038,6 +1038,14 @@ async function finalizeOrder(env, reference, paymentIntent) {
     paidTs: Date.now()
   });
   order.paid = true;
+  // Compteur d'utilisation du code promo (uniquement sur commande PAYÉE)
+  if (order.promo) {
+    try {
+      const pk = 'promos/' + encodeURIComponent(String(order.promo).toUpperCase());
+      const cur = await fbGet(env, pk);
+      await fbPatch(env, pk, { uses: ((cur && parseInt(cur.uses, 10)) || 0) + 1 });
+    } catch (e) {}
+  }
   if (isEmail(order.customer && order.customer.email)) {
     await brevoSendEmail(env, {
       toEmail: order.customer.email, toName: firstName(order.customer.name),
@@ -1068,8 +1076,8 @@ export default {
       if (!env.ADMIN_KEY || auth !== ('Bearer ' + env.ADMIN_KEY)) {
         return json({ ok: false, error: 'unauthorized' }, 401, allow);
       }
-      const parts = await Promise.all([fbGet(env, 'newsletter'), fbGet(env, 'messages'), fbGet(env, 'orders')]);
-      return json({ ok: true, newsletter: parts[0], messages: parts[1], orders: parts[2] }, 200, allow);
+      const parts = await Promise.all([fbGet(env, 'newsletter'), fbGet(env, 'messages'), fbGet(env, 'orders'), fbGet(env, 'promos')]);
+      return json({ ok: true, newsletter: parts[0], messages: parts[1], orders: parts[2], promos: parts[3] }, 200, allow);
     }
 
     // --- Catalogue : lecture publique des surcharges ---
@@ -1152,6 +1160,20 @@ export default {
         return json({ ok: true }, 200, allow);
       }
 
+      // Vérif d'un code promo pour l'aperçu du checkout — ne révèle jamais la liste, un code à la fois.
+      if (path === '/promo/check') {
+        if (await rateLimited(env, request, 'pc', 30, 3600)) return json({ ok: false, error: 'trop_de_requetes' }, 429, allow);
+        const code = str(body.code, 32).toUpperCase();
+        if (!code) return json({ ok: false }, 200, allow);
+        const managed = (await fbGet(env, 'promos')) || {};
+        let pct = null;
+        const mp = managed[code];
+        if (mp && typeof mp === 'object' && mp.active !== false && !isNaN(Number(mp.pct)) && Number(mp.pct) > 0) pct = Number(mp.pct);
+        const FIXED = { 'CANDYSUMMER26': 26, 'BIENVENUE10': 10, 'TAGADA10': 10 };
+        if (pct == null && FIXED[code] != null) pct = FIXED[code];
+        return pct != null ? json({ ok: true, pct: pct }, 200, allow) : json({ ok: false }, 200, allow);
+      }
+
       // ------------------------- PAIEMENT STRIPE -------------------------
 
       if (path === '/create-checkout') {
@@ -1179,12 +1201,17 @@ export default {
           lines.push({ id: id, name: (o.name || str(it.name, 80) || id), price: round2(price), qty: qty, img: imgv || null });
         }
         sub = round2(sub);
-        // Codes promo (source de vérité serveur) : codes fixes + code fidélité MCFIDxx-XXXX validé contre l'e-mail
+        // Codes promo (source de vérité serveur) : codes gérés (console → Firebase) + codes fixes historiques + code fidélité MCFIDxx-XXXX validé contre l'e-mail
         let discount = 0, promoCode = '';
         const promo = str(body.promo, 32).toUpperCase();
+        const managedPromos = (await fbGet(env, 'promos')) || {};
         const FIXED_PROMOS = { 'CANDYSUMMER26': 26, 'BIENVENUE10': 10, 'TAGADA10': 10 };
-        if (FIXED_PROMOS[promo] != null) {
-          discount = round2(sub * FIXED_PROMOS[promo] / 100); promoCode = promo;
+        let promoPct = null;
+        const mpr = managedPromos[promo];
+        if (mpr && typeof mpr === 'object' && mpr.active !== false && !isNaN(Number(mpr.pct)) && Number(mpr.pct) > 0) promoPct = Number(mpr.pct);
+        if (promoPct == null && FIXED_PROMOS[promo] != null) promoPct = FIXED_PROMOS[promo];
+        if (promoPct != null) {
+          discount = round2(sub * promoPct / 100); promoCode = promo;
         } else if (promo) {
           const m = promo.match(/^MCFID(5|10|15)-[A-Z0-9]{4}$/);
           if (m) {
@@ -1345,6 +1372,22 @@ export default {
         if (body.deleted !== undefined) patch.deleted = !!body.deleted;
         await fetch(fbUrl(env, 'catalog/' + encodeURIComponent(id)), { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(patch) });
         return json({ ok: true }, 200, allow);
+      }
+
+      if (path === '/promos') {
+        // Gestion des codes de réduction depuis la console (protégé ADMIN_KEY)
+        const auth = request.headers.get('Authorization') || '';
+        if (!env.ADMIN_KEY || auth !== ('Bearer ' + env.ADMIN_KEY)) return json({ ok: false, error: 'unauthorized' }, 401, allow);
+        const code = String(body.code || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 32);
+        if (!code) return json({ ok: false, error: 'code_manquant' }, 400, allow);
+        const key = 'promos/' + encodeURIComponent(code);
+        if (body.deleted) { await fetch(fbUrl(env, key), { method: 'DELETE' }); return json({ ok: true, deleted: code }, 200, allow); }
+        const pct = parseInt(body.pct, 10);
+        if (isNaN(pct) || pct < 1 || pct > 90) return json({ ok: false, error: 'pct_invalide' }, 400, allow);
+        // PATCH préserve le compteur "uses" existant
+        const patch = { pct: pct, note: String(body.note || '').slice(0, 80), active: body.active === false ? false : true };
+        await fetch(fbUrl(env, key), { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(patch) });
+        return json({ ok: true, code: code }, 200, allow);
       }
 
       return json({ ok: false, error: 'not_found' }, 404, allow);
