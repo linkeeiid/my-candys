@@ -78,7 +78,7 @@
 </style>
 </head>
 <body data-nav="">
-<script>(function(){var m={boissons:'boissons',sales:'sales',sucres:'sucres',surgele:'surgele',bestsellers:'bestsellers',nouveautes:'nouveautes',promos:'promos','mini-prix':'mini-prix',squishy:'squishy','anti-gaspi':'anti-gaspi'};var c=new URLSearchParams(location.search).get('c');if(c&&m[c])document.body.setAttribute('data-nav',m[c]);})();</script>
+<script>(function(){var m={boissons:'boissons',sales:'sales',sucres:'sucres',surgele:'surgele',divers:'divers',bestsellers:'bestsellers',nouveautes:'nouveautes',promos:'promos','mini-prix':'mini-prix',squishy:'squishy','anti-gaspi':'anti-gaspi'};var c=new URLSearchParams(location.search).get('c');if(c&&m[c])document.body.setAttribute('data-nav',m[c]);})();</script>
 
 <div class="shop-hero">
   <div class="shop-hero-in">
@@ -135,7 +135,7 @@
 <script src="catalog-overrides.js"></script>
 <script>
 (function () {
-  var CATS = ['Bonbons', 'Snacks', 'Sodas', 'Chocolats', 'Épicé', 'Desserts', 'Surgelé'];
+  var CATS = ['Bonbons', 'Snacks', 'Sodas', 'Chocolats', 'Épicé', 'Desserts', 'Surgelé', 'Divers'];
   var BRANDS = (function () { var s = {}; MC.PRODUCTS.forEach(function (p) { if (p.brand) s[p.brand] = 1; }); return Object.keys(s).sort(function (a, b) { return a.localeCompare(b, 'fr'); }); })();
   function norm(s) { return (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]/g, ''); }
   // Sous-catégories : chaque onglet de menu = un jeu de mots-clés (cherchés dans nom+marque, normalisés)
@@ -182,6 +182,7 @@
     'sales': ['Snacks salés 🌶️', 'Chips, Takis, ramen et snacks épicés qui cartonnent.'],
     'sucres': ['Sucré 🍬', 'Bonbons US, chocolats et desserts gourmands.'],
     'surgele': ['Surgelé 🧊', 'Glaces, mochis glacés et douceurs à conserver au froid — arrivage en cours.'],
+    'divers': ['Divers 🧺', 'Un peu de tout : les pépites gourmandes qui ne rentrent pas ailleurs.'],
     'bestsellers': ['Bestsellers 🩷', 'Les chouchous de la communauté My Candy\'s.'],
     'nouveautes': ['Nouveautés ⭐', 'Fraîchement débarqués dans la boutique.'],
     'promos': ['Promos ⚡', 'Toutes les réductions du moment.'],
@@ -195,6 +196,7 @@
     case 'sales': st.cat = 'Snacks'; break;
     case 'sucres': st.sweet = true; break;
     case 'surgele': st.cat = 'Surgelé'; break;
+    case 'divers': st.cat = 'Divers'; break;
     case 'bestsellers': st.best = true; break;
     case 'nouveautes': st.nouv = true; break;
     case 'promos': case 'mini-prix': st.promo = true; break;

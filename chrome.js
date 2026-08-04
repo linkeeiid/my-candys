@@ -68,6 +68,7 @@
       '<a href="mystery-box" class="mc-navlink' + act('mystery') + '">Mystery Box 📦</a>' +
       '<a href="/#tiktok" class="mc-navlink">TikTok 🔥</a>' +
       '<a href="boutique?c=anti-gaspi" class="mc-navlink mc-navlink--green' + act('anti-gaspi') + '">Anti-Gaspi ♻️</a>' +
+      '<a href="boutique?c=divers" class="mc-navlink' + act('divers') + '">Divers 🧺</a>' +
       '<div class="mc-drop">' +
         '<a href="marques" class="mc-navlink' + act('marques') + '">Top Marques ▾</a>' +
         '<div class="mc-dropmenu mc-dropmenu--right" style="min-width:420px;display:block">' +
@@ -101,6 +102,7 @@
     { t: 'Mystery Box 📦', h: 'mystery-box' },
     { t: 'TikTok 🔥', h: '/#tiktok' },
     { t: 'Anti-Gaspi ♻️', h: 'boutique?c=anti-gaspi' },
+    { t: 'Divers 🧺', h: 'boutique?c=divers' },
     { t: 'Top Marques', h: 'marques', all: 'Toutes les marques →', sub: [
       ['Red Bull', 'boutique?b=Red%20Bull'], ['Kinder', 'boutique?b=Kinder'], ['Fanta', 'boutique?b=Fanta'], ['Pringles', 'boutique?b=Pringles'], ['Snickers', 'boutique?b=Snickers'], ['Coca-Cola', 'boutique?b=Coca-Cola'], ['Nerds', 'boutique?b=Nerds'], ['Twix', 'boutique?b=Twix'], ['KitKat', 'boutique?b=KitKat'], ['Cheetos', 'boutique?b=Cheetos'], ['Takis', 'boutique?b=Takis'], ['Oreo', 'boutique?b=Oreo'] ] }
   ];

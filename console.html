@@ -701,8 +701,8 @@
   function prodImg(id){var p=(window.MC&&MC.byId)?MC.byId(id):null;return (p&&p.img)||'';}
   function prodThumb(id){var img=prodImg(id);return img?'<span style="width:34px;height:34px;border-radius:8px;background:#fff url(\''+esc(img)+'\') center/contain no-repeat;border:1px solid var(--line);flex:none;display:inline-block"></span>':'<span style="width:34px;height:34px;border-radius:8px;background:#FFE3F1;display:inline-flex;align-items:center;justify-content:center;flex:none">🍬</span>';}
   /* Famille du menu du site (Sucrés/Salés/Surgelé/Boissons) pour un produit — même logique que la boutique */
-  function famOf(id){var p=(window.MC&&MC.byId)?MC.byId(id):null;if(!p)return 'Autres';var c=p.cat;if(c==='Bonbons'||c==='Chocolats'||c==='Desserts')return 'Sucrés';if(c==='Snacks'||c==='Épicé')return 'Salés';if(c==='Surgelé')return 'Surgelé';if(c==='Sodas')return 'Boissons';return 'Autres';}
-  var FAM_EMO={'Sucrés':'🍬','Salés':'🌶️','Surgelé':'🧊','Boissons':'🥤','Autres':'📦'};
+  function famOf(id){var p=(window.MC&&MC.byId)?MC.byId(id):null;if(!p)return 'Autres';var c=p.cat;if(c==='Bonbons'||c==='Chocolats'||c==='Desserts')return 'Sucrés';if(c==='Snacks'||c==='Épicé')return 'Salés';if(c==='Surgelé')return 'Surgelé';if(c==='Sodas')return 'Boissons';if(c==='Divers')return 'Divers';return 'Autres';}
+  var FAM_EMO={'Sucrés':'🍬','Salés':'🌶️','Surgelé':'🧊','Boissons':'🥤','Divers':'🧺','Autres':'📦'};
   function renderDash(){
     var paid=orders.filter(function(o){return o.paid;});
     var ca=paid.reduce(function(s,o){return s+oTotal(o);},0);
@@ -861,8 +861,8 @@
   /* ---------- PRODUITS ---------- */
   /* ====== PRODUITS — catalogue réel connecté (Firebase via Worker) ====== */
   var MCAPI='https://my-candys-api.halimjeremy.workers.dev';
-  var CATMETA={Bonbons:{e:'🍬',c:'#FF2E9A'},Snacks:{e:'🍿',c:'#F59E0B'},Sodas:{e:'🥤',c:'#2AA7E0'},Chocolats:{e:'🍫',c:'#9B5B3A'},Desserts:{e:'🧁',c:'#A855C7'},'Épicé':{e:'🌶️',c:'#EF4444'},'Surgelé':{e:'🧊',c:'#3B82C4'}};
-  var PCATS=['Bonbons','Snacks','Sodas','Chocolats','Desserts','Épicé','Surgelé'];
+  var CATMETA={Bonbons:{e:'🍬',c:'#FF2E9A'},Snacks:{e:'🍿',c:'#F59E0B'},Sodas:{e:'🥤',c:'#2AA7E0'},Chocolats:{e:'🍫',c:'#9B5B3A'},Desserts:{e:'🧁',c:'#A855C7'},'Épicé':{e:'🌶️',c:'#EF4444'},'Surgelé':{e:'🧊',c:'#3B82C4'},'Divers':{e:'🧺',c:'#6B7280'}};
+  var PCATS=['Bonbons','Snacks','Sodas','Chocolats','Desserts','Épicé','Surgelé','Divers'];
   /* sous-catégories — identiques à la boutique (clé => libellé) ; l'affectation manuelle prime sur les mots-clés */
   var SUBLABELS={gum:'Chewing-gum & sucettes',chamallow:'Chamallow',barbeapapa:'Barbe à papa',popcorn:'Pop-corn',biscuit:'Biscuits',jelly:'Gelées & gummies',mochi:'Mochi',barres:'Barres chocolatées',peanut:'Beurre de cacahuète',dubai:'Chocolat de Dubaï',chips:'Chips & crackers',takis:'Takis & snacks épicés',jerky:'Beef jerky',ramen:'Ramen & nouilles',americaine:'Cuisine américaine',sauce:'Sauces & dips',salsa:'Salsa',chamoy:'Chamoy',energy:'Énergisantes',sodas:'Sodas viraux',the:'Thé glacé',slush:'Slushies',eau:'Eaux aromatisées',jus:'Jus de fruits',bubbletea:'Bubble tea',mogu:'Mogu Mogu'};
   var SUBKEYS=['gum','chamallow','barbeapapa','popcorn','biscuit','jelly','mochi','barres','peanut','dubai','chips','takis','jerky','ramen','americaine','sauce','salsa','chamoy','energy','sodas','the','slush','eau','jus','bubbletea','mogu'];
@@ -899,7 +899,7 @@
   function ptile(lbl,num,cls,flag,on){return '<div class="kpi '+cls+(on?' kpi-on':'')+'" data-pflag="'+flag+'"><div class="lbl">'+lbl+'</div><div class="num tnum">'+num+'</div></div>';}
   function pNoPrice(p){return p.price==null||isNaN(p.price);}
   function pStats(){var out=0,nopic=0,noprice=0;if(hasMC)MC.PRODUCTS.forEach(function(p){if(pIsOut(p))out++;if(!p.img)nopic++;if(pNoPrice(p))noprice++;});return{tot:hasMC?MC.PRODUCTS.length:0,out:out,nopic:nopic,noprice:noprice};}
-  function pRenderChips(){if(!hasMC||!$('pCats'))return;var FAMS=['Sucrés','Salés','Surgelé','Boissons'];var counts={};MC.PRODUCTS.forEach(function(p){var f=famOf(p.id);counts[f]=(counts[f]||0)+1;});
+  function pRenderChips(){if(!hasMC||!$('pCats'))return;var FAMS=['Sucrés','Salés','Surgelé','Boissons','Divers'];var counts={};MC.PRODUCTS.forEach(function(p){var f=famOf(p.id);counts[f]=(counts[f]||0)+1;});
     var h='<button class="chip'+(pFilter.cat===''?' active':'')+'" data-pcat="">Toutes ('+MC.PRODUCTS.length+')</button>';
     h+=FAMS.map(function(c){return '<button class="chip'+(pFilter.cat===c?' active':'')+'" data-pcat="'+c+'">'+(FAM_EMO[c]||'')+' '+c+' ('+(counts[c]||0)+')</button>';}).join('');
     if(counts['Autres'])h+='<button class="chip'+(pFilter.cat==='Autres'?' active':'')+'" data-pcat="Autres">📦 Autres ('+counts['Autres']+')</button>';
@@ -1104,7 +1104,7 @@
     if(!ADMINKEY){pUnlockModal();return;}
     openModal('Ajouter un produit',
       '<form><div class="form-row"><label>Nom du produit</label><input name="name" required placeholder="Ex. Oreo Mega Stuf"></div>'+
-      '<div class="form-2"><div class="form-row"><label>Catégorie</label><select name="cat"><option>Bonbons</option><option>Snacks</option><option>Sodas</option><option>Chocolats</option><option>Desserts</option><option>Épicé</option><option>Surgelé</option></select></div>'+
+      '<div class="form-2"><div class="form-row"><label>Catégorie</label><select name="cat"><option>Bonbons</option><option>Snacks</option><option>Sodas</option><option>Chocolats</option><option>Desserts</option><option>Épicé</option><option>Surgelé</option><option>Divers</option></select></div>'+
       '<div class="form-row"><label>Prix (€)</label><input name="price" type="number" step="0.01" min="0" placeholder="3.90"></div></div>'+
       '<div class="form-row"><label>Marque (optionnel)</label><input name="brand" placeholder="Ex. Oreo"></div>'+
       '<p style="font-size:.75rem;color:var(--muted);margin:.1rem 0 .6rem">Étape suivante : la <b>fiche produit</b> s\'ouvre pour ajouter la <b>photo</b>, la <b>description</b> et le <b>rayon</b>.</p>'+
