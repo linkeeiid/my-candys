@@ -78,7 +78,7 @@
 </style>
 </head>
 <body data-nav="">
-<script>(function(){var m={boissons:'boissons',sales:'sales',sucres:'sucres',asie:'asie',bestsellers:'bestsellers',nouveautes:'nouveautes',promos:'promos','mini-prix':'mini-prix',squishy:'squishy','anti-gaspi':'anti-gaspi'};var c=new URLSearchParams(location.search).get('c');if(c&&m[c])document.body.setAttribute('data-nav',m[c]);})();</script>
+<script>(function(){var m={boissons:'boissons',sales:'sales',sucres:'sucres',surgele:'surgele',bestsellers:'bestsellers',nouveautes:'nouveautes',promos:'promos','mini-prix':'mini-prix',squishy:'squishy','anti-gaspi':'anti-gaspi'};var c=new URLSearchParams(location.search).get('c');if(c&&m[c])document.body.setAttribute('data-nav',m[c]);})();</script>
 
 <div class="shop-hero">
   <div class="shop-hero-in">
@@ -135,7 +135,7 @@
 <script src="catalog-overrides.js"></script>
 <script>
 (function () {
-  var CATS = ['Bonbons', 'Snacks', 'Sodas', 'Chocolats', 'Épicé', 'Desserts'];
+  var CATS = ['Bonbons', 'Snacks', 'Sodas', 'Chocolats', 'Épicé', 'Desserts', 'Surgelé'];
   var BRANDS = (function () { var s = {}; MC.PRODUCTS.forEach(function (p) { if (p.brand) s[p.brand] = 1; }); return Object.keys(s).sort(function (a, b) { return a.localeCompare(b, 'fr'); }); })();
   function norm(s) { return (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]/g, ''); }
   // Sous-catégories : chaque onglet de menu = un jeu de mots-clés (cherchés dans nom+marque, normalisés)
@@ -169,7 +169,7 @@
   };
   var SUBLABELS = { gum: 'Chewing-gum & sucettes', chamallow: 'Chamallow', barbeapapa: 'Barbe à papa', popcorn: 'Pop-corn', biscuit: 'Biscuits', jelly: 'Gelées & gummies', mochi: 'Mochi', barres: 'Barres chocolatées', peanut: 'Beurre de cacahuète', dubai: 'Chocolat de Dubaï', chips: 'Chips & crackers', takis: 'Takis & snacks épicés', jerky: 'Beef jerky', ramen: 'Ramen & nouilles', americaine: 'Cuisine américaine', sauce: 'Sauces & dips', salsa: 'Salsa', chamoy: 'Chamoy', energy: 'Énergisantes', sodas: 'Sodas viraux', the: 'Thé glacé', slush: 'Slushies', eau: 'Eaux aromatisées', jus: 'Jus de fruits', bubbletea: 'Bubble tea', mogu: 'Mogu Mogu' };
   var params = new URLSearchParams(location.search);
-  var st = { cat: 'all', brand: 'all', promo: false, nouv: false, best: false, asie: false, sweet: false, sort: 'pop', q: '', sub: '' };
+  var st = { cat: 'all', brand: 'all', promo: false, nouv: false, best: false, sweet: false, sort: 'pop', q: '', sub: '' };
   var subP = params.get('sub'); if (subP && SUBS[subP]) st.sub = subP;
   var PAGE_SIZE = 30, page = 1;
   var HERO_IMGS = ['kinder-creamy', 'monster-punch', 'nerds', 'pickle', 'reeses', 'samyang'];
@@ -181,7 +181,7 @@
     'boissons': ['Boissons 🥤', 'Sodas viraux, énergisantes et boissons du monde entier.'],
     'sales': ['Snacks salés 🌶️', 'Chips, Takis, ramen et snacks épicés qui cartonnent.'],
     'sucres': ['Sucré 🍬', 'Bonbons US, chocolats et desserts gourmands.'],
-    'asie': ['Spécial Asie 🍜', 'Le meilleur des snacks et boissons venus d\'Asie.'],
+    'surgele': ['Surgelé 🧊', 'Glaces, mochis glacés et douceurs à conserver au froid — arrivage en cours.'],
     'bestsellers': ['Bestsellers 🩷', 'Les chouchous de la communauté My Candy\'s.'],
     'nouveautes': ['Nouveautés ⭐', 'Fraîchement débarqués dans la boutique.'],
     'promos': ['Promos ⚡', 'Toutes les réductions du moment.'],
@@ -194,7 +194,7 @@
     case 'boissons': st.cat = 'Sodas'; break;
     case 'sales': st.cat = 'Snacks'; break;
     case 'sucres': st.sweet = true; break;
-    case 'asie': st.asie = true; break;
+    case 'surgele': st.cat = 'Surgelé'; break;
     case 'bestsellers': st.best = true; break;
     case 'nouveautes': st.nouv = true; break;
     case 'promos': case 'mini-prix': st.promo = true; break;
@@ -228,7 +228,6 @@
     if (st.promo) L = L.filter(function (p) { return p.old; });
     if (st.nouv) L = L.filter(function (p) { return p.nouveau; });
     if (st.best) L = L.filter(function (p) { return p.best; });
-    if (st.asie) L = L.filter(function (p) { return p.asie; });
     if (st.sweet) L = L.filter(function (p) { return ['Bonbons', 'Chocolats', 'Desserts'].indexOf(p.cat) >= 0; });
     if (st.sub && SUBS[st.sub]) { var kws = SUBS[st.sub]; L = L.filter(function (p) { if (p.sub) return p.sub === st.sub; var hh = norm(p.name + ' ' + (p.brand || '')); return kws.some(function (k) { return hh.indexOf(k) >= 0; }); }); }
     if (st.q) { var toks = st.q.split(/\s+/).map(norm).filter(Boolean); if (toks.length) L = L.filter(function (p) { var h = norm(p.name + ' ' + (p.brand || '')); return toks.every(function (t) { return h.indexOf(t) >= 0; }); }); }
@@ -245,7 +244,6 @@
     if (st.promo) out.push({ k: 'promo', label: 'En promo' });
     if (st.nouv) out.push({ k: 'nouv', label: 'Nouveautés' });
     if (st.best) out.push({ k: 'best', label: 'Bestsellers' });
-    if (st.asie) out.push({ k: 'asie', label: 'Asie' });
     if (st.sweet) out.push({ k: 'sweet', label: 'Sucré' });
     if (st.sub) out.push({ k: 'sub', label: SUBLABELS[st.sub] || st.sub });
     if (st.q) out.push({ k: 'q', label: '“' + st.q + '”' });
@@ -332,7 +330,7 @@
   document.getElementById('shop-chips').addEventListener('click', function (e) {
     var t = e.target.closest('[data-clear]'); if (!t) return;
     var k = t.getAttribute('data-clear');
-    if (k === 'all') { st.cat = 'all'; st.brand = 'all'; st.promo = st.nouv = st.best = st.asie = st.sweet = false; st.q = ''; st.sub = ''; }
+    if (k === 'all') { st.cat = 'all'; st.brand = 'all'; st.promo = st.nouv = st.best = st.sweet = false; st.q = ''; st.sub = ''; }
     else if (k === 'cat') st.cat = 'all';
     else if (k === 'brand') st.brand = 'all';
     else st[k] = (k === 'q' || k === 'sub' ? '' : false);
@@ -340,7 +338,7 @@
     document.getElementById('shop-new').checked = st.nouv;
     apply();
   });
-  document.getElementById('shop-reset').addEventListener('click', function () { st.cat = 'all'; st.brand = 'all'; st.promo = st.nouv = st.best = st.asie = st.sweet = false; st.q = ''; st.sub = ''; document.getElementById('shop-promo').checked = false; document.getElementById('shop-new').checked = false; apply(); });
+  document.getElementById('shop-reset').addEventListener('click', function () { st.cat = 'all'; st.brand = 'all'; st.promo = st.nouv = st.best = st.sweet = false; st.q = ''; st.sub = ''; document.getElementById('shop-promo').checked = false; document.getElementById('shop-new').checked = false; apply(); });
   document.getElementById('shop-mobfilter').addEventListener('click', function () { document.getElementById('shop-aside').classList.toggle('open'); });
   document.getElementById('shop-pager').addEventListener('click', function (e) {
     var t = e.target.closest('[data-page]'); if (!t || t.disabled) return;
