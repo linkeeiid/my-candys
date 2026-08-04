@@ -200,9 +200,11 @@
     case 'bestsellers': st.best = true; break;
     case 'nouveautes': st.nouv = true; break;
     case 'promos': case 'mini-prix': st.promo = true; break;
+    default: if (CATS.indexOf(c) >= 0) st.cat = c; break; // catégorie brute (ex. ?c=Bonbons)
   }
   if (st.brand !== 'all' && !c) { var d = document.getElementById('shop-title'); if (d) d.textContent = st.brand; }
   if (c && TITLES[c]) { document.getElementById('shop-title').textContent = TITLES[c][0]; document.getElementById('shop-sub').textContent = TITLES[c][1]; document.getElementById('shop-crumb').textContent = TITLES[c][0]; }
+  else if (c && CATS.indexOf(c) >= 0) { document.getElementById('shop-title').textContent = c; document.getElementById('shop-crumb').textContent = c; document.getElementById('shop-sub').textContent = 'Toute la catégorie ' + c + '.'; }
   if (st.brand !== 'all') { document.getElementById('shop-crumb').textContent = st.brand; }
   if (st.sub) { var _sl = SUBLABELS[st.sub] || st.sub; document.getElementById('shop-title').textContent = _sl; document.getElementById('shop-crumb').textContent = _sl; }
 
