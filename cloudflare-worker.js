@@ -798,6 +798,28 @@ async function fbGet(env, path) {
   try { return await r.json(); } catch (e) { return null; }
 }
 
+/* ---- Anti-spam : limite de débit par IP (compteur glissant dans Firebase) ----
+   Renvoie true si l'IP a dépassé `max` requêtes sur `windowSec` secondes.
+   L'IP est HASHÉE avant stockage (RGPD) et jamais conservée en clair.
+   Fail-open : la moindre erreur => on n'bloque pas (on ne pénalise jamais un vrai client). */
+async function rateLimited(env, request, bucket, max, windowSec) {
+  try {
+    if (!env.FIREBASE_DB_URL) return false;
+    const ip = request.headers.get('CF-Connecting-IP') || request.headers.get('X-Forwarded-For') || 'anon';
+    let h = 2166136261; for (let i = 0; i < ip.length; i++) { h ^= ip.charCodeAt(i); h = (h * 16777619) >>> 0; }
+    const key = 'ratelimit/' + bucket + '/' + h.toString(36);
+    const now = Date.now();
+    const rec = (await fbGet(env, key)) || {};
+    if (rec.reset && now < rec.reset) {
+      if ((rec.count || 0) >= max) return true; // fenêtre en cours + quota atteint => bloqué
+      await fbPatch(env, key, { count: (rec.count || 0) + 1 });
+    } else {
+      await fbSet(env, key, { count: 1, reset: now + windowSec * 1000 }); // nouvelle fenêtre
+    }
+    return false;
+  } catch (e) { return false; }
+}
+
 /* ---- Stripe Checkout INTÉGRÉ (formulaire de paiement sur le site : CB + Apple Pay + Google Pay) ---- */
 // Crée une session Checkout en mode "embedded" (iframe sur le site, sans redirection).
 // Les moyens de paiement (carte, wallets) sont ceux activés dans le dashboard Stripe.
@@ -1080,6 +1102,7 @@ export default {
       if (path === '/newsletter') {
         const email = (body.email || '').trim();
         if (!isEmail(email) || email.length > 254) return json({ ok: false, error: 'email_invalide' }, 400, allow);
+        if (await rateLimited(env, request, 'nl', 5, 3600)) return json({ ok: false, error: 'trop_de_requetes' }, 429, allow);
         await brevoAddContact(env, email, { SOURCE: 'site-newsletter' });
         await fbPush(env, 'newsletter', { email: email, ts: Date.now() });
         // Email de bienvenue automatique (avec le code -10% BIENVENUE10)
@@ -1092,6 +1115,7 @@ export default {
         const email = (body.email || '').trim();
         const message = (body.message || '').trim();
         if (!isEmail(email) || email.length > 254 || !message || message.length > 3000) return json({ ok: false, error: 'champs_invalides' }, 400, allow);
+        if (await rateLimited(env, request, 'ct', 5, 3600)) return json({ ok: false, error: 'trop_de_requetes' }, 429, allow);
         const html = '<div style="font-family:Arial,sans-serif;color:#2A0A1C">' +
           '<h3 style="color:#E01784">Nouveau message — site My Candy\'s</h3>' +
           '<p><b>De :</b> ' + esc(name) + ' &lt;' + esc(email) + '&gt;</p>' +
@@ -1114,6 +1138,7 @@ export default {
         for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = (h * 16777619) >>> 0; }
         const expected = 'MCFID' + pct + '-' + ('000' + h.toString(36).toUpperCase()).slice(-4);
         if (code !== expected) return json({ ok: false, error: 'code_invalide' }, 400, allow);
+        if (await rateLimited(env, request, 'ly', 12, 3600)) return json({ ok: false, error: 'trop_de_requetes' }, 429, allow);
         const tierName = pct === 15 ? 'Platine 💎' : (pct === 10 ? 'Or 🥇' : 'Argent 🥈');
         const html = '<div style="font-family:Arial,sans-serif;color:#2A0A1C;max-width:520px;margin:auto">' + logoHdr() +
           '<div style="text-align:center;margin:0 0 8px"><span style="display:inline-block;background:#FFF1F8;color:#E01784;font-weight:800;font-size:12px;letter-spacing:.5px;padding:5px 12px;border-radius:999px">🎁 PALIER ' + tierName + '</span></div>' +
