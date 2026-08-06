@@ -91,6 +91,11 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
 .co-pay-hint{font-size:12.5px;color:#8A6076;margin:0 2px 2px}
 .co-pay-err{margin-top:12px;font-size:13.5px;color:#C62A22;background:#FDECEC;border:1px solid #F6C9C4;border-radius:12px;padding:11px 14px;font-weight:600}
 #co-embed{margin-top:10px}
+#co-embed:not(:empty){min-height:430px} /* hauteur stable une fois le formulaire monté → évite les sauts au switch carte/wallet */
+.co-express-wrap{margin:0 0 6px}
+#co-express{min-height:46px}
+.co-express-or{display:flex;align-items:center;gap:12px;color:#8A6076;font-size:12.5px;font-weight:600;margin:16px 2px 2px;text-transform:none}
+.co-express-or::before,.co-express-or::after{content:"";flex:1;height:1px;background:#EBD9E4}
 
 /* ---------- Récapitulatif ---------- */
 .co-sum{background:#FFF6FB;border:1px solid #F3D9E9;border-radius:20px;padding:20px 22px;box-shadow:0 10px 26px rgba(122,14,74,.1)}
@@ -189,6 +194,12 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
   <!-- Tunnel -->
   <form id="co-form" class="co-grid" autocomplete="on" hidden>
     <div class="co-form">
+
+      <!-- Express Checkout (Apple Pay / Google Pay en un tap) -->
+      <div id="co-express-wrap" class="co-express-wrap" hidden>
+        <div id="co-express"></div>
+        <div class="co-express-or"><span>ou paie avec tes coordonnées</span></div>
+      </div>
 
       <!-- 1. Coordonnées -->
       <section class="co-card">
@@ -596,7 +607,7 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
           var hint = $('#co-pay-hint'); if (hint) hint.hidden = true;
           payBtn.style.display = 'none';
           ck.mount('#co-embed');
-          try { document.getElementById('co-embed').scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (x) {}
+          try { setTimeout(function () { document.getElementById('co-embed').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 260); } catch (x) {}
         }).catch(function () {
           payBtn.disabled = false; payBtn.style.display = ''; render();
           payErr('Le formulaire de paiement n\'a pas pu s\'afficher. Réessaie.');
@@ -649,6 +660,75 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
   render();
   prefillForm();
   render(); // rafraîchit les frais si le mode de livraison mémorisé diffère
+
+  /* ---------- Express Checkout : Apple Pay / Google Pay en UN TAP, tout en haut (style Shopify) ----------
+     Le wallet fournit email + adresse ; le montant (panier + livraison) est recalculé côté serveur.
+     Frais de port RÉPLIQUÉS À L'IDENTIQUE du Worker (relais 4,90€ offert dès 39€ · domicile 6,90€ offert dès 59€). */
+  (function () {
+    var wrap = $('#co-express-wrap'), host = $('#co-express');
+    if (!wrap || !host) return;
+    var api = (window.MC_API || '').replace(/\/$/, '');
+    if (!api || !MCCart.items().length) return;
+    function shipCents(m, sub) { return m === 'domicile' ? (sub >= 59 ? 0 : 690) : (sub >= 39 ? 0 : 490); }
+    fetch(api + '/stripe-pk').then(function (r) { return r.json(); }).then(function (cfg) {
+      if (!cfg || !cfg.publishableKey) return;
+      loadStripeJs(function () {
+        var stripe; try { stripe = window.Stripe(cfg.publishableKey); } catch (x) { return; }
+        var sub0 = MCCart.subtotal();
+        var elements = stripe.elements({ mode: 'payment', amount: Math.round(sub0 * 100) + shipCents('relais', sub0), currency: 'eur' });
+        var ece; try {
+          ece = elements.create('expressCheckout', { buttonHeight: 48, paymentMethods: { applePay: 'auto', googlePay: 'auto', link: 'never', paypal: 'never', amazonPay: 'never' } });
+        } catch (x) { return; }
+        wrap.hidden = false; // visible pour que l'élément Stripe se dessine correctement
+        ece.on('ready', function (e) { if (!e || !e.availablePaymentMethods) wrap.hidden = true; }); // aucun wallet dispo (ex. PC sans Google Pay) → on masque
+        ece.mount(host);
+        ece.on('click', function (event) {
+          var s = MCCart.subtotal();
+          event.resolve({
+            emailRequired: true, phoneNumberRequired: true, shippingAddressRequired: true,
+            allowedShippingCountries: ['FR', 'BE', 'CH', 'LU'],
+            shippingRates: [
+              { id: 'relais', amount: shipCents('relais', s), displayName: shipCents('relais', s) === 0 ? 'Point relais — OFFERTE' : 'Point relais · 2-4 j ouvrés' },
+              { id: 'domicile', amount: shipCents('domicile', s), displayName: shipCents('domicile', s) === 0 ? 'À domicile — OFFERTE' : 'À domicile · 1-3 j ouvrés' }
+            ],
+            lineItems: MCCart.items().map(function (l) { return { name: l.name, amount: Math.round(l.price * 100) * l.qty }; })
+          });
+        });
+        ece.on('shippingaddresschange', function (event) { event.resolve(); });
+        ece.on('shippingratechange', function (event) {
+          var s = MCCart.subtotal();
+          elements.update({ amount: Math.round(s * 100) + (event.shippingRate ? event.shippingRate.amount : shipCents('relais', s)) });
+          event.resolve();
+        });
+        ece.on('confirm', function (event) {
+          var bd = event.billingDetails || {}, sa = event.shippingAddress || {}, addr = sa.address || {};
+          var nm = String(sa.name || bd.name || '').trim(), np = nm.split(/\s+/);
+          var cust = {
+            email: bd.email || '', first: np[0] || '', last: (np.length > 1 ? np.slice(1).join(' ') : (np[0] || '')),
+            tel: bd.phone || '', addr: addr.line1 || '', addr2: addr.line2 || '',
+            zip: addr.postal_code || '', city: addr.city || '', country: addr.country || 'FR'
+          };
+          var shipMode = (event.shippingRate && event.shippingRate.id) === 'domicile' ? 'domicile' : 'relais';
+          var modeLabel = shipMode === 'domicile' ? 'Livraison à domicile' : 'Point relais';
+          var payload = { items: MCCart.items().map(function (l) { return { id: l.id, qty: l.qty, name: l.name }; }), shipping: shipMode, customer: cust };
+          fetch(api + '/express-intent', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+              if (!d || !d.ok || !d.clientSecret) { event.paymentFailed({ reason: 'fail' }); if (window.MCui && MCui.toast) MCui.toast('Paiement indisponible, réessaie'); return; }
+              stripe.confirmPayment({ elements: elements, clientSecret: d.clientSecret, confirmParams: { return_url: location.origin + '/checkout' }, redirect: 'if_required' })
+                .then(function (res) {
+                  if (res.error) { if (window.MCui && MCui.toast) MCui.toast(res.error.message || 'Paiement refusé'); }
+                  else {
+                    try { fetch(api + '/express-verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reference: d.reference, pi: (res.paymentIntent && res.paymentIntent.id) || '' }) }); } catch (e) {}
+                    mode = shipMode; renderDone(d.reference, d.amount, cust.email, modeLabel); try { applyPostPayment(d.reference, d.amount, modeLabel); } catch (e) {}
+                  }
+                });
+            })
+            .catch(function () { event.paymentFailed({ reason: 'fail' }); if (window.MCui && MCui.toast) MCui.toast('Erreur réseau'); });
+        });
+      });
+    }).catch(function () {});
+  })();
 })();
 </script>
 </body>

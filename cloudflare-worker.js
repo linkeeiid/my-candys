@@ -857,6 +857,22 @@ async function stripeCreateSession(env, { reference, order, couponId }) {
   });
   try { return await r.json(); } catch (e) { return null; }
 }
+// PaymentIntent pour l'Express Checkout (Apple Pay / Google Pay en un tap). Montant recalculé serveur.
+async function stripeCreatePaymentIntent(env, amountCents, reference, email) {
+  const p = [];
+  p.push(['amount', String(amountCents)]);
+  p.push(['currency', 'eur']);
+  p.push(['automatic_payment_methods[enabled]', 'true']);
+  p.push(['metadata[reference]', reference]);
+  if (email) p.push(['receipt_email', email]);
+  const bodyStr = p.map(function (kv) { return encodeURIComponent(kv[0]) + '=' + encodeURIComponent(kv[1]); }).join('&');
+  const r = await fetch('https://api.stripe.com/v1/payment_intents', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + env.STRIPE_SECRET_KEY, 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: bodyStr
+  });
+  try { return await r.json(); } catch (e) { return null; }
+}
 // Coupon « montant fixe » à usage unique pour appliquer exactement la remise calculée côté serveur.
 async function stripeCreateCoupon(env, amountOffCents) {
   const bodyStr = 'amount_off=' + amountOffCents + '&currency=eur&duration=once&max_redemptions=1&name=' + encodeURIComponent('Reduction My Candys');
@@ -1088,6 +1104,11 @@ export default {
     }
 
     // --- Webhook Stripe (body BRUT requis pour la signature → traité avant le parse JSON) ---
+    // Clé publique Stripe (pour afficher les boutons Express Checkout Apple/Google Pay en haut du checkout)
+    if (path === '/stripe-pk' && request.method === 'GET') {
+      return json({ ok: true, publishableKey: env.STRIPE_PUBLISHABLE_KEY || '' }, 200, allow);
+    }
+
     if (path === '/stripe/webhook' && request.method === 'POST') {
       const raw = await request.text();
       const okSig = await verifyStripeSig(raw, request.headers.get('stripe-signature') || '', env.STRIPE_WEBHOOK_SECRET);
@@ -1097,6 +1118,12 @@ export default {
         const s = (evt.data && evt.data.object) || {};
         const ref = (s.metadata && s.metadata.reference) || s.client_reference_id;
         if (ref && s.payment_status === 'paid') { try { await finalizeOrder(env, ref, s.payment_intent); } catch (e) {} }
+      }
+      // Express Checkout (Apple Pay / Google Pay en haut du checkout) → paiement direct via PaymentIntent
+      if (evt.type === 'payment_intent.succeeded') {
+        const pi = (evt.data && evt.data.object) || {};
+        const ref = pi.metadata && pi.metadata.reference;
+        if (ref) { try { await finalizeOrder(env, ref, pi.id); } catch (e) {} }
       }
       return json({ ok: true }, 200, allow);
     }
@@ -1252,6 +1279,69 @@ export default {
           return json({ ok: false, error: 'stripe_checkout_failed', detail: session && session.error && session.error.message }, 502, allow);
         }
         return json({ ok: true, clientSecret: session.client_secret, sessionId: session.id, publishableKey: env.STRIPE_PUBLISHABLE_KEY || '', reference: reference, amount: total }, 200, allow);
+      }
+
+      // Express Checkout (Apple Pay / Google Pay en un tap, en haut du checkout) → PaymentIntent direct.
+      if (path === '/express-intent') {
+        const items = Array.isArray(body.items) ? body.items : [];
+        const shipping = (body.shipping === 'domicile') ? 'domicile' : 'relais';
+        const c = body.customer || {};
+        if (!items.length) return json({ ok: false, error: 'panier_vide' }, 400, allow);
+        if (!isEmail(c.email)) return json({ ok: false, error: 'email_invalide' }, 400, allow);
+        if (!env.STRIPE_SECRET_KEY) return json({ ok: false, error: 'stripe_non_configure' }, 500, allow);
+        // Prix = base products.js + overrides Firebase (source de vérité serveur), comme /create-checkout.
+        const ov = (await fbGet(env, 'catalog')) || {};
+        let sub = 0; const lines = [];
+        for (const it of items) {
+          const id = str(it.id, 60);
+          const qty = Math.max(1, Math.min(99, parseInt(it.qty, 10) || 1));
+          const o = ov[id] || {};
+          if (o.deleted || o.available === false) return json({ ok: false, error: 'produit_indisponible', id: id }, 400, allow);
+          const basePrice = BASE_PRICES[id];
+          const price = (o.price != null && !isNaN(o.price)) ? Number(o.price) : basePrice;
+          if (price == null || isNaN(price)) return json({ ok: false, error: 'produit_inconnu', id: id }, 400, allow);
+          sub += price * qty;
+          let imgv = (o.img || str(it.img, 400) || ''); if (/^data:/i.test(imgv)) imgv = '';
+          lines.push({ id: id, name: (o.name || str(it.name, 80) || id), price: round2(price), qty: qty, img: imgv || null });
+        }
+        sub = round2(sub);
+        const ship = shipCost(shipping, sub);
+        const total = round2(sub + ship);
+        if (total <= 0) return json({ ok: false, error: 'montant_invalide' }, 400, allow);
+        const reference = 'MC-' + rand6();
+        const customer = {
+          email: str(c.email, 254), name: (str(c.first, 60) + ' ' + str(c.last, 60)).trim(),
+          first: str(c.first, 60), last: str(c.last, 60), tel: str(c.tel, 30),
+          addr: str(c.addr, 160), addr2: str(c.addr2, 160), zip: str(c.zip, 16),
+          city: str(c.city, 80), country: str(c.country, 60)
+        };
+        const order = {
+          reference: reference, items: lines, customer: customer, shipping: shipping,
+          subtotal: sub, discount: 0, promo: '', shippingCost: ship, total: total,
+          status: 'en_attente_paiement', paid: false, express: true, ts: Date.now()
+        };
+        await fbSet(env, 'orders/' + reference, order);
+        const pi = await stripeCreatePaymentIntent(env, Math.round(total * 100), reference, customer.email);
+        if (!pi || !pi.client_secret) {
+          return json({ ok: false, error: 'stripe_pi_failed', detail: pi && pi.error && pi.error.message }, 502, allow);
+        }
+        return json({ ok: true, clientSecret: pi.client_secret, reference: reference, amount: total }, 200, allow);
+      }
+
+      // Finalisation express : le site appelle ça après un paiement wallet réussi (double sécurité avec le webhook).
+      if (path === '/express-verify') {
+        const reference = str(body.reference, 40);
+        const piId = str(body.pi, 120);
+        if (!reference || !piId) return json({ ok: false, error: 'missing' }, 400, allow);
+        const r = await fetch('https://api.stripe.com/v1/payment_intents/' + encodeURIComponent(piId), {
+          headers: { 'Authorization': 'Bearer ' + env.STRIPE_SECRET_KEY }
+        });
+        let pi = {}; try { pi = await r.json(); } catch (e) {}
+        if (pi && pi.status === 'succeeded' && pi.metadata && pi.metadata.reference === reference) {
+          try { await finalizeOrder(env, reference, pi.id); } catch (e) {}
+          return json({ ok: true }, 200, allow);
+        }
+        return json({ ok: false, error: 'not_paid' }, 200, allow);
       }
 
       // Vérification au retour de Stripe (page de confirmation) : on interroge Stripe et on finalise si payé.
