@@ -1,0 +1,8 @@
+# URLs propres (Cloudflare Pages) — réécritures internes (200 = l'URL reste jolie dans le navigateur)
+# Les sous-chemins spécifiques AVANT le générique (premier match gagne).
+/boutique/marque/*   /boutique.html   200
+/boutique/rayon/*    /boutique.html   200
+/boutique/*          /boutique.html   200
+/produit/*           /produit.html    200
+/box/*               /box.html        200
+/infos/*             /infos.html      200

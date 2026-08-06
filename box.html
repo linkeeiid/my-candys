@@ -2,6 +2,8 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<base href="/"><!-- URLs propres : résout fichiers + liens relatifs depuis la racine -->
+
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Mystery Box — My Candy's</title>
 <meta name="description" content="Nos Mystery Box My Candy's : une sélection surprise de bonbons, snacks et sodas, d'une valeur toujours supérieure au prix. Le colis parfait à unboxer.">
@@ -67,7 +69,7 @@
 (function () {
   'use strict';
   function render() {
-    var id = new URLSearchParams(location.search).get('id');
+    var id = (function () { var m = location.pathname.match(/\/box\/([^\/?#]+)/); return m ? decodeURIComponent(m[1]) : new URLSearchParams(location.search).get('id'); })();
     var b = (window.MC && MC.byId) ? MC.byId(id) : null;
     if (!b || !b.box) { b = (MC.BOXES && MC.BOXES[0]) || null; }
     if (!b) { document.getElementById('bx').innerHTML = '<p style="padding:40px">Box introuvable. <a href="mystery-box">Voir toutes les box →</a></p>'; return; }
@@ -117,9 +119,9 @@
 
     // SEO : données structurées Product (prix)
     try {
-      var ld = { "@context": "https://schema.org", "@type": "Product", "name": b.name, "image": [b.img ? ('https://mycandys.fr/' + String(b.img).replace(/^\//, '')) : ''], "description": (b.desc || '').replace(/<[^>]+>/g, ''), "sku": b.id, "brand": { "@type": "Brand", "name": "My Candy's" }, "offers": { "@type": "Offer", "priceCurrency": "EUR", "price": Number(b.price).toFixed(2), "availability": "https://schema.org/InStock", "url": "https://mycandys.fr/box?id=" + b.id } };
+      var ld = { "@context": "https://schema.org", "@type": "Product", "name": b.name, "image": [b.img ? ('https://mycandys.fr/' + String(b.img).replace(/^\//, '')) : ''], "description": (b.desc || '').replace(/<[^>]+>/g, ''), "sku": b.id, "brand": { "@type": "Brand", "name": "My Candy's" }, "offers": { "@type": "Offer", "priceCurrency": "EUR", "price": Number(b.price).toFixed(2), "availability": "https://schema.org/InStock", "url": "https://mycandys.fr/box/" + b.id } };
       var s = document.createElement('script'); s.type = 'application/ld+json'; s.textContent = JSON.stringify(ld); document.head.appendChild(s);
-      var can = document.head.querySelector('link[rel="canonical"]'); if (can) can.setAttribute('href', 'https://mycandys.fr/box?id=' + b.id);
+      var can = document.head.querySelector('link[rel="canonical"]'); if (can) can.setAttribute('href', 'https://mycandys.fr/box/' + b.id);
     } catch (e) {}
   }
   if (window.MC && MC.BOXES) render();

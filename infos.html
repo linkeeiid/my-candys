@@ -2,6 +2,8 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<base href="/"><!-- URLs propres : résout fichiers + liens relatifs depuis la racine -->
+
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Infos & aide — My Candy's</title>
 <meta name="description" content="FAQ, livraison &amp; retours, contact, notre histoire, nos boutiques et la franchise My Candy's. Toute l'aide dont tu as besoin, au même endroit.">
@@ -44,7 +46,7 @@
     "@type": "Store",
     "name": "My Candy's — Villeurbanne",
     "image": "https://mycandys.fr/assets/logo.png",
-    "url": "https://mycandys.fr/infos?p=boutiques",
+    "url": "https://mycandys.fr/infos/boutiques",
     "priceRange": "€€",
     "openingHours": "Mo-Su 14:00-02:00",
     "address": { "@type": "PostalAddress", "streetAddress": "52 rue Séverine", "postalCode": "69100", "addressLocality": "Villeurbanne", "addressRegion": "Auvergne-Rhône-Alpes", "addressCountry": "FR" },
@@ -56,7 +58,7 @@
     "@type": "Store",
     "name": "My Candy's — Saint-Raphaël",
     "image": "https://mycandys.fr/assets/logo.png",
-    "url": "https://mycandys.fr/infos?p=boutiques",
+    "url": "https://mycandys.fr/infos/boutiques",
     "priceRange": "€€",
     "openingHours": "Mo-Su 10:00-22:00",
     "address": { "@type": "PostalAddress", "streetAddress": "251 avenue du Général Leclerc", "postalCode": "83700", "addressLocality": "Saint-Raphaël", "addressRegion": "Provence-Alpes-Côte d'Azur", "addressCountry": "FR" },
@@ -232,24 +234,24 @@
 
     <aside class="info-aside">
       <nav class="info-nav" id="info-nav" aria-label="Sections d'aide">
-        <a class="info-navlink" data-sec="faq"       href="infos?p=faq"><span class="ic">❓</span> FAQ</a>
-        <a class="info-navlink" data-sec="fidelite"  href="infos?p=fidelite"><span class="ic">🎁</span> Programme fidélité</a>
-        <a class="info-navlink" data-sec="livraison" href="infos?p=livraison"><span class="ic">🚚</span> Livraison &amp; retours</a>
-        <a class="info-navlink" data-sec="contact"   href="infos?p=contact"><span class="ic">✉️</span> Nous contacter</a>
-        <a class="info-navlink" data-sec="about"     href="infos?p=about"><span class="ic">🍬</span> Qui sommes-nous ?</a>
-        <a class="info-navlink" data-sec="boutiques" href="infos?p=boutiques"><span class="ic">🏪</span> Nos boutiques</a>
-        <a class="info-navlink" data-sec="franchise" href="infos?p=franchise"><span class="ic">🤝</span> Devenir franchisé</a>
+        <a class="info-navlink" data-sec="faq"       href="infos/faq"><span class="ic">❓</span> FAQ</a>
+        <a class="info-navlink" data-sec="fidelite"  href="infos/fidelite"><span class="ic">🎁</span> Programme fidélité</a>
+        <a class="info-navlink" data-sec="livraison" href="infos/livraison"><span class="ic">🚚</span> Livraison &amp; retours</a>
+        <a class="info-navlink" data-sec="contact"   href="infos/contact"><span class="ic">✉️</span> Nous contacter</a>
+        <a class="info-navlink" data-sec="about"     href="infos/about"><span class="ic">🍬</span> Qui sommes-nous ?</a>
+        <a class="info-navlink" data-sec="boutiques" href="infos/boutiques"><span class="ic">🏪</span> Nos boutiques</a>
+        <a class="info-navlink" data-sec="franchise" href="infos/franchise"><span class="ic">🤝</span> Devenir franchisé</a>
       </nav>
       <div class="info-help">
         <div class="t">Besoin d'un coup de main ? 🍭</div>
         <p>Notre équipe répond du lundi au samedi, 9h–19h. On adore parler snacks.</p>
-        <a class="btn" href="infos?p=contact" data-sec="contact">Nous écrire →</a>
+        <a class="btn" href="infos/contact" data-sec="contact">Nous écrire →</a>
       </div>
       <nav class="info-nav info-nav-legal" aria-label="Informations légales">
         <div class="info-navgroup-t">Informations légales</div>
-        <a class="info-navlink" data-sec="mentions"        href="infos?p=mentions"><span class="ic">⚖️</span> Mentions légales</a>
-        <a class="info-navlink" data-sec="cgv"             href="infos?p=cgv"><span class="ic">📜</span> CGV</a>
-        <a class="info-navlink" data-sec="confidentialite" href="infos?p=confidentialite"><span class="ic">🔒</span> Confidentialité</a>
+        <a class="info-navlink" data-sec="mentions"        href="infos/mentions"><span class="ic">⚖️</span> Mentions légales</a>
+        <a class="info-navlink" data-sec="cgv"             href="infos/cgv"><span class="ic">📜</span> CGV</a>
+        <a class="info-navlink" data-sec="confidentialite" href="infos/confidentialite"><span class="ic">🔒</span> Confidentialité</a>
       </nav>
     </aside>
 
@@ -302,7 +304,7 @@
         <div class="info-card">
           <span class="info-eyebrow">Foire aux questions</span>
           <h2 id="faq-h">Les questions qu'on nous pose le plus ❓</h2>
-          <p class="lead">Délais, paiement, fraîcheur, retours… on t'a préparé les réponses. Il en manque une ? <a class="inl" href="infos?p=contact" data-sec="contact">Écris-nous</a>.</p>
+          <p class="lead">Délais, paiement, fraîcheur, retours… on t'a préparé les réponses. Il en manque une ? <a class="inl" href="infos/contact" data-sec="contact">Écris-nous</a>.</p>
 
           <div class="faq" id="faq">
             <div class="faq-item">
@@ -374,7 +376,7 @@
             <li>Pour des raisons d'hygiène, les produits alimentaires <strong>ouverts</strong> ne sont pas repris.</li>
             <li>Colis retourné faute de retrait en point relais : on te recontacte pour un renvoi (frais de réexpédition à prévoir).</li>
           </ul>
-          <p>Un souci ? <a class="inl" href="infos?p=contact" data-sec="contact">Contacte-nous</a>, on règle ça vite et bien.</p>
+          <p>Un souci ? <a class="inl" href="infos/contact" data-sec="contact">Contacte-nous</a>, on règle ça vite et bien.</p>
         </div>
       </section>
 
@@ -495,7 +497,7 @@
           </ul>
 
           <div class="info-cta-row">
-            <a class="primary" href="infos?p=contact" data-sec="contact">Déposer ma candidature →</a>
+            <a class="primary" href="infos/contact" data-sec="contact">Déposer ma candidature →</a>
             <a class="ghost" href="mailto:hello@mycandys.fr">hello@mycandys.fr</a>
           </div>
         </div>
@@ -523,7 +525,7 @@
           <p>
             Email : <span class="legal-todo">[email de contact — à compléter]</span><br>
             Téléphone : <span class="legal-todo">[téléphone — optionnel]</span><br>
-            Pour toute question, tu peux aussi passer par notre <a class="inl" href="infos?p=contact" data-sec="contact">formulaire de contact</a>.
+            Pour toute question, tu peux aussi passer par notre <a class="inl" href="infos/contact" data-sec="contact">formulaire de contact</a>.
           </p>
 
           <h3>Directeur de la publication</h3>
@@ -545,7 +547,7 @@
           <p>L'ensemble des éléments composant ce site (marque « My Candy's », logo, textes, visuels, mise en page, code) est protégé par le droit de la propriété intellectuelle et demeure la propriété de MY CANDYS LYON ou de ses partenaires. Toute reproduction, représentation ou réutilisation, totale ou partielle, sans autorisation écrite préalable est interdite. Les marques et logos des produits présentés restent la propriété de leurs détenteurs respectifs.</p>
 
           <h3>Données personnelles</h3>
-          <p>Le traitement de tes données personnelles est détaillé dans notre <a class="inl" href="infos?p=confidentialite" data-sec="confidentialite">politique de confidentialité</a>.</p>
+          <p>Le traitement de tes données personnelles est détaillé dans notre <a class="inl" href="infos/confidentialite" data-sec="confidentialite">politique de confidentialité</a>.</p>
 
           <p class="legal-date">Dernière mise à jour : 27 juillet 2026</p>
         </div>
@@ -593,7 +595,7 @@
           <p>Indépendamment de toute garantie commerciale, tu bénéficies de la <strong>garantie légale de conformité</strong> (articles L217-3 et suivants du Code de la consommation) et de la <strong>garantie contre les vices cachés</strong> (articles 1641 et suivants du Code civil), dans les conditions prévues par la loi.</p>
 
           <h3>10. Service client</h3>
-          <p>Notre service client francophone est joignable du lundi au samedi, de 9h à 19h, via le <a class="inl" href="infos?p=contact" data-sec="contact">formulaire de contact</a> ou par email à <span class="legal-todo">[email de contact — à compléter]</span>.</p>
+          <p>Notre service client francophone est joignable du lundi au samedi, de 9h à 19h, via le <a class="inl" href="infos/contact" data-sec="contact">formulaire de contact</a> ou par email à <span class="legal-todo">[email de contact — à compléter]</span>.</p>
 
           <h3>11. Médiation de la consommation</h3>
           <p>Conformément à l'article L612-1 du Code de la consommation, le consommateur peut recourir gratuitement à un médiateur de la consommation en vue de la résolution amiable d'un litige. Médiateur désigné : <span class="legal-todo">[médiateur de la consommation — à désigner]</span>.</p>
@@ -696,7 +698,7 @@
   var secEls   = Array.prototype.slice.call(document.querySelectorAll('.info-sec'));
 
   function currentFromURL() {
-    var p = new URLSearchParams(location.search).get('p');
+    var p = (function () { var m = location.pathname.match(/\/infos\/([^\/?#]+)/); return m ? decodeURIComponent(m[1]) : new URLSearchParams(location.search).get('p'); })();
     return (p && SECTIONS.indexOf(p) >= 0) ? p : 'faq';
   }
 
@@ -720,7 +722,7 @@
       try { activeLink.scrollIntoView({ inline: 'center', block: 'nearest' }); } catch (e) {}
     }
     if (push) {
-      try { history.pushState({ sec: sec }, '', 'infos?p=' + sec); } catch (e) {}
+      try { history.pushState({ sec: sec }, '', 'infos/' + sec); } catch (e) {}
     }
     try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); }
   }

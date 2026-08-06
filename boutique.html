@@ -2,6 +2,8 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<base href="/"><!-- URLs propres : résout fichiers + liens relatifs depuis la racine -->
+
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Boutique — My Candy's</title>
 <meta name="description" content="Tout le catalogue My Candy's : bonbons US, sodas viraux, chips épicées, chocolats et éditions limitées. Filtre par catégorie, marque, promos et nouveautés.">
@@ -78,7 +80,7 @@
 </style>
 </head>
 <body data-nav="">
-<script>(function(){var m={boissons:'boissons',sales:'sales',sucres:'sucres',surgele:'surgele',divers:'divers',bestsellers:'bestsellers',nouveautes:'nouveautes',promos:'promos','mini-prix':'mini-prix','anti-gaspi':'anti-gaspi'};var c=new URLSearchParams(location.search).get('c');if(c&&m[c])document.body.setAttribute('data-nav',m[c]);})();</script>
+<script>(function(){var m={boissons:'boissons',sales:'sales',sucres:'sucres',surgele:'surgele',divers:'divers',bestsellers:'bestsellers',nouveautes:'nouveautes',promos:'promos','mini-prix':'mini-prix','anti-gaspi':'anti-gaspi'};var _ps=location.pathname.replace(/^\/+|\/+$/g,'').split('/');var c=(_ps[0]==='boutique'&&_ps[1]&&_ps[1]!=='marque'&&_ps[1]!=='rayon')?decodeURIComponent(_ps[1]):new URLSearchParams(location.search).get('c');if(c&&m[c])document.body.setAttribute('data-nav',m[c]);})();</script>
 
 <div class="shop-hero">
   <div class="shop-hero-in">
@@ -169,14 +171,22 @@
   };
   var SUBLABELS = { gum: 'Chewing-gum & sucettes', chamallow: 'Chamallow', barbeapapa: 'Barbe à papa', popcorn: 'Pop-corn', biscuit: 'Biscuits', jelly: 'Gelées & gummies', mochi: 'Mochi', barres: 'Barres chocolatées', peanut: 'Beurre de cacahuète', dubai: 'Chocolat de Dubaï', chips: 'Chips & crackers', takis: 'Takis & snacks épicés', jerky: 'Beef jerky', ramen: 'Ramen & nouilles', americaine: 'Cuisine américaine', sauce: 'Sauces & dips', salsa: 'Salsa', chamoy: 'Chamoy', energy: 'Énergisantes', sodas: 'Sodas viraux', the: 'Thé glacé', slush: 'Slushies', eau: 'Eaux aromatisées', jus: 'Jus de fruits', bubbletea: 'Bubble tea', mogu: 'Mogu Mogu' };
   var params = new URLSearchParams(location.search);
+  // URLs propres : /boutique/<collection> · /boutique/marque/<marque> · /boutique/rayon/<rayon> (repli sur ?c=/?b=/?sub=)
+  var _pseg = location.pathname.replace(/^\/+|\/+$/g, '').split('/');
+  var _pcat = null, _psub = null, _pbrand = null;
+  if (_pseg[0] === 'boutique' && _pseg[1]) {
+    if (_pseg[1] === 'marque' && _pseg[2]) _pbrand = decodeURIComponent(_pseg[2]);
+    else if (_pseg[1] === 'rayon' && _pseg[2]) _psub = decodeURIComponent(_pseg[2]);
+    else _pcat = decodeURIComponent(_pseg[1]);
+  }
   var st = { cat: 'all', brand: 'all', promo: false, nouv: false, best: false, sweet: false, sort: 'pop', q: '', sub: '' };
-  var subP = params.get('sub'); if (subP && SUBS[subP]) st.sub = subP;
+  var subP = _psub || params.get('sub'); if (subP && SUBS[subP]) st.sub = subP;
   var PAGE_SIZE = 30, page = 1;
   var HERO_IMGS = ['kinder-creamy', 'monster-punch', 'nerds', 'pickle', 'reeses', 'samyang'];
 
-  var b = params.get('b'); if (b) st.brand = b;
+  var b = _pbrand || params.get('b'); if (b) st.brand = b;
   var q = params.get('q'); if (q) st.q = q;
-  var c = params.get('c');
+  var c = _pcat || params.get('c');
   var TITLES = {
     'boissons': ['Boissons 🥤', 'Sodas viraux, énergisantes et boissons du monde entier.'],
     'sales': ['Snacks salés 🌶️', 'Chips, Takis, ramen et snacks épicés qui cartonnent.'],

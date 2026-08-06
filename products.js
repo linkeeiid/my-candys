@@ -915,7 +915,7 @@ window.MC = window.MC || {};
     var wished = (window.MCWish && MCWish.has(p.id));
     return '' +
       '<article class="mc-prod" data-id="' + esc(p.id) + '">' +
-        '<a href="produit?id=' + encodeURIComponent(p.id) + '" class="mc-prod-imglink" aria-label="' + esc(p.name) + '">' +
+        '<a href="produit/' + encodeURIComponent(p.id) + '" class="mc-prod-imglink" aria-label="' + esc(p.name) + '">' +
           '<div class="mc-prod-img" style="background:' + (p.img ? '#fff' : p.tint) + '">' +
             (p.img ? '<img class="mc-prod-photo" src="' + esc(p.img) + '" alt="' + esc(p.name) + '" loading="lazy" decoding="async">' : '<div class="mc-stripes"></div>') +
             (noPrice ? '<div class="mc-price" style="font-size:.82em">Bientôt</div>' : '<div class="mc-price">' + MC.money(p.price) + '</div>') +
@@ -924,7 +924,7 @@ window.MC = window.MC || {};
         '</a>' +
         '<button class="mc-heart' + (wished ? ' is-on' : '') + '" data-wish="' + esc(p.id) + '" title="Ajouter aux favoris" aria-label="Ajouter aux favoris">' + (wished ? '❤️' : '🤍') + '</button>' +
         '<div class="mc-prod-body">' +
-          '<a href="produit?id=' + encodeURIComponent(p.id) + '" class="mc-pname">' + esc(p.name) + '</a>' +
+          '<a href="produit/' + encodeURIComponent(p.id) + '" class="mc-pname">' + esc(p.name) + '</a>' +
           '<div class="mc-stars"><span>★★★★★</span><span>' + (p.reviews ? '(' + p.reviews + ')' : '') + '</span></div>' +
           (p.old ? '<div class="mc-old">' + MC.money(p.old) + '</div>' : '') +
         '</div>' +
@@ -938,19 +938,19 @@ window.MC = window.MC || {};
   // pointe sur le nom catalogue "Monster". Les marques pas encore au catalogue
   // affichent un message "bientôt" dans la boutique.
   MC.LOGOS = [
-    { name:'Coca-Cola',     src:'assets/logos/coca.png',       href:'boutique?b=Coca-Cola' },
-    { name:'Takis',         src:'assets/logos/takis.png',      href:'boutique?b=Takis' },
-    { name:'Monster Energy',src:'assets/logos/monster.webp',   href:'boutique?b=Monster' },
-    { name:'Fanta',         src:'assets/logos/fanta.png',      href:'boutique?b=Fanta' },
-    { name:'Kinder',        src:'assets/logos/kinder.png',     href:'boutique?b=Kinder' },
-    { name:'Pringles',      src:'assets/logos/pringles.png',   href:'boutique?b=Pringles' },
-    { name:'Red Bull',      src:'assets/logos/redbull.png',    href:'boutique?b=Red%20Bull' },
-    { name:'KitKat',        src:'assets/logos/kitkat.png',     href:'boutique?b=KitKat' },
-    { name:'7 Up',          src:'assets/logos/7up.png',        href:'boutique?b=7%20Up' },
-    { name:"Reese's",       src:'assets/logos/reeses.png',     href:"boutique?b=Reese's" },
-    { name:'Samyang',       src:'assets/logos/samyang.png',    href:'boutique?b=Samyang' },
-    { name:'Calypso',       src:'assets/logos/calypso.png',    href:'boutique?b=Calypso' },
-    { name:'Feastables',    src:'assets/logos/feastables.png', href:'boutique?b=Feastables' },
-    { name:"Jack Link's",   src:'assets/logos/jacklinks.png',  href:"boutique?b=Jack%20Link's" }
+    { name:'Coca-Cola',     src:'assets/logos/coca.png',       href:'boutique/marque/Coca-Cola' },
+    { name:'Takis',         src:'assets/logos/takis.png',      href:'boutique/marque/Takis' },
+    { name:'Monster Energy',src:'assets/logos/monster.webp',   href:'boutique/marque/Monster' },
+    { name:'Fanta',         src:'assets/logos/fanta.png',      href:'boutique/marque/Fanta' },
+    { name:'Kinder',        src:'assets/logos/kinder.png',     href:'boutique/marque/Kinder' },
+    { name:'Pringles',      src:'assets/logos/pringles.png',   href:'boutique/marque/Pringles' },
+    { name:'Red Bull',      src:'assets/logos/redbull.png',    href:'boutique/marque/Red%20Bull' },
+    { name:'KitKat',        src:'assets/logos/kitkat.png',     href:'boutique/marque/KitKat' },
+    { name:'7 Up',          src:'assets/logos/7up.png',        href:'boutique/marque/7%20Up' },
+    { name:"Reese's",       src:'assets/logos/reeses.png',     href:"boutique/marque/Reese's" },
+    { name:'Samyang',       src:'assets/logos/samyang.png',    href:'boutique/marque/Samyang' },
+    { name:'Calypso',       src:'assets/logos/calypso.png',    href:'boutique/marque/Calypso' },
+    { name:'Feastables',    src:'assets/logos/feastables.png', href:'boutique/marque/Feastables' },
+    { name:"Jack Link's",   src:'assets/logos/jacklinks.png',  href:"boutique/marque/Jack%20Link's" }
   ];
 })();

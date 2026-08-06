@@ -227,9 +227,9 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 <!-- Hero carrousel -->
 <div class="mc-hero" id="mc-hero">
   <div class="mc-hero-track" id="mc-hero-track">
-    <a href="box?id=box-anti-gaspi"><picture><source media="(max-width:768px)" srcset="assets/banners/box-anti-gaspi-mobile.png"><img src="assets/banners/box-anti-gaspi.png" alt="My Candy's — Box Anti-Gaspi" fetchpriority="high"></picture></a>
-    <a href="boutique?c=promos"><picture><source media="(max-width:768px)" srcset="assets/banners/promo-site-mobile.png"><img src="assets/banners/promo-site.png" alt="-26% sur tout le site — Code Candysummer26" loading="lazy"></picture></a>
-    <a href="boutique?c=nouveautes"><picture><source media="(max-width:768px)" srcset="assets/banners/kinder-minecraft-mobile.png"><img src="assets/banners/kinder-minecraft.png" alt="Kinder Joy Minecraft — 28 surprises à collectionner" loading="lazy"></picture></a>
+    <a href="box/box-anti-gaspi"><picture><source media="(max-width:768px)" srcset="assets/banners/box-anti-gaspi-mobile.png"><img src="assets/banners/box-anti-gaspi.png" alt="My Candy's — Box Anti-Gaspi" fetchpriority="high"></picture></a>
+    <a href="boutique/promos"><picture><source media="(max-width:768px)" srcset="assets/banners/promo-site-mobile.png"><img src="assets/banners/promo-site.png" alt="-26% sur tout le site — Code Candysummer26" loading="lazy"></picture></a>
+    <a href="boutique/nouveautes"><picture><source media="(max-width:768px)" srcset="assets/banners/kinder-minecraft-mobile.png"><img src="assets/banners/kinder-minecraft.png" alt="Kinder Joy Minecraft — 28 surprises à collectionner" loading="lazy"></picture></a>
   </div>
   <div class="mc-dots" id="mc-hero-dots"></div>
 </div>
@@ -254,10 +254,10 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 
   <div class="mc-catwrap">
     <div class="mc-cat4">
-      <a href="boutique?c=nouveautes"><img src="assets/categories/new.jpg" alt="Nouveautés" loading="lazy"></a>
-      <a href="boutique?c=promos"><img src="assets/categories/promos.jpg" alt="Promos" loading="lazy"></a>
+      <a href="boutique/nouveautes"><img src="assets/categories/new.jpg" alt="Nouveautés" loading="lazy"></a>
+      <a href="boutique/promos"><img src="assets/categories/promos.jpg" alt="Promos" loading="lazy"></a>
       <a href="mystery-box"><img src="assets/categories/box.jpg" alt="Mystery Box" loading="lazy"></a>
-      <a href="boutique?c=pick-n-mix"><img src="assets/categories/picknmix.jpg" alt="Pick'n'Mix" loading="lazy"></a>
+      <a href="boutique/pick-n-mix"><img src="assets/categories/picknmix.jpg" alt="Pick'n'Mix" loading="lazy"></a>
     </div>
     <div class="mc-trust">
       <div class="mc-trust-item"><span>🔒</span><div><b>Paiement 100% sécurisé</b><small>Carte bancaire · Visa · Mastercard</small></div></div>
@@ -277,7 +277,7 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
   <section id="bestsellers" class="mc-sec">
     <div class="mc-sechead">
       <div><div class="mc-k" style="margin-left:22px">nos petits chouchous</div><h2 class="mc-h2">🩷 Nos bestsellers</h2></div>
-      <a href="boutique?c=bestsellers" class="mc-seeall">Afficher tout →</a>
+      <a href="boutique/bestsellers" class="mc-seeall">Afficher tout →</a>
     </div>
     <div id="row-best" class="mc-row mc-prow"></div>
     <div style="height:2px;background:#F1DAE7;border-radius:2px;margin-top:6px"></div>
@@ -286,7 +286,7 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
   <section id="nouveautes" class="mc-sec" style="padding-bottom:78px;z-index:6">
     <div class="mc-sechead">
       <div><div class="mc-k" style="color:#0FA9B8">fraîchement débarqués</div><h2 class="mc-h2">⭐ Nos nouveautés</h2></div>
-      <a href="boutique?c=nouveautes" class="mc-seeall">Afficher tout →</a>
+      <a href="boutique/nouveautes" class="mc-seeall">Afficher tout →</a>
     </div>
     <div id="row-new" class="mc-row mc-prow"></div>
   </section>
@@ -364,7 +364,7 @@ body.mc-noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
   });
   fill('mc-boxes', MC.BOXES.slice(0, 3).map(function (p) {
     var b = MC.badge(p);
-    return '<a class="mc-mbox" href="box?id=' + p.id + '"><div class="mc-mbox-img" style="background:#fff">' + (p.img ? '<img src="' + p.img + '" alt="' + MC.esc(p.name) + '" loading="lazy" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">' : '<div class="mc-stripes"></div>') +
+    return '<a class="mc-mbox" href="box/' + p.id + '"><div class="mc-mbox-img" style="background:#fff">' + (p.img ? '<img src="' + p.img + '" alt="' + MC.esc(p.name) + '" loading="lazy" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">' : '<div class="mc-stripes"></div>') +
       '<div class="mc-price" style="top:10px;left:10px;font-size:13px;padding:5px 11px">' + MC.money(p.price) + '</div>' +
       (b ? '<span class="mc-badge" style="bottom:8px;background:' + b.bg + ';color:' + b.color + '">' + b.text + '</span>' : '') +
       '</div><div class="mc-mbox-body"><b>' + MC.esc(p.name) + '</b>' +

@@ -210,10 +210,10 @@
     var id = MC.esc(l.id);
     return '' +
       '<div class="pan-line" data-id="' + id + '">' +
-        '<a href="produit?id=' + encodeURIComponent(l.id) + '" class="pan-line-img" style="background:' + (img ? '#fff' : tint) + '" aria-label="' + MC.esc(l.name) + '">' + (img ? '<img src="' + MC.esc(img) + '" alt="" loading="lazy" style="width:100%;height:100%;object-fit:contain;padding:6px">' : '<div class="mc-stripes"></div>') + '</a>' +
+        '<a href="produit/' + encodeURIComponent(l.id) + '" class="pan-line-img" style="background:' + (img ? '#fff' : tint) + '" aria-label="' + MC.esc(l.name) + '">' + (img ? '<img src="' + MC.esc(img) + '" alt="" loading="lazy" style="width:100%;height:100%;object-fit:contain;padding:6px">' : '<div class="mc-stripes"></div>') + '</a>' +
         '<div class="pan-line-body">' +
           (brand ? '<div class="pan-line-brand">' + MC.esc(brand) + '</div>' : '') +
-          '<a href="produit?id=' + encodeURIComponent(l.id) + '" class="pan-line-name">' + MC.esc(l.name) + '</a>' +
+          '<a href="produit/' + encodeURIComponent(l.id) + '" class="pan-line-name">' + MC.esc(l.name) + '</a>' +
           '<div class="pan-line-unit">' + MC.money(l.price) + ' / unité' + (l.old ? '<span class="pan-line-old">' + MC.money(l.old) + '</span>' : '') + '</div>' +
           '<div class="pan-line-ctrls">' +
             '<div class="mc-step"><button type="button" data-dec="' + id + '" aria-label="Diminuer la quantité">−</button><span>' + l.qty + '</span><button type="button" data-inc="' + id + '" aria-label="Augmenter la quantité">+</button></div>' +

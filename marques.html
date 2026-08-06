@@ -98,7 +98,7 @@
     { name: "Jack Link's", logo: 'assets/logos/jacklinks.png', count: 3, b: null }
   ];
   document.getElementById('mq-grid').innerHTML = BRANDS.map(function (x) {
-    var href = 'boutique?b=' + encodeURIComponent(x.b || x.name);
+    var href = 'boutique/marque/' + encodeURIComponent(x.b || x.name);
     var logo = x.logo
       ? '<img src="' + x.logo + '" alt="' + MC.esc(x.name) + '" loading="lazy" decoding="async">'
       : '<div style="font-weight:800;font-size:22px;letter-spacing:-.5px;color:' + (x.tone || '#2A0A1C') + '">' + MC.esc(x.name) + '</div>';

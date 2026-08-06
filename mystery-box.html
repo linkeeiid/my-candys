@@ -256,7 +256,7 @@
     host.innerHTML = MC.BOXES.map(function (p) {
       var b = MC.badge(p);
       return '' +
-        '<a class="mb-card' + (p.pop ? ' pop' : '') + '" href="box?id=' + MC.esc(p.id) + '">' +
+        '<a class="mb-card' + (p.pop ? ' pop' : '') + '" href="box/' + MC.esc(p.id) + '">' +
           '<div class="mb-card-img" style="background:#fff">' +
             (p.img ? '<img src="' + p.img + '" alt="' + MC.esc(p.name) + '" loading="lazy" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">' : '<div class="mc-stripes"></div>') +
             (p.ribbon ? '<div class="mb-ribbon">' + p.ribbon + '</div>' : '') +
