@@ -64,7 +64,6 @@
           '<div class="mc-dropcol"><div style="color:#0FA9B8">🧊 Frais</div><a href="boutique?sub=slush">Slushies</a><a href="boutique?sub=eau">Eaux aromatisées</a><a href="boutique?sub=jus">Jus de fruits</a><a href="boutique?sub=bubbletea">Bubble tea</a></div>' +
         '</div>' +
       '</div>' +
-      '<a href="boutique?c=squishy" class="mc-navlink mc-navlink--purple' + act('squishy') + '">Squishy 🌈</a>' +
       '<a href="mystery-box" class="mc-navlink' + act('mystery') + '">Mystery Box 📦</a>' +
       '<a href="/#tiktok" class="mc-navlink">TikTok 🔥</a>' +
       '<a href="boutique?c=anti-gaspi" class="mc-navlink mc-navlink--green' + act('anti-gaspi') + '">Anti-Gaspi ♻️</a>' +
@@ -98,7 +97,6 @@
     { t: 'Surgelé 🧊', h: 'boutique?c=surgele' },
     { t: 'Boissons', h: 'boutique?c=boissons', all: 'Toutes les boissons', sub: [
       ['Énergisantes (Prime, Monster)', 'boutique?sub=energy'], ['Sodas viraux', 'boutique?sub=sodas'], ['Thé glacé', 'boutique?sub=the'], ['Slushies', 'boutique?sub=slush'], ['Eaux aromatisées', 'boutique?sub=eau'], ['Jus de fruits', 'boutique?sub=jus'], ['Bubble tea', 'boutique?sub=bubbletea'] ] },
-    { t: 'Squishy 🌈', h: 'boutique?c=squishy' },
     { t: 'Mystery Box 📦', h: 'mystery-box' },
     { t: 'TikTok 🔥', h: '/#tiktok' },
     { t: 'Anti-Gaspi ♻️', h: 'boutique?c=anti-gaspi' },
