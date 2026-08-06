@@ -825,7 +825,7 @@ async function rateLimited(env, request, bucket, max, windowSec) {
 // Les moyens de paiement (carte, wallets) sont ceux activés dans le dashboard Stripe.
 async function stripeCreateSession(env, { reference, order, couponId }) {
   const p = [];
-  p.push(['ui_mode', 'embedded_page']);
+  p.push(['ui_mode', 'embedded']); // formulaire de paiement intégré à la page (requis par initEmbeddedCheckout) — active aussi Apple Pay / Google Pay quand le client est éligible
   p.push(['mode', 'payment']);
   p.push(['redirect_on_completion', 'never']);
   p.push(['client_reference_id', reference]);
