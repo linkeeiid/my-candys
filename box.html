@@ -74,7 +74,29 @@
     if (!b || !b.box) { b = (MC.BOXES && MC.BOXES[0]) || null; }
     if (!b) { document.getElementById('bx').innerHTML = '<p style="padding:40px">Box introuvable. <a href="mystery-box">Voir toutes les box →</a></p>'; return; }
 
-    document.title = b.name + " — My Candy's";
+    // --- SEO dynamique par box : titre, description, canonical, Open Graph + schema Product (prix/note = rich snippets Google) ---
+    (function setBoxSeo() {
+      function setMeta(sel, val) { var el = document.head.querySelector(sel); if (!el) { var m = sel.match(/\[(name|property)="([^"]+)"\]/); if (!m) return; el = document.createElement('meta'); el.setAttribute(m[1], m[2]); document.head.appendChild(el); } el.setAttribute('content', val); }
+      var full = b.name + " — Mystery Box de bonbons & snacks | My Candy's";
+      var desc = String(b.desc || '').replace(/<[^>]*>/g, '').trim() || ('La ' + b.name + " My Candy's : une sélection surprise de bonbons, snacks et sodas d'une valeur toujours supérieure au prix. Livraison en France.");
+      if (desc.length > 300) desc = desc.slice(0, 297) + '…';
+      var url = 'https://mycandys.fr/box/' + encodeURIComponent(b.id);
+      var img = b.img ? ('https://mycandys.fr/' + String(b.img).replace(/^\/+/, '')) : 'https://mycandys.fr/assets/banners/promo-site.jpg';
+      document.title = full;
+      setMeta('meta[name="description"]', desc);
+      setMeta('meta[property="og:title"]', full);
+      setMeta('meta[property="og:description"]', desc);
+      setMeta('meta[property="og:url"]', url);
+      setMeta('meta[property="og:image"]', img);
+      var can = document.head.querySelector('link[rel="canonical"]'); if (can) can.setAttribute('href', url);
+      var ld = {
+        "@context": "https://schema.org", "@type": "Product", "name": b.name, "image": img, "description": desc,
+        "brand": { "@type": "Brand", "name": "My Candy's" },
+        "offers": { "@type": "Offer", "price": String(b.price), "priceCurrency": "EUR", "availability": "https://schema.org/InStock", "url": url }
+      };
+      if (b.reviews) ld.aggregateRating = { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": String(b.reviews) };
+      var s = document.createElement('script'); s.type = 'application/ld+json'; s.textContent = JSON.stringify(ld); document.head.appendChild(s);
+    })();
     var badge = MC.badge ? MC.badge(b) : null;
     var qty = 1;
     var root = document.getElementById('bx');

@@ -217,6 +217,40 @@
   if (st.brand !== 'all') { document.getElementById('shop-crumb').textContent = st.brand; }
   if (st.sub) { var _sl = SUBLABELS[st.sub] || st.sub; document.getElementById('shop-title').textContent = _sl; document.getElementById('shop-crumb').textContent = _sl; }
 
+  // --- SEO dynamique : chaque catégorie / rayon / marque = une page indexable ciblée (title, description, canonical, Open Graph) ---
+  var SEO = {
+    'sucres':      ['Bonbons américains & sucreries virales', 'Bonbons US, chocolats et sucreries importés du monde entier : Nerds, Kinder, chocolat de Dubaï… Livrés partout en France.'],
+    'sales':       ['Snacks salés & chips épicées américaines', 'Takis, chips américaines, ramen et snacks salés viraux. Le meilleur du snacking US et asiatique, livré en France.'],
+    'boissons':    ['Sodas & boissons américaines virales', 'Sodas US, Prime, Monster et boissons rares vues sur TikTok. Toutes tes boissons virales importées, livrées en France.'],
+    'surgele':     ['Surgelé — glaces, mochis & douceurs', 'Glaces, mochis glacés et douceurs à conserver au froid. Nouvel arrivage surgelé chez My Candy\'s.'],
+    'divers':      ['Divers — pépites gourmandes du monde', 'Les pépites gourmandes qui ne rentrent nulle part ailleurs : éditions limitées et surprises importées.'],
+    'bestsellers': ['Bestsellers — nos bonbons & snacks les plus vendus', 'Les bonbons, snacks et sodas préférés de la communauté My Candy\'s. Les incontournables à ne pas rater.'],
+    'nouveautes':  ['Nouveautés — bonbons & snacks américains', 'Les derniers bonbons, snacks et boissons virales fraîchement débarqués chez My Candy\'s. Nouveautés chaque semaine.'],
+    'promos':      ['Promos — bonbons & snacks américains en réduction', 'Toutes les promos du moment sur les bonbons, snacks et sodas américains. Le plein de gourmandises à prix réduit.'],
+    'mini-prix':   ['Mini Prix — bonbons & snacks pas chers', 'Les bonbons, snacks et boissons à petit prix chez My Candy\'s. Se faire plaisir sans se ruiner.'],
+    'anti-gaspi':  ['Anti-Gaspi — bonbons & snacks à petit prix', 'Tes gourmandises préférées à prix mini, à savourer vite. Même qualité, même plaisir, plus malin pour ton budget et la planète.'],
+    'pick-n-mix':  ['Pick\'n\'Mix — compose ton mélange de bonbons', 'Compose ton propre mélange de bonbons My Candy\'s. Bientôt disponible !']
+  };
+  (function setShopSeo() {
+    function setMeta(sel, val) { var el = document.head.querySelector(sel); if (!el) { var m = sel.match(/\[(name|property)="([^"]+)"\]/); if (!m) return; el = document.createElement('meta'); el.setAttribute(m[1], m[2]); document.head.appendChild(el); } el.setAttribute('content', val); }
+    var t, d, canonPath;
+    if (st.sub) { var sl = SUBLABELS[st.sub] || st.sub; t = sl + ' — bonbons & snacks importés'; d = 'Notre sélection ' + sl.toLowerCase() + ' chez My Candy\'s : produits viraux importés du monde entier, livrés partout en France.'; canonPath = '/boutique/rayon/' + encodeURIComponent(st.sub); }
+    else if (st.brand && st.brand !== 'all') { t = st.brand + ' — bonbons, snacks & boissons'; d = 'Tous les produits ' + st.brand + ' chez My Candy\'s : bonbons, snacks et boissons importés. Livraison en France.'; canonPath = '/boutique/marque/' + encodeURIComponent(st.brand); }
+    else if (c && SEO[c]) { t = SEO[c][0]; d = SEO[c][1]; canonPath = '/boutique/' + c; }
+    else if (c && CATS.indexOf(c) >= 0) { t = c + ' — bonbons & snacks américains'; d = 'Toute la catégorie ' + c + ' chez My Candy\'s : produits viraux importés du monde entier, livrés en France.'; canonPath = '/boutique/' + encodeURIComponent(c); }
+    else { return; } // page boutique par défaut → garde le <title>/description/canonical statiques
+    var full = t + ' | My Candy\'s';
+    var url = 'https://mycandys.fr' + canonPath;
+    document.title = full;
+    setMeta('meta[name="description"]', d);
+    setMeta('meta[property="og:title"]', full);
+    setMeta('meta[property="og:description"]', d);
+    setMeta('meta[property="og:url"]', url);
+    setMeta('meta[name="twitter:title"]', full);
+    setMeta('meta[name="twitter:description"]', d);
+    var can = document.head.querySelector('link[rel="canonical"]'); if (can) can.setAttribute('href', url);
+  })();
+
   document.getElementById('shop-promo').checked = st.promo;
   document.getElementById('shop-new').checked = st.nouv;
   document.getElementById('shop-sort').value = st.sort;
