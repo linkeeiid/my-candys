@@ -621,7 +621,6 @@
   "use strict";
   var T={blue:'linear-gradient(135deg,#CFF3FF,#7FD8F0)',orange:'linear-gradient(135deg,#FFD9C4,#FF9E7A)',pink:'linear-gradient(135deg,#FFE3F1,#FF9ED8)',green:'linear-gradient(135deg,#E6FFCF,#B6F07F)',yellow:'linear-gradient(135deg,#FFEFC2,#FFC94D)',purple:'linear-gradient(135deg,#F3E6FF,#C9A0FF)',red:'linear-gradient(135deg,#FFE0DB,#FF9E93)',cyan:'linear-gradient(135deg,#DEF7FA,#8FE6F0)',brown:'linear-gradient(135deg,#EAD9C6,#C9A47A)'};
   var CATALOG=[
-    {id:'prime-blue',name:'Prime Blue Raspberry',price:3.49,tint:T.blue,init:8},
     {id:'takis-fuego',name:'Takis Fuego',price:4.90,tint:T.orange,init:5},
     {id:'monster-ultra',name:'Monster Ultra Paradise',price:2.49,tint:T.green,init:12},
     {id:'fanta-grape',name:'Fanta Grape (USA)',price:2.90,tint:T.purple,init:3},
@@ -633,9 +632,9 @@
   ];
   var money=function(n){return n.toFixed(2).replace('.',',')+' €';};
   var byId={};CATALOG.forEach(function(p){byId[p.id]=p;});
-  var CATS={'prime-blue':'Sodas','takis-fuego':'Snacks','monster-ultra':'Sodas','fanta-grape':'Sodas','kinder-bueno':'Chocolats','sourpatch':'Bonbons','samyang':'Snacks','nerds':'Bonbons','chamoy':'Épicé'};
+  var CATS={'takis-fuego':'Snacks','monster-ultra':'Sodas','fanta-grape':'Sodas','kinder-bueno':'Chocolats','sourpatch':'Bonbons','samyang':'Snacks','nerds':'Bonbons','chamoy':'Épicé'};
   CATALOG.forEach(function(p){p.cat=CATS[p.id]||'Autres';p.active=true;});
-  var SOLD0={'prime-blue':42,'takis-fuego':57,'monster-ultra':63,'fanta-grape':20,'kinder-bueno':15,'sourpatch':38,'samyang':29,'nerds':12,'chamoy':8};
+  var SOLD0={'takis-fuego':57,'monster-ultra':63,'fanta-grape':20,'kinder-bueno':15,'sourpatch':38,'samyang':29,'nerds':12,'chamoy':8};
   var soldUnits={},prodSeq=1;
   /* Vrais codes actifs (source = Worker /create-checkout FIXED_PROMOS) */
   /* Codes système (câblés à des fonctions du site) : compteur affiché, non supprimables. */
@@ -650,7 +649,7 @@
   var TARGET=24,RP=6,revFilter='all';
   var reviews=[
     {prod:'takis-fuego',name:'Léa M.',rating:5,text:'Les meilleurs, ça pique juste ce qu\'il faut 🔥 je recommande !',date:'Aujourd\'hui',status:'pending'},
-    {prod:'prime-blue',name:'Yanis B.',rating:4,text:'Bon goût mais un peu cher pour la taille.',date:'Hier',status:'published'},
+    {prod:'monster-ultra',name:'Yanis B.',rating:4,text:'Bon goût mais un peu cher pour la taille.',date:'Hier',status:'published'},
     {prod:'samyang',name:'Camille D.',rating:5,text:'Trop bon le Samyang, livraison rapide en plus 🙌',date:'Hier',status:'published'},
     {prod:'chamoy',name:'Noah L.',rating:5,text:'Le kit chamoy est incroyable, parfait pour TikTok 🌶️',date:'Il y a 2 j',status:'pending'},
     {prod:'monster-ultra',name:'Inès R.',rating:3,text:'Correct mais je préfère la Mango Loco.',date:'Il y a 3 j',status:'published'},

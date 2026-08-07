@@ -38,11 +38,6 @@
    override Firebase /catalog/{id}.price s'il existe, sinon ce prix de base.
    ⚠️ Garder synchro si tu changes un prix dans products.js. */
 const BASE_PRICES = {
-  'prime-blue': 3.49,
-  'prime-ice': 3.49,
-  'prime-lemon': 3.49,
-  'prime-moon': 3.49,
-  'prime-straw': 3.49,
   'takis-fuego': 4.90,
   'takis-blue': 4.90,
   'takis-nitro': 4.90,

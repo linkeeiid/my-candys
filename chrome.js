@@ -60,7 +60,7 @@
       '<div class="mc-drop">' +
         '<a href="boutique/boissons" class="mc-navlink' + act('boissons') + '">Boissons ▾</a>' +
         '<div class="mc-dropmenu" style="min-width:520px">' +
-          '<div class="mc-dropcol"><div>🥤 Boissons</div><a href="boutique/rayon/energy">Énergisantes (Prime, Monster)</a><a href="boutique/rayon/sodas">Sodas viraux</a><a href="boutique/rayon/the">Thé glacé</a></div>' +
+          '<div class="mc-dropcol"><div>🥤 Boissons</div><a href="boutique/rayon/energy">Énergisantes (Monster, Red Bull)</a><a href="boutique/rayon/sodas">Sodas viraux</a><a href="boutique/rayon/the">Thé glacé</a></div>' +
           '<div class="mc-dropcol"><div style="color:#0FA9B8">🧊 Frais</div><a href="boutique/rayon/slush">Slushies</a><a href="boutique/rayon/eau">Eaux aromatisées</a><a href="boutique/rayon/jus">Jus de fruits</a><a href="boutique/rayon/bubbletea">Bubble tea</a></div>' +
         '</div>' +
       '</div>' +
@@ -96,7 +96,7 @@
       ['Chips & crackers', 'boutique/rayon/chips'], ['Takis & snacks épicés', 'boutique/rayon/takis'], ['Beef jerky', 'boutique/rayon/jerky'], ['Ramen & nouilles', 'boutique/rayon/ramen'], ['Cuisine américaine', 'boutique/rayon/americaine'], ['Sauces & dips', 'boutique/rayon/sauce'], ['Salsa', 'boutique/rayon/salsa'], ['Chamoy', 'boutique/rayon/chamoy'] ] },
     { t: 'Surgelé 🧊', h: 'boutique/surgele' },
     { t: 'Boissons', h: 'boutique/boissons', all: 'Toutes les boissons', sub: [
-      ['Énergisantes (Prime, Monster)', 'boutique/rayon/energy'], ['Sodas viraux', 'boutique/rayon/sodas'], ['Thé glacé', 'boutique/rayon/the'], ['Slushies', 'boutique/rayon/slush'], ['Eaux aromatisées', 'boutique/rayon/eau'], ['Jus de fruits', 'boutique/rayon/jus'], ['Bubble tea', 'boutique/rayon/bubbletea'] ] },
+      ['Énergisantes (Monster, Red Bull)', 'boutique/rayon/energy'], ['Sodas viraux', 'boutique/rayon/sodas'], ['Thé glacé', 'boutique/rayon/the'], ['Slushies', 'boutique/rayon/slush'], ['Eaux aromatisées', 'boutique/rayon/eau'], ['Jus de fruits', 'boutique/rayon/jus'], ['Bubble tea', 'boutique/rayon/bubbletea'] ] },
     { t: 'Mystery Box 📦', h: 'mystery-box' },
     { t: 'TikTok 🔥', h: '/#tiktok' },
     { t: 'Anti-Gaspi ♻️', h: 'boutique/anti-gaspi' },
