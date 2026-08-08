@@ -789,7 +789,12 @@
   function fmtHM(ts){try{return new Date(ts).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});}catch(e){return '';}}
   function fmtDT(ts){if(!ts)return '';try{var d=new Date(ts);return d.toLocaleDateString('fr-FR')+' '+fmtHM(ts);}catch(e){return '';}}
   function ocolor(s){var h=0;s=String(s||'');for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;var C=['#E01784','#2AA7E0','#3E9E7A','#8B5FC0','#C08A3E','#B0553A','#0E9AAC'];return C[h%C.length];}
-  function mapOrder(o,key){var cust=o.customer||{};var st=o.status==='expediee'?'expediee':(o.paid?'nouvelle':'attente');
+  function mapOrder(o,key){var cust=o.customer||{};
+    var st;
+    if(o.status==='expediee')st='expediee';
+    else if(!o.paid)st='attente';
+    else if(o.status==='en_traitement'||o.status==='traitee')st=o.status; // préserver les statuts back-office
+    else st='nouvelle';
     return {id:o.reference||key,ref:o.reference||key,time:fmtHM(o.ts),ts:o.ts||0,
       cust:{n:(cust.name||cust.email||'Client'),e:cust.email||'',s:cust.addr||'',z:((cust.zip||'')+' '+(cust.city||'')).trim(),c:ocolor(cust.email)},
       items:(o.items||[]).map(function(i){return {id:i.id,qty:i.qty||1,name:i.name||i.id,price:(i.price!=null?i.price:0)};}),
@@ -1252,7 +1257,7 @@
   document.addEventListener('click',function(e){var g=e.target.closest('[data-goto]');if(g)setView(g.getAttribute('data-goto'));});
   $('tbody').addEventListener('click',function(e){var s=e.target.closest('[data-sell]');if(s){sellInStore(s.getAttribute('data-sell'));return;}var b=e.target.closest('[data-buy]');if(b)buyOnline(b.getAttribute('data-buy'));});
   $('orders').addEventListener('click',function(e){var a=e.target.closest('[data-advance]');if(a){advanceOrder(a.getAttribute('data-advance'));return;}var s=e.target.closest('[data-ship]');if(s){shipOrder(s.getAttribute('data-ship'));return;}var h=e.target.closest('.order-head');if(h)toggleOrder(h.parentElement.getAttribute('data-order'));});
-  $('orders').addEventListener('click',function(e){var b=e.target.closest('[data-ostatus]');if(!b)return;var ref=b.getAttribute('data-ref'),st=b.getAttribute('data-ostatus');if(!ADMINKEY)return;b.disabled=true;
+  $('orders').addEventListener('click',function(e){var b=e.target.closest('[data-ostatus]');if(!b)return;var ref=b.getAttribute('data-ref'),st=b.getAttribute('data-ostatus');if(!ADMINKEY){toast('Connecte-toi en admin pour changer le statut','warn');return;}b.disabled=true;
     fetch(MCAPI+'/order/status',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+ADMINKEY},body:JSON.stringify({reference:ref,status:st})}).then(function(r){return r.json();}).then(function(d){if(d&&d.ok){loadReal();toast('Statut : '+((OST[st]&&OST[st][1])||st),'good');}else{b.disabled=false;toast('Erreur','warn');}}).catch(function(){b.disabled=false;});});
   $('ofilters').addEventListener('click',function(e){var c=e.target.closest('[data-f]');if(!c)return;document.querySelectorAll('#ofilters .chip').forEach(function(x){x.classList.remove('active');});c.classList.add('active');filterVal=c.getAttribute('data-f');renderOrders();});
   $('search').addEventListener('input',function(){searchQ=this.value.trim().toLowerCase();if(curView==='products'){renderProducts();return;}renderStock();renderOrders();});
