@@ -1151,7 +1151,7 @@ export default {
           '<h3 style="color:#E01784">Nouveau message — site My Candy\'s</h3>' +
           '<p><b>De :</b> ' + esc(name) + ' &lt;' + esc(email) + '&gt;</p>' +
           '<p style="white-space:pre-wrap;border-left:3px solid #FF2E9A;padding-left:12px">' + esc(message) + '</p></div>';
-        await brevoSendEmail(env, { toEmail: env.TO_EMAIL, subject: 'Contact site — ' + (name || email), html: html, replyTo: email });
+        await brevoSendEmail(env, { toEmail: 'Mycandys.frejus@gmail.com', subject: 'Contact site — ' + (name || email), html: html, replyTo: email });
         await fbPush(env, 'messages', { name: name, email: email, message: message, ts: Date.now() });
         return json({ ok: true }, 200, allow);
       }
