@@ -78,7 +78,7 @@
     (function setBoxSeo() {
       function setMeta(sel, val) { var el = document.head.querySelector(sel); if (!el) { var m = sel.match(/\[(name|property)="([^"]+)"\]/); if (!m) return; el = document.createElement('meta'); el.setAttribute(m[1], m[2]); document.head.appendChild(el); } el.setAttribute('content', val); }
       var full = b.name + " — Mystery Box de bonbons & snacks | My Candy's";
-      var desc = String(b.desc || '').replace(/<[^>]*>/g, '').trim() || ('La ' + b.name + " My Candy's : une sélection surprise de bonbons, snacks et sodas d'une valeur toujours supérieure au prix. Livraison en France.");
+      var desc = String(b.desc || '').replace(/<[^>]*>/g, '').trim() || ('La ' + b.name + " My Candy's : une sélection surprise de bonbons, snacks et sodas d'une valeur toujours supérieure au prix. Livraison en France et dans le monde entier.");
       if (desc.length > 300) desc = desc.slice(0, 297) + '…';
       var url = 'https://mycandys.fr/box/' + encodeURIComponent(b.id);
       var img = b.img ? ('https://mycandys.fr/' + String(b.img).replace(/^\/+/, '')) : 'https://mycandys.fr/assets/banners/promo-site.jpg';
