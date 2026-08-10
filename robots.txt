@@ -5,6 +5,12 @@ Allow: /
 Disallow: /gestion
 Disallow: /console
 Disallow: /catalogue
+# Pages transactionnelles : aucune valeur en recherche, elles gaspillent le budget d'exploration
+Disallow: /panier
+Disallow: /checkout
+Disallow: /compte
+Disallow: /favoris
+Disallow: /suivi-commande
 
 # --- Bots IA explicitement autorisés ---
 User-agent: GPTBot
