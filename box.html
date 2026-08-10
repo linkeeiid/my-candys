@@ -9,7 +9,7 @@
 <meta name="description" content="Nos Mystery Box My Candy's : une sélection surprise de bonbons, snacks et sodas, d'une valeur toujours supérieure au prix. Le colis parfait à unboxer.">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="assets/logo.png">
-<link rel="canonical" href="https://mycandys.fr/box">
+<!-- canonical ajouté dynamiquement par le JS (URL réelle : /box/<id>) ; absent = Google auto-canonise l'URL de la page -->
 <meta property="og:type" content="product">
 <meta property="og:site_name" content="My Candy's">
 <meta property="og:title" content="Mystery Box — My Candy's">
@@ -88,7 +88,7 @@
       setMeta('meta[property="og:description"]', desc);
       setMeta('meta[property="og:url"]', url);
       setMeta('meta[property="og:image"]', img);
-      var can = document.head.querySelector('link[rel="canonical"]'); if (can) can.setAttribute('href', url);
+      var can = document.head.querySelector('link[rel="canonical"]'); if (!can) { can = document.createElement('link'); can.setAttribute('rel', 'canonical'); document.head.appendChild(can); } can.setAttribute('href', url);
       var ld = {
         "@context": "https://schema.org", "@type": "Product", "name": b.name, "image": img, "description": desc,
         "brand": { "@type": "Brand", "name": "My Candy's" },

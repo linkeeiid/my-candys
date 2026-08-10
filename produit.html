@@ -9,7 +9,7 @@
 <meta name="description" content="La fiche produit My Candy's : photo, note, prix, description gourmande et ajout au panier. Snacks viraux, sodas rares et éditions limitées importés du monde entier.">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="assets/logo.png">
-<link rel="canonical" href="https://mycandys.fr/produit">
+<!-- canonical ajouté dynamiquement par le JS (URL réelle du produit) ; absent = Google auto-canonise l'URL de la page -->
 <!-- Open Graph -->
 <meta property="og:type" content="product">
 <meta property="og:site_name" content="My Candy's">
@@ -466,7 +466,7 @@
     setMeta('meta[name="twitter:title"]', p.name + ' — My Candy\'s');
     setMeta('meta[name="twitter:description"]', desc);
     setMeta('meta[name="twitter:image"]', img);
-    var can = document.head.querySelector('link[rel="canonical"]'); if (can) can.setAttribute('href', url);
+    var can = document.head.querySelector('link[rel="canonical"]'); if (!can) { can = document.createElement('link'); can.setAttribute('rel', 'canonical'); document.head.appendChild(can); } can.setAttribute('href', url);
     /* Données structurées Product (prix + dispo) — SANS note/avis tant qu'il n'y a pas de vrais avis clients */
     var ld = {
       "@context": "https://schema.org",
