@@ -767,25 +767,49 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
   var sec = document.getElementById('co-upsell'), row = document.getElementById('co-ups-row');
   if (!sec || !row || !window.MC || !window.MCCart) return;
   var esc = MC.esc, money = MC.money;
-  function pick() {
+  // Tirage ALÉATOIRE PONDÉRÉ : varie à chaque visite, mais favorise ce qui COMPLÈTE le panier (donne envie)
+  function weightedPick(exclude) {
     var its = MCCart.items(), inCart = {}, cats = {};
     its.forEach(function (l) { inCart[l.id] = 1; if (l.cat) cats[l.cat] = 1; });
-    var all = (MC.PRODUCTS || []).filter(function (p) {
-      return p && p.img && p.price > 0 && p.available !== false && p.stock !== 0 && !p.box && !inCart[p.id];
+    var sweet = cats['Bonbons'] || cats['Chocolats'] || cats['Desserts'];
+    var salty = cats['Snacks'] || cats['Épicé'];
+    var drink = cats['Sodas'];
+    var pool = (MC.PRODUCTS || []).filter(function (p) {
+      return p && p.img && p.price > 0 && p.available !== false && p.stock !== 0 && !p.box && !inCart[p.id] && !(exclude && exclude[p.id]);
+    }).map(function (p) {
+      var w = 1;
+      if (cats[p.cat]) w += 2.5;                                        // même univers que le panier
+      if (p.cat === 'Sodas' && (sweet || salty)) w += 2.5;             // une boisson pour accompagner
+      if (drink && (p.cat === 'Snacks' || p.cat === 'Bonbons')) w += 2; // un snack / bonbon avec la boisson
+      if (salty && (p.cat === 'Bonbons' || p.cat === 'Chocolats')) w += 1.5; // du sucré après le salé
+      if (p.best) w += 1.5;                                             // bestseller → donne envie
+      if (p.old) w += 1;                                                // en promo → bonne affaire
+      return { p: p, w: w };
     });
-    // priorité : même univers que le panier → bestsellers → les mieux notés
-    all.sort(function (a, b) {
-      var ac = cats[a.cat] ? 1 : 0, bc = cats[b.cat] ? 1 : 0; if (ac !== bc) return bc - ac;
-      var ab = a.best ? 1 : 0, bb = b.best ? 1 : 0; if (ab !== bb) return bb - ab;
-      return (b.reviews || 0) - (a.reviews || 0);
-    });
-    return all.slice(0, 8);
+    var out = [], n = Math.min(8, pool.length);
+    for (var k = 0; k < n; k++) {
+      var total = 0; pool.forEach(function (x) { total += x.w; });
+      if (total <= 0) break;
+      var r = Math.random() * total, acc = 0, idx = 0;
+      for (var i = 0; i < pool.length; i++) { acc += pool[i].w; if (acc >= r) { idx = i; break; } }
+      out.push(pool[idx].p); pool.splice(idx, 1);
+    }
+    return out;
   }
-  function render() {
-    var list = pick();
-    if (!list.length) { sec.hidden = true; return; }
+  var current = null; // sélection stable pendant la session (ne se ré-mélange pas à chaque ajout)
+  function refresh() {
+    var inCart = {}; MCCart.items().forEach(function (l) { inCart[l.id] = 1; });
+    if (current === null) { current = weightedPick(null); }
+    else {
+      current = current.filter(function (p) { return !inCart[p.id]; }); // retire ce qui vient d'être ajouté
+      if (current.length < 8) {                                         // complète sans réordonner l'existant
+        var have = {}; current.forEach(function (p) { have[p.id] = 1; });
+        weightedPick(have).forEach(function (p) { if (current.length < 8 && !have[p.id]) { current.push(p); have[p.id] = 1; } });
+      }
+    }
+    if (!current.length) { sec.hidden = true; return; }
     sec.hidden = false;
-    row.innerHTML = list.map(function (p) {
+    row.innerHTML = current.map(function (p) {
       return '<div class="co-ups">' +
         '<div class="co-ups-img"><img src="' + esc(p.img) + '" alt="' + esc(p.name) + '" loading="lazy" decoding="async"></div>' +
         '<div class="co-ups-name">' + esc(p.name) + '</div>' +
@@ -799,10 +823,10 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
     var id = b.getAttribute('data-add');
     var p = (MC.byId && MC.byId(id)) || (MC.PRODUCTS || []).filter(function (x) { return x.id === id; })[0];
     if (!p) return;
-    MCCart.add(p, 1); // → mc-cart-change → résumé + montant wallet mis à jour, et l'upsell se re-rend (retire l'ajouté)
+    MCCart.add(p, 1); // → mc-cart-change → résumé + montant wallet mis à jour, l'ajouté disparaît de l'upsell
   });
-  window.addEventListener('mc-cart-change', render);
-  render();
+  window.addEventListener('mc-cart-change', refresh);
+  refresh();
 })();
 </script>
 </body>
