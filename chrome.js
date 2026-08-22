@@ -42,16 +42,16 @@
       '<div class="mc-drop">' +
         '<a href="boutique/sucres" class="mc-navlink' + act('sucres') + '">Sucrés ▾</a>' +
         '<div class="mc-dropmenu" style="min-width:640px">' +
-          '<div class="mc-dropcol"><div>🍬 Bonbons</div><a href="boutique/Bonbons">Bonbons US</a><a href="boutique/rayon/gum">Chewing-gum &amp; sucettes</a><a href="boutique/rayon/chamallow">Chamallow</a><a href="boutique/rayon/barbeapapa">Barbe à papa</a><a href="boutique/sucres" class="mc-seeall">Voir tout →</a></div>' +
-          '<div class="mc-dropcol"><div>🍿 Snacks sucrés</div><a href="boutique/rayon/popcorn">Pop-corn</a><a href="boutique/rayon/biscuit">Biscuits</a><a href="boutique/rayon/jelly">Gelées</a><a href="boutique/rayon/mochi">Mochi</a><a href="boutique/sucres" class="mc-seeall">Voir tout →</a></div>' +
-          '<div class="mc-dropcol"><div>🍫 Chocolats</div><a href="boutique/Chocolats">Chocolats intl</a><a href="boutique/rayon/barres">Barres chocolatées</a><a href="boutique/rayon/peanut">Beurre de cacahuète</a><a href="boutique/rayon/dubai">Chocolat de Dubaï ✨</a><a href="boutique/sucres" class="mc-seeall">Voir tout →</a></div>' +
+          '<div class="mc-dropcol"><div>🍬 Bonbons</div><a href="boutique/Bonbons">Bonbons US</a><a href="boutique/rayon/gum">Chewing-gum &amp; sucettes</a><a href="boutique/rayon/chamallow">Chamallow</a><a href="boutique/rayon/barbeapapa">Barbe à papa</a><a href="boutique/Bonbons" class="mc-seeall">Voir tout les bonbons →</a></div>' +
+          '<div class="mc-dropcol"><div>🍿 Snacks sucrés</div><a href="boutique/rayon/popcorn">Pop-corn</a><a href="boutique/rayon/biscuit">Biscuits</a><a href="boutique/rayon/jelly">Gelées</a><a href="boutique/rayon/mochi">Mochi</a><a href="boutique/Desserts" class="mc-seeall">Voir tout les desserts →</a></div>' +
+          '<div class="mc-dropcol"><div>🍫 Chocolats</div><a href="boutique/Chocolats">Chocolats intl</a><a href="boutique/rayon/barres">Barres chocolatées</a><a href="boutique/rayon/peanut">Beurre de cacahuète</a><a href="boutique/rayon/dubai">Chocolat de Dubaï ✨</a><a href="boutique/Chocolats" class="mc-seeall">Voir tout les chocolats →</a></div>' +
         '</div>' +
       '</div>' +
       '<div class="mc-drop">' +
         '<a href="boutique/sales" class="mc-navlink' + act('sales') + '">Salés ▾</a>' +
         '<div class="mc-dropmenu" style="min-width:560px">' +
           '<div class="mc-dropcol"><div>🌶️ Snacks salés</div><a href="boutique/rayon/chips">Chips &amp; crackers</a><a href="boutique/rayon/takis">Takis &amp; snacks épicés</a><a href="boutique/rayon/jerky">Beef jerky</a><a href="boutique/sales" class="mc-seeall">Voir tout →</a></div>' +
-          '<div class="mc-dropcol"><div>🍜 Cuisine</div><a href="boutique/rayon/ramen">Ramen &amp; nouilles</a><a href="boutique/rayon/americaine">Cuisine américaine</a></div>' +
+          '<div class="mc-dropcol"><div>🍜 Cuisine</div><a href="boutique/rayon/ramen">Ramen</a><a href="boutique/rayon/nouilles">Nouilles</a><a href="boutique/rayon/americaine">Cuisine américaine</a></div>' +
           '<div class="mc-dropcol"><div>🥫 Sauces</div><a href="boutique/rayon/sauce">Sauces &amp; dips</a><a href="boutique/rayon/salsa">Salsa</a><a href="boutique/rayon/chamoy">Chamoy</a></div>' +
         '</div>' +
       '</div>' +
@@ -92,7 +92,7 @@
     { t: 'Sucrés', h: 'boutique/sucres', all: 'Tous les produits sucrés', sub: [
       ['Bonbons US', 'boutique/Bonbons'], ['Chewing-gum & sucettes', 'boutique/rayon/gum'], ['Chamallow', 'boutique/rayon/chamallow'], ['Barbe à papa', 'boutique/rayon/barbeapapa'], ['Pop-corn', 'boutique/rayon/popcorn'], ['Biscuits', 'boutique/rayon/biscuit'], ['Gelées & gummies', 'boutique/rayon/jelly'], ['Mochi', 'boutique/rayon/mochi'], ['Chocolats intl', 'boutique/Chocolats'], ['Barres chocolatées', 'boutique/rayon/barres'], ['Beurre de cacahuète', 'boutique/rayon/peanut'], ['Chocolat de Dubaï ✨', 'boutique/rayon/dubai'] ] },
     { t: 'Salés', h: 'boutique/sales', all: 'Tous les produits salés', sub: [
-      ['Chips & crackers', 'boutique/rayon/chips'], ['Takis & snacks épicés', 'boutique/rayon/takis'], ['Beef jerky', 'boutique/rayon/jerky'], ['Ramen & nouilles', 'boutique/rayon/ramen'], ['Cuisine américaine', 'boutique/rayon/americaine'], ['Sauces & dips', 'boutique/rayon/sauce'], ['Salsa', 'boutique/rayon/salsa'], ['Chamoy', 'boutique/rayon/chamoy'] ] },
+      ['Chips & crackers', 'boutique/rayon/chips'], ['Takis & snacks épicés', 'boutique/rayon/takis'], ['Beef jerky', 'boutique/rayon/jerky'], ['Ramen', 'boutique/rayon/ramen'], ['Nouilles', 'boutique/rayon/nouilles'], ['Cuisine américaine', 'boutique/rayon/americaine'], ['Sauces & dips', 'boutique/rayon/sauce'], ['Salsa', 'boutique/rayon/salsa'], ['Chamoy', 'boutique/rayon/chamoy'] ] },
     { t: 'Surgelé 🧊', h: 'boutique/surgele' },
     { t: 'Boissons', h: 'boutique/boissons', all: 'Toutes les boissons', sub: [
       ['Énergisantes (Monster, Red Bull)', 'boutique/rayon/energy'], ['Sodas viraux', 'boutique/rayon/sodas'], ['Thé glacé', 'boutique/rayon/the'], ['Slushies', 'boutique/rayon/slush'], ['Eaux aromatisées', 'boutique/rayon/eau'], ['Jus de fruits', 'boutique/rayon/jus'], ['Bubble tea', 'boutique/rayon/bubbletea'] ] },
