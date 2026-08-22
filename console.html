@@ -1038,7 +1038,7 @@
     var promoState=inPromo
       ? '🔥 En promo : <s>'+money(p.old)+'</s> → <b style="color:var(--pink)">'+(p.price!=null?money(p.price):'—')+'</b> (-'+pct+' %). Visible dans le rayon « Promos ⚡ ».'
       : (p.price!=null?'Pas de promo. Prix actuel : '+money(p.price)+'.':'Renseigne d\'abord un prix pour ce produit.');
-    var subOpts='<option value="">— Automatique (mots-clés) —</option>'+SUBKEYS.map(function(k){return '<option value="'+k+'"'+(p.sub===k?' selected':'')+'>'+esc(SUBLABELS[k])+'</option>';}).join('');
+    var subOpts='<option value="">— Automatique (mots-clés) —</option>'+SUBKEYS.map(function(k){return '<option value="'+k+'"'+(p.sub===k?' selected':'')+'>'+esc(SUBLABELS[k])+'</option>';}).join('')+((window.MC_CATMETA&&window.MC_CATMETA.extraSubs)||[]).filter(function(s){return s&&s.key&&SUBKEYS.indexOf(s.key)<0;}).map(function(s){return '<option value="'+esc(s.key)+'"'+(p.sub===s.key?' selected':'')+'>'+esc(s.label||s.key)+' (perso)</option>';}).join('');
     openModal('Fiche — '+p.name,
       '<form>'+(canEdit?'<div class="form-row"><label>Nom du produit</label><input name="pname" value="'+esc(p.name||'')+'" placeholder="Nom du produit…"></div>':'<div class="form-row"><label>Nom du produit</label><input value="'+esc(p.name||'')+'" disabled></div>')+
       '<div style="display:flex;gap:1.1rem;flex-wrap:wrap;align-items:flex-start"><div style="text-align:center">'+prev+(canEdit?'<div style="margin-top:.5rem"><button type="button" class="btn btn-ghost pFile" style="font-size:.74rem;padding:.35rem .6rem">📷 Choisir un fichier</button></div><input type="file" accept="image/*" class="pFileIn" style="display:none">':'')+'</div>'+
