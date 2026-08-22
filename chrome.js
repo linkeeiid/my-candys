@@ -52,7 +52,7 @@
         '<div class="mc-dropmenu" style="min-width:560px">' +
           '<div class="mc-dropcol"><div>🌶️ Snacks salés</div><a href="boutique/rayon/chips">Chips &amp; crackers</a><a href="boutique/rayon/takis">Takis &amp; snacks épicés</a><a href="boutique/rayon/jerky">Beef jerky</a><a href="boutique/sales" class="mc-seeall">Voir tout →</a></div>' +
           '<div class="mc-dropcol"><div>🍜 Cuisine</div><a href="boutique/rayon/ramen">Ramen</a><a href="boutique/rayon/nouilles">Nouilles</a><a href="boutique/rayon/americaine">Cuisine américaine</a></div>' +
-          '<div class="mc-dropcol"><div>🥫 Sauces</div><a href="boutique/rayon/sauce">Sauces &amp; dips</a><a href="boutique/rayon/salsa">Salsa</a><a href="boutique/rayon/chamoy">Chamoy</a></div>' +
+          '<div class="mc-dropcol"><div>🥫 Sauces</div><a href="boutique/rayon/sauce">Sauces &amp; dips</a><a href="boutique/rayon/salsa">Salsa</a></div>' +
         '</div>' +
       '</div>' +
       '<a href="boutique/surgele" class="mc-navlink' + act('surgele') + '">Surgelé 🧊</a>' +
@@ -92,7 +92,7 @@
     { t: 'Sucrés', h: 'boutique/sucres', all: 'Tous les produits sucrés', sub: [
       ['Bonbons US', 'boutique/Bonbons'], ['Chewing-gum & sucettes', 'boutique/rayon/gum'], ['Chamallow', 'boutique/rayon/chamallow'], ['Barbe à papa', 'boutique/rayon/barbeapapa'], ['Pop-corn', 'boutique/rayon/popcorn'], ['Biscuits', 'boutique/rayon/biscuit'], ['Gelées & gummies', 'boutique/rayon/jelly'], ['Mochi', 'boutique/rayon/mochi'], ['Chocolats intl', 'boutique/Chocolats'], ['Barres chocolatées', 'boutique/rayon/barres'], ['Beurre de cacahuète', 'boutique/rayon/peanut'], ['Chocolat de Dubaï ✨', 'boutique/rayon/dubai'] ] },
     { t: 'Salés', h: 'boutique/sales', all: 'Tous les produits salés', sub: [
-      ['Chips & crackers', 'boutique/rayon/chips'], ['Takis & snacks épicés', 'boutique/rayon/takis'], ['Beef jerky', 'boutique/rayon/jerky'], ['Ramen', 'boutique/rayon/ramen'], ['Nouilles', 'boutique/rayon/nouilles'], ['Cuisine américaine', 'boutique/rayon/americaine'], ['Sauces & dips', 'boutique/rayon/sauce'], ['Salsa', 'boutique/rayon/salsa'], ['Chamoy', 'boutique/rayon/chamoy'] ] },
+      ['Chips & crackers', 'boutique/rayon/chips'], ['Takis & snacks épicés', 'boutique/rayon/takis'], ['Beef jerky', 'boutique/rayon/jerky'], ['Ramen', 'boutique/rayon/ramen'], ['Nouilles', 'boutique/rayon/nouilles'], ['Cuisine américaine', 'boutique/rayon/americaine'], ['Sauces & dips', 'boutique/rayon/sauce'], ['Salsa', 'boutique/rayon/salsa'] ] },
     { t: 'Surgelé 🧊', h: 'boutique/surgele' },
     { t: 'Boissons', h: 'boutique/boissons', all: 'Toutes les boissons', sub: [
       ['Énergisantes (Monster, Red Bull)', 'boutique/rayon/energy'], ['Sodas viraux', 'boutique/rayon/sodas'], ['Thé glacé', 'boutique/rayon/the'], ['Slushies', 'boutique/rayon/slush'], ['Eaux aromatisées', 'boutique/rayon/eau'], ['Jus de fruits', 'boutique/rayon/jus'], ['Bubble tea', 'boutique/rayon/bubbletea'] ] },
