@@ -99,7 +99,7 @@ h1,h2,h3{font-weight:800;letter-spacing:-.5px;margin:0}
 .mc-dropcol a:hover{color:#E01784}
 .mc-dropmenu--right a{transition:color .12s}
 .mc-dropmenu--right a:hover{color:#E01784!important}
-.mc-dropcol a.mc-seeall{color:#E01784;font-weight:600}
+.mc-dropcol a.mc-seeall{color:#E01784;font-weight:600;border:0;background:none;padding:4px 0;border-radius:0}
 
 /* ---------- Drawers (overlay commun) ---------- */
 .mc-ov{position:fixed;inset:0;background:rgba(42,10,28,.5);z-index:130;transition:opacity .3s;opacity:0;pointer-events:none}
