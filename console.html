@@ -521,8 +521,14 @@
           </div>
         </div>
         <div class="ofilters" id="pCats"></div>
+        <div class="pbulk" id="pBulk" style="display:none;align-items:center;gap:.55rem;margin:.1rem 0 .7rem;flex-wrap:wrap">
+          <button class="btn btn-ghost" id="pDupBtn" title="Coche automatiquement les produits en double (même nom), en gardant 1 exemplaire de chaque">🔁 Cocher les doublons</button>
+          <button class="btn btn-ghost" id="pSelClear" style="display:none">Tout décocher</button>
+          <button class="btn" id="pBulkDel" disabled style="background:#EF4444;color:#fff;border-color:#EF4444;opacity:.55">🗑 Supprimer la sélection (<span id="pSelN">0</span>)</button>
+          <span class="sub" id="pDupInfo" style="color:var(--muted);font-size:.8rem"></span>
+        </div>
         <div class="tablecard"><div class="tscroll"><table>
-          <thead><tr><th>Produit</th><th>Catégorie</th><th>Marque</th><th class="r">Prix</th><th class="r">Stock</th><th>Dispo</th><th class="r">Fiche</th></tr></thead>
+          <thead><tr><th class="pchk-col" style="width:30px"><input type="checkbox" id="pCheckAll" title="Tout cocher (lignes affichées)"></th><th>Produit</th><th>Catégorie</th><th>Marque</th><th class="r">Prix</th><th class="r">Stock</th><th>Dispo</th><th class="r">Fiche</th></tr></thead>
           <tbody id="prodBody"></tbody>
         </table></div></div>
         <button class="btn btn-ghost" id="prodMore" style="margin-top:.8rem;width:100%;justify-content:center;display:none">Afficher plus de produits</button>
@@ -910,7 +916,7 @@
     $('pCats').innerHTML=h;}
 
   function renderProducts(){
-    if(!hasMC){$('prodBody').innerHTML='<tr><td colspan="7" style="padding:1.4rem;text-align:center;color:var(--muted)">Catalogue indisponible (products.js non chargé).</td></tr>';return;}
+    if(!hasMC){$('prodBody').innerHTML='<tr><td colspan="8" style="padding:1.4rem;text-align:center;color:var(--muted)">Catalogue indisponible (products.js non chargé).</td></tr>';return;}
     var st=pStats();
     var allOn=(!pFilter.flag&&!pFilter.cat&&!searchQ);
     $('prodKpis').innerHTML='<div class="kpi accent'+(allOn?' kpi-on':'')+'" data-pall="1" style="cursor:pointer" title="Voir tous les produits"><div class="lbl">Références</div><div class="num tnum">'+st.tot+'</div></div>'+ptile('En rupture',st.out,'warn','out',pFilter.flag==='out')+ptile('Sans photo',st.nopic,'','nophoto',pFilter.flag==='nophoto')+ptile('À prixer',st.noprice,'warn','noprice',pFilter.flag==='noprice')+tile('Édition',ADMINKEY?'ON':'OFF','',ADMINKEY?'good':'',ADMINKEY?'activée':'verrouillée');
@@ -928,11 +934,12 @@
     var slice=pFiltered.slice(pShown,pShown+pPage),h='',lock=ADMINKEY?'':' disabled';
     slice.forEach(function(p){
       var cat=p.cat||'—',m=cmeta(cat);
-      if(cat!==pLastCat){pLastCat=cat;h+='<tr class="pgrp"><td colspan="7" style="background:'+m.c+'14;color:'+m.c+';font-weight:800;font-size:.7rem;letter-spacing:.07em;text-transform:uppercase;padding:.5rem .85rem">'+m.e+' '+esc(cat)+'</td></tr>';}
+      if(cat!==pLastCat){pLastCat=cat;h+='<tr class="pgrp"><td colspan="8" style="background:'+m.c+'14;color:'+m.c+';font-weight:800;font-size:.7rem;letter-spacing:.07em;text-transform:uppercase;padding:.5rem .85rem">'+m.e+' '+esc(cat)+'</td></tr>';}
       var thumb=p.img?'<span class="thumb" style="background:#fff url(\''+esc(p.img)+'\') center/contain no-repeat"></span>':'<span class="thumb" style="background:'+m.c+'22;display:grid;place-items:center;font-size:.9rem">'+m.e+'</span>';
       var opts=PCATS.map(function(c){return '<option'+(p.cat===c?' selected':'')+'>'+c+'</option>';}).join('');
       var avail=(p.available!==false),stock=(p.stock==null?'':p.stock);
       h+='<tr data-pid="'+esc(p.id)+'">'+
+        '<td class="pchk-col">'+(ADMINKEY?'<input type="checkbox" class="pe-check" data-pid="'+esc(p.id)+'">':'')+'</td>'+
         '<td><div class="prod">'+thumb+'<div><div class="n">'+esc(p.name)+'</div><div class="sku">#'+esc(p.id)+'</div></div></div></td>'+
         '<td><select class="pin pe-cat"'+lock+'>'+opts+'</select></td>'+
         '<td><input class="pin pe-brand" value="'+esc(p.brand||'')+'" placeholder="—"'+lock+'></td>'+
@@ -943,7 +950,35 @@
     });
     $('prodBody').insertAdjacentHTML('beforeend',h);pShown+=slice.length;
     if($('prodMore'))$('prodMore').style.display=pShown<pFiltered.length?'':'none';
+    pSyncBulkBar();
   }
+  // Retire UNE ligne produit du DOM sans tout re-rendre (préserve le scroll) + entête de groupe si vide
+  function pRemoveRow(id){
+    var body=$('prodBody'); if(!body)return;
+    var rows=body.children;
+    for(var ri=0;ri<rows.length;ri++){
+      var tr=rows[ri];
+      if(tr.getAttribute&&tr.getAttribute('data-pid')===id){
+        var grp=tr.previousElementSibling;
+        body.removeChild(tr);
+        if(grp&&grp.classList&&grp.classList.contains('pgrp')){var nx=grp.nextElementSibling;if(!nx||(nx.classList&&nx.classList.contains('pgrp')))grp.parentNode.removeChild(grp);}
+        if(pShown>0)pShown--;
+        break;
+      }
+    }
+  }
+  // Met à jour les compteurs (références, chips) sans re-rendre la liste
+  function pCountsRefresh(){
+    if($('prodCount'))$('prodCount').textContent='· '+(hasMC?MC.PRODUCTS.length:0)+' références';
+    var kn=$('prodKpis')&&$('prodKpis').querySelector('.kpi.accent .num');if(kn)kn.textContent=(hasMC?MC.PRODUCTS.length:0);
+    pRenderChips();
+  }
+  // ---- Sélection multiple + doublons ----
+  function pNorm(s){return (s||'').toLowerCase().replace(/\s+/g,' ').trim();}
+  function pDupSet(){var seen={},dups={};pFiltered.forEach(function(p){var k=pNorm(p.name);if(!k)return;if(seen[k])dups[p.id]=1;else seen[k]=1;});return dups;}
+  function pRenderAll(){var guard=0;while(pShown<pFiltered.length&&guard++<400)pMore();}
+  function pChecks(){return Array.prototype.slice.call(document.querySelectorAll('#prodBody .pe-check'));}
+  function pSyncBulkBar(){var bar=$('pBulk');if(!bar)return;bar.style.display=ADMINKEY?'flex':'none';var n=pChecks().filter(function(cb){return cb.checked;}).length;if($('pSelN'))$('pSelN').textContent=n;var del=$('pBulkDel');if(del){del.disabled=!n;del.style.opacity=n?'1':'.55';}if($('pSelClear'))$('pSelClear').style.display=n?'':'none';}
   function pUnlockModal(){
     openModal('Activer l\'édition',
       '<form><p style="font-size:.83rem;color:var(--muted);margin:0 0 .7rem">Mot de passe administrateur pour modifier le catalogue en direct (prix, stock, photos…).</p><div class="form-row"><label>Mot de passe</label><input name="pw" type="password" required placeholder="••••••••"></div><div class="perr" style="color:var(--red);font-size:.8rem;min-height:1.1rem;font-weight:600"></div><button class="btn btn-primary" type="submit" style="width:100%;justify-content:center">Déverrouiller</button></form>',
@@ -1308,6 +1343,35 @@
   if($('notifBtn'))$('notifBtn').addEventListener('click',enableNotifs);
   refreshNotifBtn();
   $('prodMore').addEventListener('click',pMore);
+  // Sélection multiple / doublons
+  $('prodBody').addEventListener('change',function(e){if(e.target.classList&&e.target.classList.contains('pe-check'))pSyncBulkBar();});
+  if($('pCheckAll'))$('pCheckAll').addEventListener('change',function(){var on=this.checked;pChecks().forEach(function(cb){cb.checked=on;});pSyncBulkBar();});
+  if($('pSelClear'))$('pSelClear').addEventListener('click',function(){pChecks().forEach(function(cb){cb.checked=false;});if($('pCheckAll'))$('pCheckAll').checked=false;pSyncBulkBar();});
+  if($('pDupBtn'))$('pDupBtn').addEventListener('click',function(){
+    if(!ADMINKEY){toast('Active l\'édition d\'abord','warn');return;}
+    var dups=pDupSet(),ids=Object.keys(dups);
+    if(!ids.length){if($('pDupInfo'))$('pDupInfo').textContent='Aucun doublon détecté 👍';toast('Aucun doublon (même nom) détecté','good');return;}
+    pRenderAll();
+    pChecks().forEach(function(cb){if(dups[cb.getAttribute('data-pid')])cb.checked=true;});
+    if($('pDupInfo'))$('pDupInfo').textContent=ids.length+' doublon(s) coché(s) — 1 exemplaire gardé de chaque';
+    pSyncBulkBar();toast(ids.length+' doublon(s) coché(s)','good');
+  });
+  if($('pBulkDel'))$('pBulkDel').addEventListener('click',function(){
+    if(!ADMINKEY){toast('Active l\'édition d\'abord','warn');return;}
+    var ids=pChecks().filter(function(cb){return cb.checked;}).map(function(cb){return cb.getAttribute('data-pid');});
+    if(!ids.length)return;
+    if(!confirm('Supprimer '+ids.length+' produit(s) sélectionné(s) du catalogue ?\n\nIls disparaîtront de la boutique. Action définitive.'))return;
+    var del=$('pBulkDel');del.disabled=true;del.style.opacity='.55';
+    var i=0,ok=0;
+    (function next(){
+      if(i>=ids.length){pCountsRefresh();pSyncBulkBar();if($('pDupInfo'))$('pDupInfo').textContent='';toast(ok+' produit(s) supprimé(s) ✓','good');return;}
+      var id=ids[i++];if($('pSelN'))$('pSelN').textContent=(ids.length-i+1);
+      pSave(id,{deleted:true},function(good){
+        if(good){for(var di=MC.PRODUCTS.length-1;di>=0;di--){if(MC.PRODUCTS[di].id===id){MC.PRODUCTS.splice(di,1);break;}}pRemoveRow(id);ok++;}
+        next();
+      });
+    })();
+  });
   $('pCats').addEventListener('click',function(e){var c=e.target.closest('[data-pcat]');if(!c)return;pFilter.cat=c.getAttribute('data-pcat');renderProducts();});
   $('prodKpis').addEventListener('click',function(e){
     if(e.target.closest('[data-pall]')){pFilter.flag='';pFilter.cat='';searchQ='';if($('search'))$('search').value='';renderProducts();return;}
@@ -1319,7 +1383,7 @@
     else if(e.target.classList.contains('pe-stock')){clearTimeout(pTimer);var sv=e.target.value;pTimer=setTimeout(function(){pSave(id,{stock:sv===''?null:parseInt(sv,10)});},700);}});
   $('prodBody').addEventListener('click',function(e){
     var ed=e.target.closest('[data-pedit]');if(ed){pFicheModal(ed.getAttribute('data-pedit'));return;}
-    var dl=e.target.closest('[data-pdel]');if(dl){if(!ADMINKEY){toast('Active l\'édition d\'abord','warn');return;}var did=dl.getAttribute('data-pdel'),dp=MC.byId?MC.byId(did):null;if(!confirm('Supprimer « '+(dp?dp.name:did)+' » du catalogue ?\n\nLe produit disparaîtra de la boutique.'))return;pSave(did,{deleted:true},function(ok){if(ok){for(var di=MC.PRODUCTS.length-1;di>=0;di--){if(MC.PRODUCTS[di].id===did){MC.PRODUCTS.splice(di,1);break;}}renderProducts();toast('Produit supprimé ✓','good');}});return;}
+    var dl=e.target.closest('[data-pdel]');if(dl){if(!ADMINKEY){toast('Active l\'édition d\'abord','warn');return;}var did=dl.getAttribute('data-pdel'),dp=MC.byId?MC.byId(did):null;if(!confirm('Supprimer « '+(dp?dp.name:did)+' » du catalogue ?\n\nLe produit disparaîtra de la boutique.'))return;pSave(did,{deleted:true},function(ok){if(ok){for(var di=MC.PRODUCTS.length-1;di>=0;di--){if(MC.PRODUCTS[di].id===did){MC.PRODUCTS.splice(di,1);break;}}pRemoveRow(did);pCountsRefresh();toast('Produit supprimé ✓','good');}});return;}
     var sw=e.target.closest('[data-pavail]');if(sw){if(!ADMINKEY){toast('Active l\'édition d\'abord','warn');return;}var id=sw.getAttribute('data-pavail'),willBe=sw.classList.contains('off');sw.classList.toggle('off');pSave(id,{available:willBe},function(ok){if(ok)toast(willBe?'Marqué disponible':'Marqué épuisé');else sw.classList.toggle('off');});return;}});
   // promos
   if($('promoAdd'))$('promoAdd').addEventListener('click',function(){openPromoModal(null);});
