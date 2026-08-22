@@ -1019,6 +1019,22 @@
     var kn=$('prodKpis')&&$('prodKpis').querySelector('.kpi.accent .num');if(kn)kn.textContent=(hasMC?MC.PRODUCTS.length:0);
     pRenderChips();
   }
+  // Met à jour UNE ligne produit en place après édition de la fiche (nom, photo, prix, promo…) → scroll conservé
+  function pUpdateRow(id){
+    var p=(MC.byId&&MC.byId(id))||null; if(!p)return;
+    var body=$('prodBody'); if(!body)return;
+    var tr=null,rows=body.children;
+    for(var ri=0;ri<rows.length;ri++){if(rows[ri].getAttribute&&rows[ri].getAttribute('data-pid')===id){tr=rows[ri];break;}}
+    if(!tr)return;
+    var m=cmeta(p.cat||'—');
+    var nameEl=tr.querySelector('.prod .n'); if(nameEl)nameEl.textContent=p.name;
+    var th=tr.querySelector('.thumb'); if(th){ if(p.img){th.setAttribute('style',"background:#fff url('"+p.img+"') center/contain no-repeat");th.textContent='';} else {th.setAttribute('style',"background:"+m.c+"22;display:grid;place-items:center;font-size:.9rem");th.textContent=m.e;} }
+    var catSel=tr.querySelector('.pe-cat'); if(catSel&&p.cat)catSel.value=p.cat;
+    var brandInp=tr.querySelector('.pe-brand'); if(brandInp)brandInp.value=(p.brand||'');
+    var stockInp=tr.querySelector('.pe-stock'); if(stockInp)stockInp.value=(p.stock==null?'':p.stock);
+    var priceInp=tr.querySelector('.pe-price'); if(priceInp){var td=priceInp.parentNode; if(td)td.innerHTML=(p.old?'<span title="En promo" style="color:var(--pink);font-weight:800;font-size:.72rem;margin-right:.2rem">🔥</span>':'')+'<input class="pin pe-price" type="number" step="0.01" min="0" value="'+(p.price!=null?p.price:'')+'"'+(ADMINKEY?'':' disabled')+' style="width:72px;text-align:right">';}
+    var sw=tr.querySelector('[data-pavail]'); if(sw)sw.classList.toggle('off',p.available===false);
+  }
   // ---- Sélection multiple + doublons ----
   function pNorm(s){return (s||'').toLowerCase().replace(/\s+/g,' ').trim();}
   function pDupSet(){var seen={},dups={};pFiltered.forEach(function(p){var k=pNorm(p.name);if(!k)return;if(seen[k])dups[p.id]=1;else seen[k]=1;});return dups;}
@@ -1051,20 +1067,20 @@
         (canEdit?'<div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:flex-end"><div class="form-row" style="margin:0"><label>Prix promo (€)</label><input class="pin pPromoIn" type="number" step="0.01" min="0" value="'+(inPromo&&p.price!=null?p.price:'')+'" placeholder="ex. 1.99" style="width:120px"></div><button type="button" class="btn btn-primary pPromoApply" style="padding:.5rem .85rem;font-size:.8rem">'+(inPromo?'Mettre à jour':'Mettre en promo')+'</button>'+(inPromo?'<button type="button" class="btn btn-ghost pPromoRemove" style="padding:.5rem .85rem;font-size:.8rem">Retirer la promo</button>':'')+'</div>':'')+
       '</div>'+
       (canEdit?'<button class="btn btn-primary" type="submit" style="width:100%;justify-content:center;margin-top:.7rem">Enregistrer la fiche</button>':'<p style="font-size:.8rem;color:var(--muted);margin:.7rem 0 0">🔒 Active l\'édition pour modifier la fiche.</p>')+'</form>',
-      function(f){if(!canEdit)return;var nm=(f.pname?f.pname.value.trim():'');var patch={desc:f.desc.value.trim(),img:f.img.value.trim()};if(nm)patch.name=nm;pSave(id,patch,function(ok){if(ok){closeModal();renderProducts();toast('Fiche enregistrée ✓','good');}});});
+      function(f){if(!canEdit)return;var nm=(f.pname?f.pname.value.trim():'');var patch={desc:f.desc.value.trim(),img:f.img.value.trim()};if(nm)patch.name=nm;pSave(id,patch,function(ok){if(ok){closeModal();pUpdateRow(id);toast('Fiche enregistrée ✓','good');}});});
     if(canEdit){var fb=$('modalBody').querySelector('.pFile'),fin=$('modalBody').querySelector('.pFileIn');
       if(fb)fb.addEventListener('click',function(){fin.click();});
       if(fin)fin.addEventListener('change',function(){var file=fin.files[0];if(!file)return;fb.textContent='Compression…';pResize(file,function(data){fb.textContent='📷 Choisir un fichier';if(!data){toast('Image illisible','warn');return;}var im=$('modalBody').querySelector('[name=img]');if(im)im.value=data;var pv=$('modalBody').querySelector('img');if(pv)pv.src=data;toast('Photo prête — clique Enregistrer');});});
       var subSel=$('modalBody').querySelector('.pSubSel');
-      if(subSel)subSel.addEventListener('change',function(){var v=subSel.value;pSave(id,{sub:v===''?null:v},function(ok){if(ok){renderProducts();toast(v?'Rayon : '+SUBLABELS[v]+' ✓':'Rayon automatique ✓','good');}});});
+      if(subSel)subSel.addEventListener('change',function(){var v=subSel.value;pSave(id,{sub:v===''?null:v},function(ok){if(ok){pUpdateRow(id);toast(v?'Rayon : '+(SUBLABELS[v]||v)+' ✓':'Rayon automatique ✓','good');}});});
       var pApply=$('modalBody').querySelector('.pPromoApply');
       if(pApply)pApply.addEventListener('click',function(){var inp=$('modalBody').querySelector('.pPromoIn'),np=parseFloat(inp.value),ref=(p.old!=null?p.old:p.price);
         if(isNaN(np)||np<=0){toast('Entre un prix promo valide','warn');return;}
         if(ref==null||isNaN(ref)){toast('Renseigne d\'abord un prix normal','warn');return;}
         if(np>=ref){toast('Le prix promo doit être inférieur à '+money(ref),'warn');return;}
-        pSave(id,{old:ref,price:np},function(ok){if(ok){closeModal();renderProducts();toast('Promo appliquée ✓ — dans « Promos »','good');}});});
+        pSave(id,{old:ref,price:np},function(ok){if(ok){closeModal();pUpdateRow(id);toast('Promo appliquée ✓ — dans « Promos »','good');}});});
       var pRem=$('modalBody').querySelector('.pPromoRemove');
-      if(pRem)pRem.addEventListener('click',function(){pSave(id,{price:(p.old!=null?p.old:p.price),old:null},function(ok){if(ok){closeModal();renderProducts();toast('Promo retirée','good');}});});}
+      if(pRem)pRem.addEventListener('click',function(){pSave(id,{price:(p.old!=null?p.old:p.price),old:null},function(ok){if(ok){closeModal();pUpdateRow(id);toast('Promo retirée','good');}});});}
   }
   /* ---------- BOX MYSTÈRES ---------- */
   function renderBoxes(){
