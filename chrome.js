@@ -36,10 +36,9 @@
       '<div class="mc-searchpill"><span style="font-size:19px;opacity:.55">🔍</span><input type="search" placeholder="Rechercher un bonbon, un soda, une marque..." aria-label="Recherche"><button id="mc-search-close" title="Fermer" style="color:#8A6076;font-size:18px;padding:2px 6px">✕</button></div>' +
     '</div>' +
     '<nav class="mc-navwrap"><div class="mc-row mc-nav">' +
-      '<a href="boutique/bestsellers" class="mc-navlink' + act('bestsellers') + '">Bestsellers 🩷</a>' +
+      '<a href="boutique/tous" class="mc-navlink' + act('tous') + '">Tous nos produits 🍬</a>' +
       '<a href="boutique/nouveautes" class="mc-navlink' + act('nouveautes') + '">Nouveautés ⭐</a>' +
-      '<a href="boutique/promos" class="mc-navlink' + act('promos') + '">Promos ⚡</a>' +
-      '<a href="boutique/mini-prix" class="mc-navlink mc-navlink--red' + act('mini-prix') + '">Mini Prix 🪙</a>' +
+      '<a href="boutique/promos" class="mc-navlink mc-navlink--red' + act('promos') + '">Promos ⚡</a>' +
       '<div class="mc-drop">' +
         '<a href="boutique/sucres" class="mc-navlink' + act('sucres') + '">Sucrés ▾</a>' +
         '<div class="mc-dropmenu" style="min-width:640px">' +
@@ -64,6 +63,7 @@
           '<div class="mc-dropcol"><div style="color:#0FA9B8">🧊 Frais</div><a href="boutique/rayon/slush">Slushies</a><a href="boutique/rayon/eau">Eaux aromatisées</a><a href="boutique/rayon/jus">Jus de fruits</a><a href="boutique/rayon/bubbletea">Bubble tea</a></div>' +
         '</div>' +
       '</div>' +
+      '<a href="boutique/squishys" class="mc-navlink' + act('squishys') + '">Squishys 🐙</a>' +
       '<a href="mystery-box" class="mc-navlink' + act('mystery') + '">Mystery Box 📦</a>' +
       '<a href="/#tiktok" class="mc-navlink">TikTok 🔥</a>' +
       '<a href="boutique/anti-gaspi" class="mc-navlink mc-navlink--green' + act('anti-gaspi') + '">Anti-Gaspi ♻️</a>' +
@@ -86,10 +86,9 @@
 
   /* Menu mobile "drilldown" (niveau 1 → sous-menu qui glisse), inspiré de My American Shop */
   var MENU = [
-    { t: 'Bestsellers 🩷', h: 'boutique/bestsellers' },
+    { t: 'Tous nos produits 🍬', h: 'boutique/tous' },
     { t: 'Nouveautés ⭐', h: 'boutique/nouveautes' },
     { t: 'Promos ⚡', h: 'boutique/promos' },
-    { t: 'Mini Prix 🪙', h: 'boutique/mini-prix' },
     { t: 'Sucrés', h: 'boutique/sucres', all: 'Tous les produits sucrés', sub: [
       ['Bonbons US', 'boutique/Bonbons'], ['Chewing-gum & sucettes', 'boutique/rayon/gum'], ['Chamallow', 'boutique/rayon/chamallow'], ['Barbe à papa', 'boutique/rayon/barbeapapa'], ['Pop-corn', 'boutique/rayon/popcorn'], ['Biscuits', 'boutique/rayon/biscuit'], ['Gelées & gummies', 'boutique/rayon/jelly'], ['Mochi', 'boutique/rayon/mochi'], ['Chocolats intl', 'boutique/Chocolats'], ['Barres chocolatées', 'boutique/rayon/barres'], ['Beurre de cacahuète', 'boutique/rayon/peanut'], ['Chocolat de Dubaï ✨', 'boutique/rayon/dubai'] ] },
     { t: 'Salés', h: 'boutique/sales', all: 'Tous les produits salés', sub: [
@@ -97,6 +96,7 @@
     { t: 'Surgelé 🧊', h: 'boutique/surgele' },
     { t: 'Boissons', h: 'boutique/boissons', all: 'Toutes les boissons', sub: [
       ['Énergisantes (Monster, Red Bull)', 'boutique/rayon/energy'], ['Sodas viraux', 'boutique/rayon/sodas'], ['Thé glacé', 'boutique/rayon/the'], ['Slushies', 'boutique/rayon/slush'], ['Eaux aromatisées', 'boutique/rayon/eau'], ['Jus de fruits', 'boutique/rayon/jus'], ['Bubble tea', 'boutique/rayon/bubbletea'] ] },
+    { t: 'Squishys 🐙', h: 'boutique/squishys' },
     { t: 'Mystery Box 📦', h: 'mystery-box' },
     { t: 'TikTok 🔥', h: '/#tiktok' },
     { t: 'Anti-Gaspi ♻️', h: 'boutique/anti-gaspi' },
@@ -136,7 +136,7 @@
       '<div class="mc-fcols">' +
       '<div class="mc-fcol"><div class="mc-fcol-title">Besoin d\'aide ?</div><div class="mc-fcol-links"><a href="infos/faq">FAQ</a><a href="infos/livraison">Livraison &amp; retours</a><a href="suivi-commande">Suivi de commande</a><a href="infos/contact">Nous contacter</a></div></div>' +
       '<div class="mc-fcol"><div class="mc-fcol-title">La marque</div><div class="mc-fcol-links"><a href="infos/about">Qui sommes-nous ?</a><a href="infos/boutiques">Nos boutiques</a><a href="marques">Nos marques</a></div></div>' +
-      '<div class="mc-fcol"><div class="mc-fcol-title">Boutique</div><div class="mc-fcol-links"><a href="boutique/bestsellers">Bestsellers</a><a href="boutique/nouveautes">Nouveautés</a><a href="boutique/promos">Promos</a><a href="mystery-box">Mystery Box</a></div></div>' +
+      '<div class="mc-fcol"><div class="mc-fcol-title">Boutique</div><div class="mc-fcol-links"><a href="boutique/tous">Tous nos produits</a><a href="boutique/nouveautes">Nouveautés</a><a href="boutique/promos">Promos</a><a href="boutique/squishys">Squishys</a><a href="mystery-box">Mystery Box</a></div></div>' +
       '</div>' +
     '</div>' +
     '<div class="mc-fbarwrap"><div class="mc-fbar"><div>© 2026 My Candy\'s — Tous droits réservés. · <a href="infos/mentions" style="color:#D9AEC4;text-decoration:underline">Mentions légales</a> · <a href="infos/cgv" style="color:#D9AEC4;text-decoration:underline">CGV</a> · <a href="infos/confidentialite" style="color:#D9AEC4;text-decoration:underline">Confidentialité</a></div></div></div>' +

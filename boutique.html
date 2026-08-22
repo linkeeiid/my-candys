@@ -80,7 +80,7 @@
 </style>
 </head>
 <body data-nav="">
-<script>(function(){var m={boissons:'boissons',sales:'sales',sucres:'sucres',surgele:'surgele',divers:'divers',bestsellers:'bestsellers',nouveautes:'nouveautes',promos:'promos','mini-prix':'mini-prix','anti-gaspi':'anti-gaspi'};var _ps=location.pathname.replace(/^\/+|\/+$/g,'').split('/');var c=(_ps[0]==='boutique'&&_ps[1]&&_ps[1]!=='marque'&&_ps[1]!=='rayon')?decodeURIComponent(_ps[1]):new URLSearchParams(location.search).get('c');if(c&&m[c])document.body.setAttribute('data-nav',m[c]);})();</script>
+<script>(function(){var m={tous:'tous',boissons:'boissons',sales:'sales',sucres:'sucres',surgele:'surgele',divers:'divers',squishys:'squishys',nouveautes:'nouveautes',promos:'promos','anti-gaspi':'anti-gaspi'};var _ps=location.pathname.replace(/^\/+|\/+$/g,'').split('/');var c=(_ps[0]==='boutique'&&_ps[1]&&_ps[1]!=='marque'&&_ps[1]!=='rayon')?decodeURIComponent(_ps[1]):new URLSearchParams(location.search).get('c');if(c&&m[c])document.body.setAttribute('data-nav',m[c]);})();</script>
 
 <div class="shop-hero">
   <div class="shop-hero-in">
@@ -188,27 +188,28 @@
   var q = params.get('q'); if (q) st.q = q;
   var c = _pcat || params.get('c');
   var TITLES = {
+    'tous': ['Tous nos produits 🍬', 'Tout le catalogue My Candy\'s en un seul endroit.'],
     'boissons': ['Boissons 🥤', 'Sodas viraux, énergisantes et boissons du monde entier.'],
     'sales': ['Snacks salés 🌶️', 'Chips, Takis, ramen et snacks épicés qui cartonnent.'],
     'sucres': ['Sucré 🍬', 'Bonbons US, chocolats et desserts gourmands.'],
     'surgele': ['Surgelé 🧊', 'Glaces, mochis glacés et douceurs à conserver au froid — arrivage en cours.'],
     'divers': ['Divers 🧺', 'Un peu de tout : les pépites gourmandes qui ne rentrent pas ailleurs.'],
-    'bestsellers': ['Bestsellers 🩷', 'Les chouchous de la communauté My Candy\'s.'],
+    'squishys': ['Squishys 🐙', 'Nos bonbons à la texture folle, moelleux comme des nuages — vus sur les réseaux.'],
     'nouveautes': ['Nouveautés ⭐', 'Fraîchement débarqués dans la boutique.'],
     'promos': ['Promos ⚡', 'Toutes les réductions du moment.'],
-    'mini-prix': ['Mini Prix 🪙', 'Les petits prix qui font plaisir.'],
     'anti-gaspi': ['Anti-Gaspi ♻️', 'Tes gourmandises préférées à petit prix, parce qu\'elles sont à savourer vite ! Même qualité, même plaisir — juste plus malin pour ton porte-monnaie et pour la planète. ♻️'],
     'pick-n-mix': ['Pick\'n\'Mix 🍬', 'Compose ton mélange — bientôt disponible !']
   };
   switch (c) {
+    case 'tous': st.cat = 'all'; break;
     case 'boissons': st.cat = 'Sodas'; break;
     case 'sales': st.cat = 'Snacks'; break;
     case 'sucres': st.sweet = true; break;
     case 'surgele': st.cat = 'Surgelé'; break;
     case 'divers': st.cat = 'Divers'; break;
-    case 'bestsellers': st.best = true; break;
+    case 'squishys': st.squishy = true; break;
     case 'nouveautes': st.nouv = true; break;
-    case 'promos': case 'mini-prix': st.promo = true; break;
+    case 'promos': st.promo = true; break;
     default: if (CATS.indexOf(c) >= 0) st.cat = c; break; // catégorie brute (ex. ?c=Bonbons)
   }
   if (st.brand !== 'all' && !c) { var d = document.getElementById('shop-title'); if (d) d.textContent = st.brand; }
@@ -219,15 +220,15 @@
 
   // --- SEO dynamique : chaque catégorie / rayon / marque = une page indexable ciblée (title, description, canonical, Open Graph) ---
   var SEO = {
+    'tous':        ['Tous nos produits — bonbons & snacks américains', 'Tout le catalogue My Candy\'s : bonbons US, snacks viraux, sodas, chocolats et éditions limitées. Livrés en France et dans le monde entier.'],
+    'squishys':    ['Squishys — bonbons à la texture folle', 'Nos bonbons squishy moelleux comme des nuages, vus sur les réseaux. Importés et livrés en France et dans le monde entier.'],
     'sucres':      ['Bonbons américains & sucreries virales', 'Bonbons US, chocolats et sucreries importés du monde entier : Nerds, Kinder, chocolat de Dubaï… Livrés en France et dans le monde entier.'],
     'sales':       ['Snacks salés & chips épicées américaines', 'Takis, chips américaines, ramen et snacks salés viraux. Le meilleur du snacking US et asiatique, livré en France et dans le monde entier.'],
     'boissons':    ['Sodas & boissons américaines virales', 'Sodas US, Monster et boissons rares vues sur TikTok. Toutes tes boissons virales importées, livrées en France et dans le monde entier.'],
     'surgele':     ['Surgelé — glaces, mochis & douceurs', 'Glaces, mochis glacés et douceurs à conserver au froid. Nouvel arrivage surgelé chez My Candy\'s.'],
     'divers':      ['Divers — pépites gourmandes du monde', 'Les pépites gourmandes qui ne rentrent nulle part ailleurs : éditions limitées et surprises importées.'],
-    'bestsellers': ['Bestsellers — nos bonbons & snacks les plus vendus', 'Les bonbons, snacks et sodas préférés de la communauté My Candy\'s. Les incontournables à ne pas rater.'],
     'nouveautes':  ['Nouveautés — bonbons & snacks américains', 'Les derniers bonbons, snacks et boissons virales fraîchement débarqués chez My Candy\'s. Nouveautés chaque semaine.'],
     'promos':      ['Promos — bonbons & snacks américains en réduction', 'Toutes les promos du moment sur les bonbons, snacks et sodas américains. Le plein de gourmandises à prix réduit.'],
-    'mini-prix':   ['Mini Prix — bonbons & snacks pas chers', 'Les bonbons, snacks et boissons à petit prix chez My Candy\'s. Se faire plaisir sans se ruiner.'],
     'anti-gaspi':  ['Anti-Gaspi — bonbons & snacks à petit prix', 'Tes gourmandises préférées à prix mini, à savourer vite. Même qualité, même plaisir, plus malin pour ton budget et la planète.'],
     'pick-n-mix':  ['Pick\'n\'Mix — compose ton mélange de bonbons', 'Compose ton propre mélange de bonbons My Candy\'s. Bientôt disponible !']
   };
@@ -275,6 +276,7 @@
     if (st.promo) L = L.filter(function (p) { return p.old; });
     if (st.nouv) L = L.filter(function (p) { return p.nouveau; });
     if (st.best) L = L.filter(function (p) { return p.best; });
+    if (st.squishy) L = L.filter(function (p) { return /squish/i.test(p.name); });
     if (st.sweet) L = L.filter(function (p) { return ['Bonbons', 'Chocolats', 'Desserts'].indexOf(p.cat) >= 0; });
     if (st.sub && SUBS[st.sub]) { var kws = SUBS[st.sub]; L = L.filter(function (p) { if (p.sub) return p.sub === st.sub; var hh = norm(p.name + ' ' + (p.brand || '')); return kws.some(function (k) { return hh.indexOf(k) >= 0; }); }); }
     if (st.q) { var toks = st.q.split(/\s+/).map(norm).filter(Boolean); if (toks.length) L = L.filter(function (p) { var h = norm(p.name + ' ' + (p.brand || '')); return toks.every(function (t) { return h.indexOf(t) >= 0; }); }); }
@@ -291,6 +293,7 @@
     if (st.promo) out.push({ k: 'promo', label: 'En promo' });
     if (st.nouv) out.push({ k: 'nouv', label: 'Nouveautés' });
     if (st.best) out.push({ k: 'best', label: 'Bestsellers' });
+    if (st.squishy) out.push({ k: 'squishy', label: 'Squishys' });
     if (st.sweet) out.push({ k: 'sweet', label: 'Sucré' });
     if (st.sub) out.push({ k: 'sub', label: SUBLABELS[st.sub] || st.sub });
     if (st.q) out.push({ k: 'q', label: '“' + st.q + '”' });
@@ -377,7 +380,7 @@
   document.getElementById('shop-chips').addEventListener('click', function (e) {
     var t = e.target.closest('[data-clear]'); if (!t) return;
     var k = t.getAttribute('data-clear');
-    if (k === 'all') { st.cat = 'all'; st.brand = 'all'; st.promo = st.nouv = st.best = st.sweet = false; st.q = ''; st.sub = ''; }
+    if (k === 'all') { st.cat = 'all'; st.brand = 'all'; st.promo = st.nouv = st.best = st.squishy = st.sweet = false; st.q = ''; st.sub = ''; }
     else if (k === 'cat') st.cat = 'all';
     else if (k === 'brand') st.brand = 'all';
     else st[k] = (k === 'q' || k === 'sub' ? '' : false);
@@ -385,7 +388,7 @@
     document.getElementById('shop-new').checked = st.nouv;
     apply();
   });
-  document.getElementById('shop-reset').addEventListener('click', function () { st.cat = 'all'; st.brand = 'all'; st.promo = st.nouv = st.best = st.sweet = false; st.q = ''; st.sub = ''; document.getElementById('shop-promo').checked = false; document.getElementById('shop-new').checked = false; apply(); });
+  document.getElementById('shop-reset').addEventListener('click', function () { st.cat = 'all'; st.brand = 'all'; st.promo = st.nouv = st.best = st.squishy = st.sweet = false; st.q = ''; st.sub = ''; document.getElementById('shop-promo').checked = false; document.getElementById('shop-new').checked = false; apply(); });
   document.getElementById('shop-mobfilter').addEventListener('click', function () { document.getElementById('shop-aside').classList.toggle('open'); });
   document.getElementById('shop-pager').addEventListener('click', function (e) {
     var t = e.target.closest('[data-page]'); if (!t || t.disabled) return;
