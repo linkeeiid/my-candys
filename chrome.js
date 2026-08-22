@@ -200,6 +200,45 @@
   document.body.insertAdjacentHTML('afterbegin', TOP);
   document.body.insertAdjacentHTML('beforeend', BOTTOM);
 
+  /* Config catégories/rayons éditée depuis l'admin (window.MC_CATMETA) : renomme les catégories/rayons
+     et injecte les rayons ajoutés, sur le menu desktop (DOM) + mobile (données MENU). 100% défensif : sans config, rien ne change. */
+  function applyCatMeta() {
+    try {
+      var cm = window.MC_CATMETA; if (!cm) return;
+      var hdr = document.querySelector('.mc-header');
+      if (hdr) {
+        Array.prototype.forEach.call(hdr.querySelectorAll('a[href^="boutique/rayon/"]'), function (a) {
+          var key = (a.getAttribute('href') || '').split('/').pop();
+          if (cm.subLabels && cm.subLabels[key]) a.textContent = cm.subLabels[key];
+        });
+        if (cm.catLabels) Array.prototype.forEach.call(hdr.querySelectorAll('.mc-navlink'), function (a) {
+          var m = (a.getAttribute('href') || '').match(/^boutique\/([a-z-]+)$/); if (!m) return;
+          var key = m[1]; if (cm.catLabels[key]) { var drop = /▾/.test(a.textContent); a.textContent = cm.catLabels[key] + (drop ? ' ▾' : ''); }
+        });
+        if (cm.extraSubs) cm.extraSubs.forEach(function (s) {
+          if (!s || !s.key || !s.parent) return;
+          if (hdr.querySelector('a[href="boutique/rayon/' + s.key + '"]')) return;
+          var pl = hdr.querySelector('.mc-drop > a.mc-navlink[href="boutique/' + s.parent + '"]'); if (!pl) return;
+          var menu = pl.parentNode.querySelector('.mc-dropmenu'); if (!menu) return;
+          var col = menu.querySelector('.mc-dropcol'); if (!col) return;
+          var a = document.createElement('a'); a.setAttribute('href', 'boutique/rayon/' + s.key); a.textContent = s.label || s.key;
+          var seeall = col.querySelector('.mc-seeall'); if (seeall) col.insertBefore(a, seeall); else col.appendChild(a);
+        });
+      }
+      // Mobile : appliquer aux données MENU (le tiroir se construit à l'ouverture)
+      MENU.forEach(function (item) {
+        var ck = (item.h || '').replace('boutique/', '');
+        if (cm.catLabels && cm.catLabels[ck]) item.t = cm.catLabels[ck];
+        if (item.sub) {
+          item.sub.forEach(function (pair) { var sk = (pair[1] || '').split('/').pop(); if (cm.subLabels && cm.subLabels[sk]) pair[0] = cm.subLabels[sk]; });
+          if (cm.extraSubs) cm.extraSubs.forEach(function (s) { if (s && s.parent && ('boutique/' + s.parent === item.h) && !item.sub.some(function (p) { return p[1] === 'boutique/rayon/' + s.key; })) item.sub.push([s.label || s.key, 'boutique/rayon/' + s.key]); });
+        }
+      });
+    } catch (e) {}
+  }
+  applyCatMeta();
+  window.addEventListener('mc-catmeta', applyCatMeta);
+
   /* Cloudflare Web Analytics (mesure d'audience sans cookie).
      → Colle ton token entre les guillemets de CF_TOKEN (voir GUIDE-BACKEND.md). Vide = désactivé. */
   var CF_TOKEN = '';

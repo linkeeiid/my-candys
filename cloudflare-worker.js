@@ -1456,6 +1456,8 @@ export default {
         if (body.worth !== undefined) patch.worth = (body.worth === null || body.worth === '') ? '' : String(body.worth).slice(0, 120);
         if (body.reviews !== undefined) { const rv = parseInt(body.reviews, 10); if (!isNaN(rv)) patch.reviews = Math.max(0, Math.min(999999, rv)); }
         if (body.deleted !== undefined) patch.deleted = !!body.deleted;
+        // Config des catégories/rayons gérée depuis l'admin (stockée sous la clé réservée __catmeta)
+        if (body.catmeta !== undefined) { try { const s = JSON.stringify(body.catmeta); if (s.length < 40000) patch.catmeta = body.catmeta; } catch (e) {} }
         await fetch(fbUrl(env, 'catalog/' + encodeURIComponent(id)), { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(patch) });
         return json({ ok: true }, 200, allow);
       }

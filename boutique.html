@@ -201,6 +201,12 @@
     'anti-gaspi': ['Anti-Gaspi ♻️', 'Tes gourmandises préférées à petit prix, parce qu\'elles sont à savourer vite ! Même qualité, même plaisir — juste plus malin pour ton porte-monnaie et pour la planète. ♻️'],
     'pick-n-mix': ['Pick\'n\'Mix 🍬', 'Compose ton mélange — bientôt disponible !']
   };
+  // Config catégories/rayons éditée depuis l'admin (labels + rayons custom) — appliquée si présente (window.MC_CATMETA, mise en cache par catalog-overrides.js)
+  (function () { var cm = window.MC_CATMETA; if (!cm) return;
+    if (cm.subLabels) for (var k in cm.subLabels) { if (cm.subLabels[k]) SUBLABELS[k] = cm.subLabels[k]; }
+    if (cm.catLabels) for (var ck in cm.catLabels) { if (cm.catLabels[ck] && TITLES[ck]) TITLES[ck][0] = cm.catLabels[ck]; }
+    if (cm.extraSubs) cm.extraSubs.forEach(function (s) { if (s && s.key) { SUBLABELS[s.key] = s.label || s.key; if (!SUBS[s.key]) SUBS[s.key] = []; } });
+  })();
   switch (c) {
     case 'tous': st.cat = 'all'; break;
     case 'boissons': st.cat = 'Sodas'; break;

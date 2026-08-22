@@ -420,6 +420,7 @@
       <div class="grp">Boutique</div>
       <button class="navlink" data-view="products"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 01-2.8 0l-7-7A1.9 1.9 0 013 12.2V4a2 2 0 012-2h8.2c.5 0 1 .2 1.4.6l6 6a2 2 0 010 2.8z"/><circle cx="7.5" cy="7.5" r="1.3"/></svg> Produits</button>
       <button class="navlink" data-view="boxes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg> Box mystères</button>
+      <button class="navlink" data-view="cats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M3 7a2 2 0 012-2h3.5l2 2H19a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg> Catégories</button>
       <button class="navlink" data-view="orders"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/></svg> Commandes <span class="nbadge zero" id="navBadge">0</span></button>
       <button class="navlink" data-view="promos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9a2 2 0 012-2h14a2 2 0 012 2v1.5a1.7 1.7 0 000 3.4V15a2 2 0 01-2 2H5a2 2 0 01-2-2v-1.1a1.7 1.7 0 000-3.4z"/><path d="M9.5 9.5l5 5M9.6 9.6h.01M14.4 14.4h.01"/></svg> Promotions</button>
       <div class="grp">Relation client</div>
@@ -546,6 +547,19 @@
         </div>
         <div class="autonote">🎁 Ces box s'affichent sur la page <b>Mystery Box</b> et sur l'accueil. Modifie le <b>prix</b>, la <b>photo</b>, le <b>ruban</b> ou la <b>description</b> : c'est en ligne <b>tout de suite</b>, sans rien pousser.</div>
         <div id="boxGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:1rem"></div>
+      </section>
+
+      <!-- ===== CATÉGORIES ===== -->
+      <section class="view" id="view-cats">
+        <div class="toolbar">
+          <h2 class="secttl">Catégories <span class="sub">Renommer les catégories et rayons, ajouter des sous-catégories</span></h2>
+          <div class="tools">
+            <span class="badge-soft b-wait" id="cEditState" style="font-weight:700">🔒 Lecture seule</span>
+            <button class="btn btn-primary" id="cSave">💾 Enregistrer les catégories</button>
+          </div>
+        </div>
+        <div class="autonote">✏️ Renomme les catégories/rayons du menu et ajoute des sous-catégories (ex. « Boissons américaines »). Pour remplir un nouveau rayon : va dans <b>Produits</b> → ✎ Fiche d'un produit → choisis le <b>Rayon</b>. Les changements sont visibles sur le site au <b>prochain chargement</b> d'une page.</div>
+        <div id="catsBody"></div>
       </section>
 
       <!-- ===== CLIENTS ===== -->
@@ -909,6 +923,38 @@
   function ptile(lbl,num,cls,flag,on){return '<div class="kpi '+cls+(on?' kpi-on':'')+'" data-pflag="'+flag+'"><div class="lbl">'+lbl+'</div><div class="num tnum">'+num+'</div></div>';}
   function pNoPrice(p){return p.price==null||isNaN(p.price);}
   function pStats(){var out=0,nopic=0,noprice=0;if(hasMC)MC.PRODUCTS.forEach(function(p){if(pIsOut(p))out++;if(!p.img)nopic++;if(pNoPrice(p))noprice++;});return{tot:hasMC?MC.PRODUCTS.length:0,out:out,nopic:nopic,noprice:noprice};}
+
+  // ===== Catégories (renommer + ajouter des rayons) — config stockée sous __catmeta =====
+  var CAT_DEFAULTS=[['tous','Tous nos produits 🍬'],['nouveautes','Nouveautés ⭐'],['promos','Promos ⚡'],['sucres','Sucrés'],['sales','Salés'],['surgele','Surgelé 🧊'],['boissons','Boissons'],['squishys','Squishys 🐙'],['anti-gaspi','Anti-Gaspi ♻️'],['divers','Divers 🧺']];
+  var CAT_PARENTS=[['sucres','Sucrés'],['sales','Salés'],['boissons','Boissons']];
+  var catExtra=null;
+  function catSlug(s){return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'').slice(0,24)||('sub'+Date.now().toString(36));}
+  function renderCats(){
+    if($('cEditState')){$('cEditState').className=ADMINKEY?'badge-soft b-on':'badge-soft b-wait';$('cEditState').style.fontWeight='700';$('cEditState').innerHTML=ADMINKEY?'🔓 Édition activée':'🔒 Lecture seule';}
+    var cm=window.MC_CATMETA||{},cl=cm.catLabels||{},sl=cm.subLabels||{};
+    if(catExtra===null)catExtra=(cm.extraSubs||[]).slice();
+    var lock=ADMINKEY?'':' disabled';
+    function inp(kind,key,def,val){return '<label style="display:flex;flex-direction:column;gap:.2rem;font-size:.74rem;color:var(--muted)"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(def)+'</span><input class="pin" data-'+kind+'="'+esc(key)+'" data-def="'+esc(def)+'" value="'+esc(val)+'"'+lock+'></label>';}
+    var grid='display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.85rem';
+    var catRows=CAT_DEFAULTS.map(function(p){return inp('catkey',p[0],p[1],cl[p[0]]||p[1]);}).join('');
+    var subRows=Object.keys(SUBLABELS).map(function(k){return inp('subkey',k,SUBLABELS[k],sl[k]||SUBLABELS[k]);}).join('');
+    var popts=CAT_PARENTS.map(function(p){return '<option value="'+p[0]+'">'+p[1]+'</option>';}).join('');
+    var pName=function(k){return CAT_PARENTS.reduce(function(a,p){return p[0]===k?p[1]:a;},k);};
+    var exList=catExtra.length?catExtra.map(function(s,i){return '<div style="display:flex;align-items:center;gap:.5rem;padding:.45rem 0;border-top:1px solid var(--line)"><b>'+esc(s.label||s.key)+'</b><span class="sub" style="color:var(--muted)">→ '+esc(pName(s.parent))+'</span><button class="mini pdel" data-cxdel="'+i+'" style="margin-left:auto"'+lock+'>🗑</button></div>';}).join(''):'<div class="sub" style="color:var(--muted);padding:.45rem 0">Aucune sous-catégorie ajoutée pour l\'instant.</div>';
+    $('catsBody').innerHTML=
+      '<div class="tablecard" style="padding:1.1rem 1.3rem"><h3 style="margin:0 0 .85rem">Catégories du menu</h3><div style="'+grid+'">'+catRows+'</div></div>'+
+      '<div class="tablecard" style="padding:1.1rem 1.3rem;margin-top:1rem"><h3 style="margin:0 0 .85rem">Sous-catégories (rayons)</h3><div style="'+grid+'">'+subRows+'</div></div>'+
+      '<div class="tablecard" style="padding:1.1rem 1.3rem;margin-top:1rem"><h3 style="margin:0 0 .85rem">Ajouter une sous-catégorie</h3><div style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:flex-end"><label style="display:flex;flex-direction:column;gap:.2rem;font-size:.74rem;color:var(--muted)">Dans la catégorie<select class="pin" id="cxParent"'+lock+'>'+popts+'</select></label><label style="display:flex;flex-direction:column;gap:.2rem;font-size:.74rem;color:var(--muted);flex:1;min-width:180px">Nom de la sous-catégorie<input class="pin" id="cxLabel" placeholder="Ex. Boissons américaines"'+lock+'></label><button class="btn btn-ghost" id="cxAdd"'+lock+'>＋ Ajouter</button></div><div style="margin-top:.7rem">'+exList+'</div></div>';
+  }
+  function saveCats(){
+    if(!ADMINKEY){toast('Active l\'édition d\'abord','warn');return;}
+    var cl={},sl={};
+    Array.prototype.forEach.call(document.querySelectorAll('#catsBody [data-catkey]'),function(i){var k=i.getAttribute('data-catkey'),d=i.getAttribute('data-def'),v=i.value.trim();if(v&&v!==d)cl[k]=v;});
+    Array.prototype.forEach.call(document.querySelectorAll('#catsBody [data-subkey]'),function(i){var k=i.getAttribute('data-subkey'),d=i.getAttribute('data-def'),v=i.value.trim();if(v&&v!==d)sl[k]=v;});
+    var cfg={catLabels:cl,subLabels:sl,extraSubs:catExtra||[]};
+    var btn=$('cSave');if(btn){btn.disabled=true;btn.textContent='Enregistrement…';}
+    pSave('__catmeta',{catmeta:cfg},function(ok){if(btn){btn.disabled=false;btn.textContent='💾 Enregistrer les catégories';}if(ok){window.MC_CATMETA=cfg;try{window.dispatchEvent(new Event('mc-catmeta'));}catch(e){}toast('Catégories enregistrées ✓ — visibles au prochain chargement d\'une page du site','good');}});
+  }
   function pRenderChips(){if(!hasMC||!$('pCats'))return;var FAMS=['Sucrés','Salés','Surgelé','Boissons','Divers'];var counts={};MC.PRODUCTS.forEach(function(p){var f=famOf(p.id);counts[f]=(counts[f]||0)+1;});
     var h='<button class="chip'+(pFilter.cat===''?' active':'')+'" data-pcat="">Toutes ('+MC.PRODUCTS.length+')</button>';
     h+=FAMS.map(function(c){return '<button class="chip'+(pFilter.cat===c?' active':'')+'" data-pcat="'+c+'">'+(FAM_EMO[c]||'')+' '+c+' ('+(counts[c]||0)+')</button>';}).join('');
@@ -1272,7 +1318,7 @@
 
   /* ---------- routing ---------- */
   var curView='dash';
-  var TITLES={dash:['Tableau de bord','Vue d\'ensemble de l\'activité'],stats:['Statistiques','Analyse des ventes et du catalogue'],products:['Produits','Gérer le catalogue de la boutique'],boxes:['Box mystères','Prix, photo, description des box surprise'],stock:['Stock & synchro','Réconciliation caisse ↔ site en temps réel'],orders:['Commandes','Traiter et expédier les commandes en ligne'],clients:['Clients','Fichier clients et historique'],inbox:['Boîte de réception','Inscrits newsletter & messages de contact'],promos:['Promotions','Codes de réduction et campagnes'],restock:['Réapprovisionnement','Ce qu\'il faut recommander aux fournisseurs'],reports:['Rapports & export','Bilans, exports comptables et clôture'],loyalty:['Fidélité','Programme de points et paliers'],reviews:['Avis clients','Modérer les avis produits']};
+  var TITLES={dash:['Tableau de bord','Vue d\'ensemble de l\'activité'],stats:['Statistiques','Analyse des ventes et du catalogue'],products:['Produits','Gérer le catalogue de la boutique'],boxes:['Box mystères','Prix, photo, description des box surprise'],cats:['Catégories','Renommer les catégories et rayons, ajouter des sous-catégories'],stock:['Stock & synchro','Réconciliation caisse ↔ site en temps réel'],orders:['Commandes','Traiter et expédier les commandes en ligne'],clients:['Clients','Fichier clients et historique'],inbox:['Boîte de réception','Inscrits newsletter & messages de contact'],promos:['Promotions','Codes de réduction et campagnes'],restock:['Réapprovisionnement','Ce qu\'il faut recommander aux fournisseurs'],reports:['Rapports & export','Bilans, exports comptables et clôture'],loyalty:['Fidélité','Programme de points et paliers'],reviews:['Avis clients','Modérer les avis produits']};
   function setView(v){
     curView=v;
     document.querySelectorAll('.navlink').forEach(function(n){n.classList.toggle('active',n.getAttribute('data-view')===v);});
@@ -1280,7 +1326,7 @@
     $('view-'+v).classList.add('active');
     $('pageTitle').textContent=TITLES[v][0];$('pageSub').textContent=TITLES[v][1];
     closeNav();
-    if(v==='dash')renderDash();else if(v==='stats')renderStats();else if(v==='products')renderProducts();else if(v==='boxes')renderBoxes();else if(v==='clients')renderClients();else if(v==='promos')renderPromos();else if(v==='restock')renderRestock();else if(v==='reports')renderReports();else if(v==='loyalty')renderLoyalty();else if(v==='reviews')renderReviews();
+    if(v==='dash')renderDash();else if(v==='stats')renderStats();else if(v==='products')renderProducts();else if(v==='boxes')renderBoxes();else if(v==='cats')renderCats();else if(v==='clients')renderClients();else if(v==='promos')renderPromos();else if(v==='restock')renderRestock();else if(v==='reports')renderReports();else if(v==='loyalty')renderLoyalty();else if(v==='reviews')renderReviews();
   }
 
   /* ---------- events ---------- */
@@ -1373,6 +1419,14 @@
     })();
   });
   $('pCats').addEventListener('click',function(e){var c=e.target.closest('[data-pcat]');if(!c)return;pFilter.cat=c.getAttribute('data-pcat');renderProducts();});
+  // Onglet Catégories
+  if($('cSave'))$('cSave').addEventListener('click',saveCats);
+  if($('catsBody'))$('catsBody').addEventListener('click',function(e){
+    var add=e.target.closest('#cxAdd');
+    if(add){if(!ADMINKEY){toast('Active l\'édition d\'abord','warn');return;}var lab=($('cxLabel')&&$('cxLabel').value.trim())||'';var par=($('cxParent')&&$('cxParent').value)||'sucres';if(!lab){toast('Donne un nom à la sous-catégorie','warn');return;}var key=catSlug(lab);if(catExtra.some(function(s){return s.key===key;}))key=key+Date.now().toString(36).slice(-3);catExtra.push({parent:par,key:key,label:lab});renderCats();toast('Sous-catégorie ajoutée — clique « Enregistrer »','good');return;}
+    var del=e.target.closest('[data-cxdel]');
+    if(del){if(!ADMINKEY)return;var i=parseInt(del.getAttribute('data-cxdel'),10);if(!isNaN(i)&&catExtra[i]){catExtra.splice(i,1);renderCats();}return;}
+  });
   $('prodKpis').addEventListener('click',function(e){
     if(e.target.closest('[data-pall]')){pFilter.flag='';pFilter.cat='';searchQ='';if($('search'))$('search').value='';renderProducts();return;}
     var k=e.target.closest('[data-pflag]');if(!k)return;var f=k.getAttribute('data-pflag');pFilter.flag=(pFilter.flag===f?'':f);renderProducts();});

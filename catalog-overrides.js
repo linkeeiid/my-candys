@@ -65,8 +65,11 @@
     }
   }
 
+  // Config catégories/rayons éditée depuis l'admin (clé réservée __catmeta), exposée globalement
+  function readCatMeta(ov) { try { window.MC_CATMETA = (ov && ov['__catmeta'] && ov['__catmeta'].catmeta) || null; } catch (e) { window.MC_CATMETA = null; } }
+
   // 1) cache immédiat (synchrone)
-  try { apply(JSON.parse(localStorage.getItem(LS) || 'null')); } catch (e) {}
+  try { var _cached = JSON.parse(localStorage.getItem(LS) || 'null'); apply(_cached); readCatMeta(_cached); } catch (e) {}
 
   // 2) surcharges fraîches
   if (API) {
@@ -76,7 +79,9 @@
         if (s !== localStorage.getItem(LS)) {
           try { localStorage.setItem(LS, s); } catch (e) {}
           apply(d.overrides);
+          readCatMeta(d.overrides);
           window.dispatchEvent(new Event('mc-catalog-updated')); // les pages réaffichent
+          window.dispatchEvent(new Event('mc-catmeta'));
         }
       }
     }).catch(function () {});
