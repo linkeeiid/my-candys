@@ -1,3 +1,9 @@
+/* Panier vidé à CHAQUE nouvelle arrivée sur le site (nouvelle session / onglet).
+   sessionStorage persiste pendant la navigation (on peut donc ajouter puis payer),
+   et se réinitialise quand l'onglet est fermé → panier vide à la visite suivante. */
+(function(){
+  try{ if(!sessionStorage.getItem('mcSessionV1')){ sessionStorage.setItem('mcSessionV1','1'); localStorage.removeItem('mcCartV1'); } }catch(e){}
+})();
 (function(){
   var KEY='mcCartV1';
   function read(){ try{ return JSON.parse(localStorage.getItem(KEY)) || []; }catch(e){ return []; } }

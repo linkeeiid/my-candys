@@ -143,10 +143,10 @@
   // Sous-catégories : chaque onglet de menu = un jeu de mots-clés (cherchés dans nom+marque, normalisés)
   var SUBS = {
     gum: ['gum', 'chewing', 'sucette', 'lollipop', 'frizzy', 'popping', 'pushpop'],
-    chamallow: ['chamallow', 'marshmallow', 'guimauve'],
     barbeapapa: ['barbeapapa', 'cottoncandy', 'popin'],
     popcorn: ['popcorn', 'palomitas', 'candypop', 'cookiepop', 'netflix', 'werther'],
     biscuit: ['biscuit', 'granola', 'cookie', 'oreo', 'lotus', 'biscoff'],
+    cereales: ['cereale', 'cereales', 'poptarts', 'luckycharms', 'frosted', 'kellog', 'froot', 'cheerios', 'chocapic', 'miel', 'cinnamon', 'nesquik'],
     jelly: ['jelly', 'gelee', 'gummy', 'gummies', 'hitschies', 'hitchies', 'nerds', 'jarritos', 'fini', 'bazooka', 'swezzy', 'laffytaffy', 'cerdan', 'pappi'],
     mochi: ['mochi'],
     barres: ['snickers', 'twix', 'kitkat', 'mars', 'bounty', 'bueno', 'maltesers', 'milka', 'lion', 'feastables', 'mrbeast'],
@@ -155,10 +155,7 @@
     chips: ['pringles', 'lays', 'cheetos', 'brets', 'chips', 'cracker', 'doritos', 'vico', 'monstermunch', 'flipz', 'pipas', 'nachos', 'buenosdias'],
     takis: ['takis', 'cornchito', 'pilipili', 'samyang', 'buldak'],
     jerky: ['jerky', 'jacklink', 'beef'],
-    ramen: ['ramen', 'samyang', 'buldak'],
     nouilles: ['nouille', 'noodle', 'ramen', 'samyang', 'buldak', 'udon', 'yakisoba', 'indomie', 'nissin', 'shin'],
-    americaine: ['poptarts', 'luckycharms', 'frosted', 'kellog', 'nesquik', 'marshmallow'],
-    sauce: ['sauce', 'guacamole', 'salsa', 'chamoy'],
     salsa: ['salsa'],
     energy: ['redbull', 'monster', 'energy', 'kratingdaeng', 'gameon'],
     sodas: ['fanta', 'coca', 'pepsi', 'sprite', 'mountaindew', 'mtndew', 'drpepper', 'schweppes', 'selecto', 'hamoud', 'lorina', 'poms'],
@@ -169,7 +166,7 @@
     bubbletea: ['bubbletea', 'boba'],
     mogu: ['mogu']
   };
-  var SUBLABELS = { gum: 'Chewing-gum & sucettes', chamallow: 'Chamallow', barbeapapa: 'Barbe à papa', popcorn: 'Pop-corn', biscuit: 'Biscuits', jelly: 'Gelées & gummies', mochi: 'Mochi', barres: 'Barres chocolatées', peanut: 'Beurre de cacahuète', dubai: 'Chocolat de Dubaï', chips: 'Chips & crackers', takis: 'Takis & snacks épicés', jerky: 'Beef jerky', ramen: 'Ramen', nouilles: 'Nouilles', americaine: 'Cuisine américaine', sauce: 'Sauces & dips', salsa: 'Salsa', energy: 'Énergisantes', sodas: 'Sodas viraux', the: 'Thé glacé', slush: 'Slushies', eau: 'Eaux aromatisées', jus: 'Jus de fruits', bubbletea: 'Bubble tea', mogu: 'Mogu Mogu' };
+  var SUBLABELS = { gum: 'Chewing-gum & sucettes', barbeapapa: 'Barbe à papa', popcorn: 'Pop-corn', biscuit: 'Biscuits', cereales: 'Céréales', jelly: 'Gelées & gummies', mochi: 'Mochi', barres: 'Barres chocolatées', peanut: 'Beurre de cacahuète', dubai: 'Chocolat de Dubaï', chips: 'Chips & crackers', takis: 'Takis & snacks épicés', jerky: 'Beef jerky', nouilles: 'Nouilles', salsa: 'Salsa', energy: 'Énergisantes', sodas: 'Sodas viraux', the: 'Thé glacé', slush: 'Slushies', eau: 'Eaux aromatisées', jus: 'Jus de fruits', bubbletea: 'Bubble tea', mogu: 'Mogu Mogu' };
   var params = new URLSearchParams(location.search);
   // URLs propres : /boutique/<collection> · /boutique/marque/<marque> · /boutique/rayon/<rayon> (repli sur ?c=/?b=/?sub=)
   var _pseg = location.pathname.replace(/^\/+|\/+$/g, '').split('/');
