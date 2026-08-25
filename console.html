@@ -873,8 +873,38 @@
     var subs='<div class="card"><div class="card-h"><h3>📩 Inscrits newsletter <span style="color:var(--muted);font-weight:600">('+RSUB.length+')</span></h3></div>'+
       (RSUB.length?RSUB.map(function(n){return '<div style="display:flex;justify-content:space-between;gap:1rem;padding:.45rem 0;border-bottom:1px solid var(--line);font-size:.88rem"><span>'+esc(n.email||'')+'</span><span style="color:var(--muted);white-space:nowrap">'+fmtDT(n.ts)+'</span></div>';}).join(''):'<div style="color:var(--muted);padding:.6rem 0">Aucun inscrit pour le moment.</div>')+'</div>';
     var msgs='<div class="card" style="margin-top:1.2rem"><div class="card-h"><h3>✉️ Messages contact <span style="color:var(--muted);font-weight:600">('+RMSG.length+')</span></h3></div>'+
-      (RMSG.length?RMSG.map(function(m){return '<div style="padding:.75rem 0;border-bottom:1px solid var(--line)"><div style="font-size:.74rem;color:var(--muted)">'+fmtDT(m.ts)+'</div><div style="font-weight:700;margin:.1rem 0">'+esc(m.name||'')+' <span style="color:var(--muted);font-weight:400">&lt;'+esc(m.email||'')+'&gt;</span></div><div style="color:var(--ink-2);font-size:.88rem;white-space:pre-wrap">'+esc(m.message||'')+'</div></div>';}).join(''):'<div style="color:var(--muted);padding:.6rem 0">Aucun message pour le moment.</div>')+'</div>';
+      (RMSG.length?RMSG.map(function(m,i){
+        var nm=esc(m.name||''), em=esc(m.email||'');
+        return '<div class="imsg" data-imsg="'+i+'" style="padding:.75rem 0;border-bottom:1px solid var(--line)">'+
+          '<div style="font-size:.74rem;color:var(--muted)">'+fmtDT(m.ts)+'</div>'+
+          '<div style="font-weight:700;margin:.1rem 0">'+nm+' <span style="color:var(--muted);font-weight:400">&lt;'+em+'&gt;</span></div>'+
+          '<div style="color:var(--ink-2);font-size:.88rem;white-space:pre-wrap">'+esc(m.message||'')+'</div>'+
+          (m.email?
+            '<div style="margin-top:.55rem"><button class="mini" data-ireply="'+i+'">↩️ Répondre par email</button></div>'+
+            '<div class="ireply-form" data-iform="'+i+'" style="display:none;margin-top:.65rem;border:1px solid var(--line);border-radius:12px;padding:.85rem">'+
+              '<div style="font-size:.74rem;color:var(--muted);margin-bottom:.45rem">Réponse expédiée depuis <b>hello@mycandys.fr</b> — l\'e-mail ajoute automatiquement « Bonjour '+(nm||'client')+' » et la signature.</div>'+
+              '<input class="pin ir-subj" style="width:100%;margin-bottom:.5rem" value="Re: votre message — My Candy&#39;s 🍬">'+
+              '<textarea class="pin ir-body" rows="5" style="width:100%;resize:vertical" placeholder="Écris ta réponse ici…"></textarea>'+
+              '<div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:.55rem"><button class="mini" data-icancel="'+i+'">Annuler</button><button class="btn btn-primary" data-isend="'+i+'">📧 Envoyer</button></div>'+
+            '</div>'
+          :'')+
+        '</div>';
+      }).join(''):'<div style="color:var(--muted);padding:.6rem 0">Aucun message pour le moment.</div>')+'</div>';
     el.innerHTML=subs+msgs;
+  }
+  function replyMsg(i,btn){
+    var m=RMSG[+i];if(!m||!m.email)return;
+    if(!ADMINKEY){toast('Connecte-toi en admin pour répondre','warn');return;}
+    var f=$('inbox-root').querySelector('[data-iform="'+i+'"]');if(!f)return;
+    var subj=(f.querySelector('.ir-subj').value||'').trim()||'Réponse de My Candy\'s';
+    var msg=(f.querySelector('.ir-body').value||'').trim();
+    if(!msg){f.querySelector('.ir-body').focus();return;}
+    btn.disabled=true;var old=btn.textContent;btn.textContent='Envoi…';
+    fetch(MCAPI+'/admin/reply',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+ADMINKEY},body:JSON.stringify({email:m.email,name:m.name||'',subject:subj,message:msg})})
+      .then(function(r){return r.json();}).then(function(d){
+        if(d&&d.ok){toast('📧 Réponse envoyée à '+m.email,'good');f.style.display='none';f.querySelector('.ir-body').value='';}
+        else{btn.disabled=false;btn.textContent=old;toast('Erreur : '+((d&&d.error)||'envoi'),'warn');}
+      }).catch(function(){btn.disabled=false;btn.textContent=old;toast('Erreur réseau','warn');});
   }
   function find(id){id=+id;for(var i=0;i<orders.length;i++)if(orders[i].id===id)return orders[i];return null;}
   function advanceOrder(id){var o=find(id);if(!o||o.status!=='nouvelle')return;o.status='preparee';openSet[id]=true;refresh();toast('Commande #'+id+' marquée préparée');}
@@ -1359,6 +1389,14 @@
   $('ofilters').addEventListener('click',function(e){var c=e.target.closest('[data-f]');if(!c)return;document.querySelectorAll('#ofilters .chip').forEach(function(x){x.classList.remove('active');});c.classList.add('active');filterVal=c.getAttribute('data-f');renderOrders();});
   $('search').addEventListener('input',function(){searchQ=this.value.trim().toLowerCase();if(curView==='products'){renderProducts();return;}renderStock();renderOrders();});
   $('bell').addEventListener('click',function(){setView('orders');});
+  if($('inbox-root'))$('inbox-root').addEventListener('click',function(e){
+    var rep=e.target.closest('[data-ireply]');
+    if(rep){var i=rep.getAttribute('data-ireply');var f=$('inbox-root').querySelector('[data-iform="'+i+'"]');if(f){var show=f.style.display==='none';f.style.display=show?'block':'none';if(show){var t=f.querySelector('.ir-body');if(t)t.focus();}}return;}
+    var can=e.target.closest('[data-icancel]');
+    if(can){var f2=$('inbox-root').querySelector('[data-iform="'+can.getAttribute('data-icancel')+'"]');if(f2)f2.style.display='none';return;}
+    var snd=e.target.closest('[data-isend]');
+    if(snd){replyMsg(snd.getAttribute('data-isend'),snd);return;}
+  });
   // produits — catalogue réel
   $('pUnlock').addEventListener('click',pUnlockModal);
   $('pAdd').addEventListener('click',openProductModal);

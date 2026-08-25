@@ -1037,6 +1037,18 @@ function relanceEmailHtml(name) {
     '<p style="color:#8A6076;font-size:12.5px">Code à saisir au paiement. À très vite ! 💌</p></div>';
 }
 
+/* Réponse personnalisée du gérant à un client (depuis la Boîte de réception de la console). */
+function adminReplyHtml(name, message) {
+  var first = firstName(name);
+  var body = esc(String(message || '')).replace(/\r\n|\r|\n/g, '<br>');
+  return '<div style="font-family:Arial,sans-serif;color:#2A0A1C;max-width:520px;margin:auto">' + logoHdr() +
+    '<h2 style="color:#E01784">Bonjour' + (first ? ' ' + esc(first) : '') + ' 🍬</h2>' +
+    '<div style="font-size:14px;line-height:1.65">' + body + '</div>' +
+    '<p style="color:#8A6076;font-size:13px;margin-top:24px">Une question ? Réponds simplement à cet e-mail, on est là pour toi. 💌<br>— L\'équipe My Candy\'s</p>' +
+    '<p style="text-align:center;margin:20px 0 6px"><a href="https://mycandys.fr/boutique" style="background:#E01784;color:#fff;text-decoration:none;font-weight:700;padding:12px 24px;border-radius:12px;display:inline-block">Visiter la boutique →</a></p>' +
+    '</div>';
+}
+
 /* Finalise une commande si le paiement SumUp est bien PAID. Idempotent. */
 // Finalise une commande DÉJÀ vérifiée payée (webhook Stripe ou retour vérifié). Idempotent.
 async function finalizeOrder(env, reference, paymentIntent) {
@@ -1428,6 +1440,24 @@ export default {
         let mailed = false;
         try { await brevoSendEmail(env, { toEmail: email, toName: firstName(name), subject: "On t'a gardé -10% chez My Candy's 🍬", html: relanceEmailHtml(name) }); mailed = true; } catch (e) {}
         return json({ ok: true, mailed: mailed }, 200, allow);
+      }
+
+      if (path === '/admin/reply') {
+        // Back-office : répondre à un client par email depuis la Boîte de réception (expédié par hello@mycandys.fr). (protégé ADMIN_KEY)
+        const auth = request.headers.get('Authorization') || '';
+        if (!env.ADMIN_KEY || auth !== ('Bearer ' + env.ADMIN_KEY)) return json({ ok: false, error: 'unauthorized' }, 401, allow);
+        const email = str(body.email, 254); const name = str(body.name, 80);
+        const subject = str(body.subject, 160) || 'Réponse de My Candy\'s 🍬';
+        const message = str(body.message, 5000);
+        if (!isEmail(email)) return json({ ok: false, error: 'email_invalide' }, 400, allow);
+        if (!message) return json({ ok: false, error: 'message_vide' }, 400, allow);
+        let mailed = false, detail = '';
+        try {
+          const r = await brevoSendEmail(env, { toEmail: email, toName: name, subject: subject, html: adminReplyHtml(name, message), replyTo: env.SENDER_EMAIL });
+          mailed = r.ok;
+          if (!r.ok) { try { detail = (await r.text()).slice(0, 300); } catch (e) {} }
+        } catch (e) { detail = String(e).slice(0, 300); }
+        return json({ ok: mailed, mailed: mailed, error: mailed ? undefined : ('envoi_echoue' + (detail ? ': ' + detail : '')) }, mailed ? 200 : 502, allow);
       }
 
       if (path === '/catalog') {
