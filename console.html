@@ -816,7 +816,7 @@
     else if(o.status==='en_traitement'||o.status==='traitee')st=o.status; // préserver les statuts back-office
     else st='nouvelle';
     return {id:o.reference||key,ref:o.reference||key,time:fmtHM(o.ts),ts:o.ts||0,
-      cust:{n:(cust.name||cust.email||'Client'),e:cust.email||'',s:cust.addr||'',z:((cust.zip||'')+' '+(cust.city||'')).trim(),c:ocolor(cust.email)},
+      cust:{n:(cust.name||cust.email||'Client'),e:cust.email||'',t:cust.tel||'',s:cust.addr||'',z:((cust.zip||'')+' '+(cust.city||'')).trim(),c:ocolor(cust.email)},
       items:(o.items||[]).map(function(i){return {id:i.id,qty:i.qty||1,name:i.name||i.id,price:(i.price!=null?i.price:0)};}),
       status:st,total:(o.total!=null?o.total:0),tracking:o.tracking||'',carrier:o.carrier||'',paid:!!o.paid};}
   function loadReal(){
@@ -862,7 +862,7 @@
         '</div>'+
         '<div class="order-detail"><div class="odetail-grid">'+
           '<div class="obox"><h4>Articles commandés</h4><div class="oitems">'+items+'</div></div>'+
-          '<div class="obox"><h4>Livraison</h4><div class="addr"><div class="line"><span class="ic">📍</span><span><span class="nm">'+esc(o.cust.n)+'</span><br>'+esc(o.cust.s)+'<br>'+esc(o.cust.z)+'</span></div><div class="line" style="margin-top:.5rem"><span class="ic">✉️</span><span>'+esc(o.cust.e)+'</span></div></div></div>'+
+          '<div class="obox"><h4>Livraison</h4><div class="addr"><div class="line"><span class="ic">📍</span><span><span class="nm">'+esc(o.cust.n)+'</span><br>'+esc(o.cust.s)+'<br>'+esc(o.cust.z)+'</span></div><div class="line" style="margin-top:.5rem"><span class="ic">✉️</span><span>'+esc(o.cust.e)+'</span></div>'+(o.cust.t?'<div class="line" style="margin-top:.5rem"><span class="ic">📞</span><span><a href="tel:'+esc(o.cust.t.replace(/[^0-9+]/g,''))+'" style="color:inherit">'+esc(o.cust.t)+'</a></span></div>':'')+'</div></div>'+
         '</div><div class="oactions">'+act+'</div></div>'+
       '</div>';
     }).join('');
