@@ -348,7 +348,9 @@
   .pin:disabled{background:var(--line-soft);color:var(--ink-2);cursor:not-allowed}
   select.pin{max-width:130px}
   .switch.sm.locked{opacity:.5;pointer-events:none}
-  .kpi[data-pflag]{cursor:pointer;transition:box-shadow .12s}
+  .kpi[data-pflag],.kpi[data-ofilt]{cursor:pointer;transition:box-shadow .12s}
+  .kpi[data-ofilt]:hover{box-shadow:0 4px 14px rgba(224,23,132,.14)}
+  .kpi.kpi-on{outline:2px solid var(--pink);outline-offset:-2px}
   .kpi.kpi-on{box-shadow:0 0 0 2px var(--pink) inset}
   #view-products .prod .thumb{border:1px solid var(--line)}
   #pCats{flex-wrap:wrap}
@@ -409,7 +411,7 @@
   <!-- ============ SIDEBAR ============ -->
   <aside class="sidebar">
     <div class="brand">
-      <div class="mark">🍬</div>
+      <div class="mark" style="background:none;box-shadow:none"><img src="assets/logo.png" alt="My Candy's" style="width:100%;height:100%;object-fit:contain"></div>
       <div class="bt"><div class="n">My Candy's</div><div class="s">Admin</div></div>
       <button class="burger" id="navBurger" type="button" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
     </div>
@@ -832,8 +834,9 @@
   }
   function ordersLive(){return orders.filter(function(o){return o.status!=='attente';});} /* commandes payées/réelles (hors attente de paiement) */
   function nLive(){return ordersLive().length;}
+  function otile(lbl,num,unit,cls,filt){var on=(filterVal===filt);return '<div class="kpi '+cls+(on?' kpi-on':'')+'" data-ofilt="'+filt+'" title="Filtrer : '+lbl+'"><div class="lbl">'+lbl+'</div><div class="num tnum">'+num+(unit?'<span class="unit">'+unit+'</span>':'')+'</div></div>';}
   function renderOrderKpis(){var nw=0,sh=0,ca=0;orders.forEach(function(o){if(o.status==='expediee')sh++;else if(o.status==='nouvelle')nw++;if(o.paid)ca+=oTotal(o);});
-    if($('okpis'))$('okpis').innerHTML=tile('À expédier',nw,'','warn','')+tile('Expédiées',sh,'','good','')+tile('Commandes',nLive(),'','','')+tile('Chiffre d\'affaires',money(ca).replace(' €',''),' €','accent','');
+    if($('okpis'))$('okpis').innerHTML=otile('À expédier',nw,'','warn','nouvelle')+otile('Expédiées',sh,'','good','expediee')+otile('Commandes',nLive(),'','','all')+tile('Chiffre d\'affaires',money(ca).replace(' €',''),' €','accent','');
     var badge=$('navBadge');if(badge){badge.textContent=nw;badge.className='nbadge'+(nw===0?' zero':'');}
     var bb=$('bellBadge');if(bb){bb.textContent=nw;bb.className='nb'+(nw===0?' zero':'');}
   }
@@ -1391,7 +1394,9 @@
   $('orders').addEventListener('click',function(e){var a=e.target.closest('[data-advance]');if(a){advanceOrder(a.getAttribute('data-advance'));return;}var s=e.target.closest('[data-ship]');if(s){shipOrder(s.getAttribute('data-ship'));return;}var h=e.target.closest('.order-head');if(h)toggleOrder(h.parentElement.getAttribute('data-order'));});
   $('orders').addEventListener('click',function(e){var b=e.target.closest('[data-ostatus]');if(!b)return;var ref=b.getAttribute('data-ref'),st=b.getAttribute('data-ostatus');if(!ADMINKEY){toast('Connecte-toi en admin pour changer le statut','warn');return;}b.disabled=true;
     fetch(MCAPI+'/order/status',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+ADMINKEY},body:JSON.stringify({reference:ref,status:st})}).then(function(r){return r.json();}).then(function(d){if(d&&d.ok){loadReal();toast('Statut : '+((OST[st]&&OST[st][1])||st),'good');}else{b.disabled=false;toast('Erreur','warn');}}).catch(function(){b.disabled=false;});});
-  $('ofilters').addEventListener('click',function(e){var c=e.target.closest('[data-f]');if(!c)return;document.querySelectorAll('#ofilters .chip').forEach(function(x){x.classList.remove('active');});c.classList.add('active');filterVal=c.getAttribute('data-f');renderOrders();});
+  function setOrderFilter(f){filterVal=f;document.querySelectorAll('#ofilters .chip').forEach(function(x){x.classList.toggle('active',x.getAttribute('data-f')===f);});renderOrders();}
+  $('ofilters').addEventListener('click',function(e){var c=e.target.closest('[data-f]');if(!c)return;setOrderFilter(c.getAttribute('data-f'));});
+  if($('okpis'))$('okpis').addEventListener('click',function(e){var t=e.target.closest('[data-ofilt]');if(!t)return;setOrderFilter(t.getAttribute('data-ofilt'));});
   $('search').addEventListener('input',function(){searchQ=this.value.trim().toLowerCase();if(curView==='products'){renderProducts();return;}renderStock();renderOrders();});
   $('bell').addEventListener('click',function(){setView('orders');});
   if($('inbox-root'))$('inbox-root').addEventListener('click',function(e){
