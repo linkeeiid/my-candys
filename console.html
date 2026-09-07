@@ -730,7 +730,7 @@
     var pm=paid.length?ca/paid.length:0;
     if($('dashKpis'))$('dashKpis').innerHTML=
       tile('Chiffre d\'affaires',money(ca).replace(' €',''),' €','accent','')+
-      tile('Commandes',orders.length,'','','dont '+nw+' à expédier')+
+      tile('Commandes',nLive(),'','','dont '+nw+' à expédier')+
       tile('À expédier',nw,'','warn','')+
       tile('Panier moyen',money(pm).replace(' €',''),' €','good','');
     var top=aggProducts().slice(0,6);
@@ -830,8 +830,10 @@
       renderDash();renderOrders();renderInbox();renderPromos();
     }).catch(function(){});
   }
+  function ordersLive(){return orders.filter(function(o){return o.status!=='attente';});} /* commandes payées/réelles (hors attente de paiement) */
+  function nLive(){return ordersLive().length;}
   function renderOrderKpis(){var nw=0,sh=0,ca=0;orders.forEach(function(o){if(o.status==='expediee')sh++;else if(o.status==='nouvelle')nw++;if(o.paid)ca+=oTotal(o);});
-    if($('okpis'))$('okpis').innerHTML=tile('À expédier',nw,'','warn','')+tile('Expédiées',sh,'','good','')+tile('Commandes',orders.length,'','','')+tile('Chiffre d\'affaires',money(ca).replace(' €',''),' €','accent','');
+    if($('okpis'))$('okpis').innerHTML=tile('À expédier',nw,'','warn','')+tile('Expédiées',sh,'','good','')+tile('Commandes',nLive(),'','','')+tile('Chiffre d\'affaires',money(ca).replace(' €',''),' €','accent','');
     var badge=$('navBadge');if(badge){badge.textContent=nw;badge.className='nbadge'+(nw===0?' zero':'');}
     var bb=$('bellBadge');if(bb){bb.textContent=nw;bb.className='nb'+(nw===0?' zero':'');}
   }
@@ -839,7 +841,7 @@
   function renderOrders(){
     if(!ADMINKEY){ if($('okpis'))$('okpis').innerHTML=''; if($('orders'))$('orders').innerHTML=gateHtml('Commandes protégées'); return; }
     renderOrderKpis();
-    var list=orders.filter(function(o){return (filterVal==='all'||o.status===filterVal)&&(!searchQ||(o.cust.n||'').toLowerCase().indexOf(searchQ)>=0||(o.cust.e||'').toLowerCase().indexOf(searchQ)>=0||(o.ref||'').toLowerCase().indexOf(searchQ)>=0);});
+    var list=orders.filter(function(o){return ((filterVal==='all'&&o.status!=='attente')||o.status===filterVal)&&(!searchQ||(o.cust.n||'').toLowerCase().indexOf(searchQ)>=0||(o.cust.e||'').toLowerCase().indexOf(searchQ)>=0||(o.ref||'').toLowerCase().indexOf(searchQ)>=0);});
     if(!list.length){$('orders').innerHTML='<div style="color:var(--muted);padding:1.4rem;text-align:center;background:var(--card);border:1px solid var(--line);border-radius:14px">Aucune commande dans cette vue.</div>';}
     else $('orders').innerHTML=list.map(function(o){
       var st=OST[o.status]||['st-prep',o.status],open=openSet[o.id];
@@ -1202,7 +1204,7 @@
     var map={};orders.forEach(function(o){var k=o.cust.n;if(!map[k])map[k]={cust:o.cust,n:0,total:0,last:o.time};map[k].n++;map[k].total+=oTotal(o);});
     var arr=Object.keys(map).map(function(k){return map[k];}).sort(function(a,b){return b.total-a.total;});
     var caTot=arr.reduce(function(s,c){return s+c.total;},0);
-    $('clientKpis').innerHTML=tile('Clients',arr.length,'','accent','')+tile('Commandes',orders.length,'','','')+tile('Panier moyen',money(orders.length?caTot/orders.length:0).replace(' €',''),' €','','')+tile('Meilleur client',arr.length?money(arr[0].total).replace(' €',''):'0',' €','good',arr.length?arr[0].cust.n:'—');
+    $('clientKpis').innerHTML=tile('Clients',arr.length,'','accent','')+tile('Commandes',nLive(),'','','')+tile('Panier moyen',money(nLive()?caTot/nLive():0).replace(' €',''),' €','','')+tile('Meilleur client',arr.length?money(arr[0].total).replace(' €',''):'0',' €','good',arr.length?arr[0].cust.n:'—');
     $('clientBody').innerHTML=arr.length?arr.map(function(c,i){
       return '<tr><td><div style="display:flex;align-items:center;gap:.6rem"><span class="avatar" style="background:'+c.cust.c+'">'+initials(c.cust.n)+'</span><div><div style="font-weight:700;font-size:.85rem">'+c.cust.n+(i===0?'<span class="vip">VIP</span>':'')+'</div><div class="sku">'+c.cust.e+'</div></div></div></td>'+
         '<td style="font-size:.84rem">'+c.cust.z+'</td>'+
@@ -1302,7 +1304,7 @@
   function renderReports(){
     var nb=0,ca=0;CATALOG.forEach(function(p){var u=soldUnits[p.id]||0;nb+=u;ca+=u*p.price;});
     var orders7=Math.max(1,Math.round(nb/2.4));
-    $('reportKpis').innerHTML=tile('CA (7j)',money(ca).replace(' €',''),' €','good','')+tile('Commandes',orders.length,'','','')+tile('Articles vendus',nb,'','accent','')+tile('Panier moyen',money(ca/orders7).replace(' €',''),' €','','');
+    $('reportKpis').innerHTML=tile('CA (7j)',money(ca).replace(' €',''),' €','good','')+tile('Commandes',nLive(),'','','')+tile('Articles vendus',nb,'','accent','')+tile('Panier moyen',money(ca/orders7).replace(' €',''),' €','','');
     var catMap={};CATALOG.forEach(function(p){catMap[p.cat]=(catMap[p.cat]||0)+(soldUnits[p.id]||0)*p.price;});
     var arr=Object.keys(catMap).map(function(k){return{cat:k,rev:catMap[k]};}).sort(function(a,b){return b.rev-a.rev;});
     var maxR=arr[0]?arr[0].rev:1;
@@ -1318,7 +1320,7 @@
   function exportClients(){var map={};orders.forEach(function(o){var k=o.cust.n;if(!map[k])map[k]={cust:o.cust,n:0,total:0};map[k].n++;map[k].total+=oTotal(o);});var rows=[['Client','E-mail','Ville','Commandes','Total (€)']];Object.keys(map).forEach(function(k){var c=map[k];rows.push([c.cust.n,c.cust.e,c.cust.z,c.n,c.total.toFixed(2)]);});exportCSV('Export — Clients','clients-my-candys.csv',rows);}
   function zReport(){var ca=orders.reduce(function(s,o){return s+oTotal(o);},0);
     function rw(k,v){return '<div class="exprow"><div style="flex:1;font-size:.85rem">'+k+'</div><b>'+v+'</b></div>';}
-    openModal('Clôture de caisse — Z','<div class="expcard">'+rw('Commandes en ligne',orders.length)+rw('Ventes boutique (7j)',salesB.reduce(add,0))+rw('Articles vendus (7j)',(function(){var n=0;CATALOG.forEach(function(p){n+=soldUnits[p.id]||0;});return n;})())+rw('Chiffre d\'affaires en ligne',money(ca))+rw('Ticket moyen',money(orders.length?ca/orders.length:0))+'</div>',function(){});
+    openModal('Clôture de caisse — Z','<div class="expcard">'+rw('Commandes en ligne',nLive())+rw('Ventes boutique (7j)',salesB.reduce(add,0))+rw('Articles vendus (7j)',(function(){var n=0;CATALOG.forEach(function(p){n+=soldUnits[p.id]||0;});return n;})())+rw('Chiffre d\'affaires en ligne',money(ca))+rw('Ticket moyen',money(nLive()?ca/nLive():0))+'</div>',function(){});
     toast('Clôture générée','good');}
 
   /* ---------- FIDÉLITÉ ---------- */
