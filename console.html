@@ -922,7 +922,7 @@
   var SUBKEYS=['gum','barbeapapa','popcorn','biscuit','cereales','jelly','mochi','barres','peanut','dubai','chips','takis','jerky','nouilles','salsa','energy','sodas','the','slush','eau','jus','bubbletea','mogu'];
   var cmeta=function(c){return CATMETA[c]||{e:'📦',c:'#8A6076'};};
   var hasMC=(typeof MC!=='undefined'&&MC&&MC.PRODUCTS);
-  var ADMINKEY=null;try{ADMINKEY=sessionStorage.getItem('mcAdminKey')||null;}catch(e){}
+  var ADMINKEY=null;try{ADMINKEY=localStorage.getItem('mcAdminKey')||sessionStorage.getItem('mcAdminKey')||null;}catch(e){}
   var pOverrides={},pFilter={cat:'',flag:''},pShown=0,pFiltered=[],pPage=60,pLastCat='',pTimer;
   var pIsOut=function(p){return p.available===false||p.stock===0;};
 
@@ -1075,7 +1075,7 @@
     openModal('Activer l\'édition',
       '<form><p style="font-size:.83rem;color:var(--muted);margin:0 0 .7rem">Mot de passe administrateur pour modifier le catalogue en direct (prix, stock, photos…).</p><div class="form-row"><label>Mot de passe</label><input name="pw" type="password" required placeholder="••••••••"></div><div class="perr" style="color:var(--red);font-size:.8rem;min-height:1.1rem;font-weight:600"></div><button class="btn btn-primary" type="submit" style="width:100%;justify-content:center">Déverrouiller</button></form>',
       function(f){var key=f.pw.value,err=$('modalBody').querySelector('.perr');err.textContent='Vérification…';
-        fetch(MCAPI+'/admin/data',{headers:{'Authorization':'Bearer '+key}}).then(function(r){if(r.status===401)throw 401;if(!r.ok)throw 0;ADMINKEY=key;try{sessionStorage.setItem('mcAdminKey',key);}catch(e){}closeModal();renderProducts();loadReal();toast('Accès admin activé ✓','good');}).catch(function(e){err.textContent=e===401?'Mot de passe incorrect.':'Erreur de connexion.';});});
+        fetch(MCAPI+'/admin/data',{headers:{'Authorization':'Bearer '+key}}).then(function(r){if(r.status===401)throw 401;if(!r.ok)throw 0;ADMINKEY=key;try{localStorage.setItem('mcAdminKey',key);}catch(e){}closeModal();renderProducts();loadReal();toast('Accès admin activé ✓','good');}).catch(function(e){err.textContent=e===401?'Mot de passe incorrect.':'Erreur de connexion.';});});
   }
   function pFicheModal(id){
     var p=MC.byId?MC.byId(id):null;if(!p)return;var canEdit=!!ADMINKEY,lock=canEdit?'':' disabled';
@@ -1425,7 +1425,7 @@
       else{toast('Notifications non disponibles sur ce navigateur. Installe l\'app sur l\'écran d\'accueil, ou utilise Chrome/Safari à jour.','warn');}
       return;
     }
-    var key=ADMINKEY||(function(){try{return sessionStorage.getItem('mcAdminKey');}catch(e){return null;}})();
+    var key=ADMINKEY||(function(){try{return localStorage.getItem('mcAdminKey')||sessionStorage.getItem('mcAdminKey');}catch(e){return null;}})();
     if(!key){pUnlockModal();return;}
     try{
       var perm=await Notification.requestPermission();
