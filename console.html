@@ -924,7 +924,7 @@
   /* ====== PRODUITS — catalogue réel connecté (Firebase via Worker) ====== */
   var MCAPI='https://my-candys-api.halimjeremy.workers.dev';
   var CATMETA={Bonbons:{e:'🍬',c:'#FF2E9A'},Snacks:{e:'🍿',c:'#F59E0B'},Sodas:{e:'🥤',c:'#2AA7E0'},Chocolats:{e:'🍫',c:'#9B5B3A'},Desserts:{e:'🧁',c:'#A855C7'},'Épicé':{e:'🌶️',c:'#EF4444'},'Surgelé':{e:'🧊',c:'#3B82C4'},'Divers':{e:'🧺',c:'#6B7280'}};
-  var PCATS=['Bonbons','Snacks','Sodas','Chocolats','Desserts','Épicé','Surgelé','Divers'];
+  var PCATS=['Bonbons','Snacks','Sodas','Chocolats','Desserts','Épicé'];
   /* sous-catégories — identiques à la boutique (clé => libellé) ; l'affectation manuelle prime sur les mots-clés */
   var SUBLABELS={gum:'Chewing-gum & sucettes',barbeapapa:'Barbe à papa',popcorn:'Pop-corn',biscuit:'Biscuits',cereales:'Céréales',jelly:'Gelées & gummies',mochi:'Mochi',barres:'Barres chocolatées',peanut:'Beurre de cacahuète',dubai:'Chocolat de Dubaï',chips:'Chips & crackers',takis:'Takis & snacks épicés',jerky:'Beef jerky',nouilles:'Nouilles',salsa:'Salsa',energy:'Énergisantes',sodas:'Sodas viraux',the:'Thé glacé',slush:'Slushies',eau:'Eaux aromatisées',jus:'Jus de fruits',bubbletea:'Bubble tea',mogu:'Mogu Mogu'};
   var SUBKEYS=['gum','barbeapapa','popcorn','biscuit','cereales','jelly','mochi','barres','peanut','dubai','chips','takis','jerky','nouilles','salsa','energy','sodas','the','slush','eau','jus','bubbletea','mogu'];
@@ -995,7 +995,7 @@
   }
   function pRenderChips(){if(!hasMC||!$('pCats'))return;var FAMS=['Sucrés','Salés','Surgelé','Boissons','Divers'];var counts={};MC.PRODUCTS.forEach(function(p){var f=famOf(p.id);counts[f]=(counts[f]||0)+1;});
     var h='<button class="chip'+(pFilter.cat===''?' active':'')+'" data-pcat="">Toutes ('+MC.PRODUCTS.length+')</button>';
-    h+=FAMS.map(function(c){return '<button class="chip'+(pFilter.cat===c?' active':'')+'" data-pcat="'+c+'">'+(FAM_EMO[c]||'')+' '+c+' ('+(counts[c]||0)+')</button>';}).join('');
+    h+=FAMS.filter(function(c){return counts[c];}).map(function(c){return '<button class="chip'+(pFilter.cat===c?' active':'')+'" data-pcat="'+c+'">'+(FAM_EMO[c]||'')+' '+c+' ('+(counts[c]||0)+')</button>';}).join(''); // n'affiche que les familles non vides
     if(counts['Autres'])h+='<button class="chip'+(pFilter.cat==='Autres'?' active':'')+'" data-pcat="Autres">📦 Autres ('+counts['Autres']+')</button>';
     $('pCats').innerHTML=h;}
 
