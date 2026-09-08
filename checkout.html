@@ -769,21 +769,23 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
   var esc = MC.esc, money = MC.money;
   // Tirage ALÉATOIRE PONDÉRÉ : varie à chaque visite, mais favorise ce qui COMPLÈTE le panier (donne envie)
   function weightedPick(exclude) {
-    var its = MCCart.items(), inCart = {}, cats = {};
-    its.forEach(function (l) { inCart[l.id] = 1; if (l.cat) cats[l.cat] = 1; });
+    var its = MCCart.items(), inCart = {}, cats = {}, brands = {}, subs = {};
+    its.forEach(function (l) { inCart[l.id] = 1; if (l.cat) cats[l.cat] = 1; var full = MC.byId && MC.byId(l.id); if (full) { if (full.brand) brands[full.brand] = 1; if (full.sub) subs[full.sub] = 1; } });
     var sweet = cats['Bonbons'] || cats['Chocolats'] || cats['Desserts'];
     var salty = cats['Snacks'] || cats['Épicé'];
     var drink = cats['Sodas'];
     var pool = (MC.PRODUCTS || []).filter(function (p) {
       return p && p.img && p.price > 0 && p.available !== false && p.stock !== 0 && !p.box && !inCart[p.id] && !(exclude && exclude[p.id]);
     }).map(function (p) {
-      var w = 1;
+      var w = 0.6;
+      if (p.brand && brands[p.brand]) w += 3.5;                         // même marque que le panier → très personnalisé
       if (cats[p.cat]) w += 2.5;                                        // même univers que le panier
-      if (p.cat === 'Sodas' && (sweet || salty)) w += 2.5;             // une boisson pour accompagner
+      if (p.sub && subs[p.sub]) w += 2.5;                               // même sous-rayon que le panier
+      if (p.cat === 'Sodas' && (sweet || salty)) w += 2;               // une boisson pour accompagner
       if (drink && (p.cat === 'Snacks' || p.cat === 'Bonbons')) w += 2; // un snack / bonbon avec la boisson
       if (salty && (p.cat === 'Bonbons' || p.cat === 'Chocolats')) w += 1.5; // du sucré après le salé
-      if (p.best) w += 1.5;                                             // bestseller → donne envie
-      if (p.old) w += 1;                                                // en promo → bonne affaire
+      if (p.best) w += 0.5;                                             // léger coup de pouce bestseller
+      if (p.old) w += 0.8;                                              // en promo → bonne affaire
       return { p: p, w: w };
     });
     var out = [], n = Math.min(8, pool.length);
@@ -818,13 +820,8 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
       '</div>';
     }).join('');
   }
-  row.addEventListener('click', function (e) {
-    var b = e.target.closest('[data-add]'); if (!b) return;
-    var id = b.getAttribute('data-add');
-    var p = (MC.byId && MC.byId(id)) || (MC.PRODUCTS || []).filter(function (x) { return x.id === id; })[0];
-    if (!p) return;
-    MCCart.add(p, 1); // → mc-cart-change → résumé + montant wallet mis à jour, l'ajouté disparaît de l'upsell
-  });
+  // L'ajout au panier est géré par la délégation globale data-add (app.js) → UN SEUL ajout.
+  // (l'événement mc-cart-change déclenche refresh() : l'article ajouté disparaît de l'upsell)
   window.addEventListener('mc-cart-change', refresh);
   refresh();
 })();

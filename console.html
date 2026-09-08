@@ -526,7 +526,7 @@
         </div>
         <div class="ofilters" id="pCats"></div>
         <div class="pbulk" id="pBulk" style="display:none;align-items:center;gap:.55rem;margin:.1rem 0 .7rem;flex-wrap:wrap">
-          <button class="btn btn-ghost" id="pDupBtn" title="Coche automatiquement les produits en double (même nom), en gardant 1 exemplaire de chaque">🔁 Cocher les doublons</button>
+          <button class="btn btn-ghost" id="pDupBtn" title="Affiche les produits aux noms similaires, groupés, pour repérer et supprimer les vrais doublons (attention aux variantes de taille légitimes)">🔁 Voir les noms similaires</button>
           <button class="btn btn-ghost" id="pSelClear" style="display:none">Tout décocher</button>
           <button class="btn" id="pBulkDel" disabled style="background:#EF4444;color:#fff;border-color:#EF4444;opacity:.55">🗑 Supprimer la sélection (<span id="pSelN">0</span>)</button>
           <span class="sub" id="pDupInfo" style="color:var(--muted);font-size:.8rem"></span>
@@ -1002,16 +1002,18 @@
   function renderProducts(){
     if(!hasMC){$('prodBody').innerHTML='<tr><td colspan="8" style="padding:1.4rem;text-align:center;color:var(--muted)">Catalogue indisponible (products.js non chargé).</td></tr>';return;}
     var st=pStats();
+    var dupSet=pDupSet(), dupN=Object.keys(dupSet).length;
     var allOn=(!pFilter.flag&&!pFilter.cat&&!searchQ);
-    $('prodKpis').innerHTML='<div class="kpi accent'+(allOn?' kpi-on':'')+'" data-pall="1" style="cursor:pointer" title="Voir tous les produits"><div class="lbl">Références</div><div class="num tnum">'+st.tot+'</div></div>'+ptile('En rupture',st.out,'warn','out',pFilter.flag==='out')+ptile('Sans photo',st.nopic,'','nophoto',pFilter.flag==='nophoto')+ptile('À prixer',st.noprice,'warn','noprice',pFilter.flag==='noprice')+tile('Édition',ADMINKEY?'ON':'OFF','',ADMINKEY?'good':'',ADMINKEY?'activée':'verrouillée');
+    $('prodKpis').innerHTML='<div class="kpi accent'+(allOn?' kpi-on':'')+'" data-pall="1" style="cursor:pointer" title="Voir tous les produits"><div class="lbl">Références</div><div class="num tnum">'+st.tot+'</div></div>'+ptile('En rupture',st.out,'warn','out',pFilter.flag==='out')+ptile('Sans photo',st.nopic,'','nophoto',pFilter.flag==='nophoto')+ptile('À prixer',st.noprice,'warn','noprice',pFilter.flag==='noprice')+ptile('Noms similaires',dupN,dupN?'warn':'','dup',pFilter.flag==='dup')+tile('Édition',ADMINKEY?'ON':'OFF','',ADMINKEY?'good':'',ADMINKEY?'activée':'verrouillée');
     $('prodCount').textContent='· '+st.tot+' références';
     if($('pEditState')){$('pEditState').className=ADMINKEY?'badge-soft b-on':'badge-soft b-wait';$('pEditState').style.fontWeight='700';$('pEditState').innerHTML=ADMINKEY?'🔓 Édition activée':'🔒 Lecture seule';}
     if($('pUnlock'))$('pUnlock').style.display=ADMINKEY?'none':'';
     pRenderChips();
     var q=searchQ;
-    pFiltered=MC.PRODUCTS.filter(function(p){if(pFilter.cat&&famOf(p.id)!==pFilter.cat)return false;if(pFilter.flag==='out'&&!pIsOut(p))return false;if(pFilter.flag==='nophoto'&&p.img)return false;if(pFilter.flag==='noprice'&&!pNoPrice(p))return false;if(q&&(p.name+' '+(p.brand||'')).toLowerCase().indexOf(q)<0)return false;return true;});
+    pFiltered=MC.PRODUCTS.filter(function(p){if(pFilter.cat&&famOf(p.id)!==pFilter.cat)return false;if(pFilter.flag==='out'&&!pIsOut(p))return false;if(pFilter.flag==='nophoto'&&p.img)return false;if(pFilter.flag==='noprice'&&!pNoPrice(p))return false;if(pFilter.flag==='dup'&&!dupSet[p.id])return false;if(q&&(p.name+' '+(p.brand||'')).toLowerCase().indexOf(q)<0)return false;return true;});
     var nkey=function(s){return (s||'').replace(/^[^0-9A-Za-zÀ-ÿ]+/,'').toLowerCase();};
-    pFiltered.sort(function(a,b){var c=(a.cat||'~').localeCompare(b.cat||'~','fr');if(c)return c;var d=(a.brand||'~~~').localeCompare(b.brand||'~~~','fr');if(d)return d;return nkey(a.name).localeCompare(nkey(b.name),'fr');});
+    if(pFilter.flag==='dup'){pFiltered.sort(function(a,b){var c=(dupSet[a.id]||'').localeCompare(dupSet[b.id]||'','fr');if(c)return c;return nkey(a.name).localeCompare(nkey(b.name),'fr');});} // groupes de similaires côte à côte
+    else pFiltered.sort(function(a,b){var c=(a.cat||'~').localeCompare(b.cat||'~','fr');if(c)return c;var d=(a.brand||'~~~').localeCompare(b.brand||'~~~','fr');if(d)return d;return nkey(a.name).localeCompare(nkey(b.name),'fr');});
     pLastCat='';pShown=0;$('prodBody').innerHTML='';pMore();
   }
   function pMore(){
@@ -1074,8 +1076,15 @@
     var sw=tr.querySelector('[data-pavail]'); if(sw)sw.classList.toggle('off',p.available===false);
   }
   // ---- Sélection multiple + doublons ----
-  function pNorm(s){return (s||'').toLowerCase().replace(/\s+/g,' ').trim();}
-  function pDupSet(){var seen={},dups={};pFiltered.forEach(function(p){var k=pNorm(p.name);if(!k)return;if(seen[k])dups[p.id]=1;else seen[k]=1;});return dups;}
+  // Normalisation « signature » : minuscules, sans accents ni ponctuation, sans tailles/poids/quantités
+  // ni mots vides, mots triés → « Takis Fuego 100g », « TAKIS  fuego » et « Fuego Takis » donnent la MÊME clé.
+  function pNorm(s){s=(s||'').toLowerCase();try{s=s.normalize('NFD').replace(new RegExp('[\\u0300-\\u036f]','g'),'');}catch(e){}s=s.replace(/[^a-z0-9 ]+/g,' ');
+    var stop={pack:1,lot:1,edition:1,saveur:1,saveurs:1,gout:1,gouts:1,flavor:1,flavour:1,de:1,la:1,le:1,les:1,du:1,des:1,the:1,and:1,et:1,x:1,g:1,kg:1,gr:1,ml:1,cl:1,l:1,oz:1,lb:1,lbs:1,pc:1,pcs:1,piece:1,pieces:1,unite:1,unites:1,sachet:1,sachets:1,boite:1,box:1};
+    var w=s.split(/\s+/).filter(function(t){if(!t)return false;if(/^\d+([.,]\d+)?$/.test(t))return false;if(/^\d+([.,]\d+)?(g|kg|gr|ml|cl|l|oz|lb|lbs|pcs?)$/.test(t))return false;if(/^x?\d+$/.test(t))return false;if(stop[t])return false;return true;});
+    w.sort();return w.join(' ');}
+  // Doublons/similaires = même signature sur TOUT le catalogue (hors supprimés).
+  // Renvoie {id: clé} pour TOUS les membres d'un groupe ≥2 (pour les afficher et les comparer).
+  function pDupSet(){var by={},dups={};(MC.PRODUCTS||[]).forEach(function(p){if(!p||p.deleted)return;var k=pNorm(p.name);if(!k)return;(by[k]=by[k]||[]).push(p.id);});Object.keys(by).forEach(function(k){if(by[k].length>1)by[k].forEach(function(id){dups[id]=k;});});return dups;}
   function pRenderAll(){var guard=0;while(pShown<pFiltered.length&&guard++<400)pMore();}
   function pChecks(){return Array.prototype.slice.call(document.querySelectorAll('#prodBody .pe-check'));}
   function pSyncBulkBar(){var bar=$('pBulk');if(!bar)return;bar.style.display=ADMINKEY?'flex':'none';var n=pChecks().filter(function(cb){return cb.checked;}).length;if($('pSelN'))$('pSelN').textContent=n;var del=$('pBulkDel');if(del){del.disabled=!n;del.style.opacity=n?'1':'.55';}if($('pSelClear'))$('pSelClear').style.display=n?'':'none';}
@@ -1460,13 +1469,12 @@
   if($('pCheckAll'))$('pCheckAll').addEventListener('change',function(){var on=this.checked;pChecks().forEach(function(cb){cb.checked=on;});pSyncBulkBar();});
   if($('pSelClear'))$('pSelClear').addEventListener('click',function(){pChecks().forEach(function(cb){cb.checked=false;});if($('pCheckAll'))$('pCheckAll').checked=false;pSyncBulkBar();});
   if($('pDupBtn'))$('pDupBtn').addEventListener('click',function(){
-    if(!ADMINKEY){toast('Active l\'édition d\'abord','warn');return;}
     var dups=pDupSet(),ids=Object.keys(dups);
-    if(!ids.length){if($('pDupInfo'))$('pDupInfo').textContent='Aucun doublon détecté 👍';toast('Aucun doublon (même nom) détecté','good');return;}
+    if(!ids.length){if($('pDupInfo'))$('pDupInfo').textContent='Aucun nom similaire détecté 👍';toast('Aucun nom similaire détecté','good');return;}
+    pFilter.flag='dup';pFilter.cat='';searchQ='';if($('search'))$('search').value='';renderProducts(); // filtre + groupe les noms similaires de TOUT le catalogue
     pRenderAll();
-    pChecks().forEach(function(cb){if(dups[cb.getAttribute('data-pid')])cb.checked=true;});
-    if($('pDupInfo'))$('pDupInfo').textContent=ids.length+' doublon(s) coché(s) — 1 exemplaire gardé de chaque';
-    pSyncBulkBar();toast(ids.length+' doublon(s) coché(s)','good');
+    if($('pDupInfo'))$('pDupInfo').textContent=ids.length+' article(s) à vérifier, groupés par nom similaire — coche les VRAIS doublons (⚠️ pas les variantes de taille) puis « Supprimer ».';
+    pSyncBulkBar();toast(ids.length+' noms similaires — vérifie avant de supprimer','good');
   });
   if($('pBulkDel'))$('pBulkDel').addEventListener('click',function(){
     if(!ADMINKEY){toast('Active l\'édition d\'abord','warn');return;}

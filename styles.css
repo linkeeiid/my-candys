@@ -158,8 +158,8 @@ h1,h2,h3{font-weight:800;letter-spacing:-.5px;margin:0}
 .mc-step button::before{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:11px;height:2.4px;background:#E01784;border-radius:2px}
 .mc-step button[data-inc]::after{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:2.4px;height:11px;background:#E01784;border-radius:2px}
 .mc-step span{min-width:22px;text-align:center;font-weight:600;font-size:14px}
-.mc-cline-rm{font-size:12.5px;color:#B7A0AC}
-.mc-cline-rm:hover{color:#E01784}
+.mc-cline-rm{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid #F3C6DE;border-radius:10px;background:#fff;color:#C77A9C;cursor:pointer;transition:color .12s,border-color .12s,background .12s}
+.mc-cline-rm:hover{color:#E01784;border-color:#E01784;background:#FFF1F8}
 .mc-cline-total{flex:none;font-weight:700;font-size:16px;color:#2A0A1C}
 .mc-cart-foot{padding:18px 22px 22px;border-top:1px solid #F3D9E9;background:#fff;display:none}
 .mc-cart-promo{display:flex;align-items:center;gap:10px;margin-bottom:14px}
