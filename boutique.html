@@ -279,7 +279,7 @@
     if (st.promo) L = L.filter(function (p) { return p.old; });
     if (st.nouv) L = L.filter(function (p) { return p.nouveau; });
     if (st.best) L = L.filter(function (p) { return p.best; });
-    if (st.squishy) L = L.filter(function (p) { return /squish/i.test(p.name); });
+    if (st.squishy) L = L.filter(function (p) { return p.cat === 'Divers'; }); // vrais squishys (objets, rangés en « Divers ») — plus de bonbons attrapés par le mot « squishy » du nom
     if (st.sweet) L = L.filter(function (p) { return ['Bonbons', 'Chocolats', 'Desserts'].indexOf(p.cat) >= 0; });
     if (st.sub && SUBS[st.sub]) { var kws = SUBS[st.sub]; L = L.filter(function (p) { if (p.sub) return p.sub === st.sub; var hh = norm(p.name + ' ' + (p.brand || '')); return kws.some(function (k) { return hh.indexOf(k) >= 0; }); }); }
     if (st.q) { var toks = st.q.split(/\s+/).map(norm).filter(Boolean); if (toks.length) L = L.filter(function (p) { var h = norm(p.name + ' ' + (p.brand || '')); return toks.every(function (t) { return h.indexOf(t) >= 0; }); }); }
