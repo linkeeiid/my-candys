@@ -59,6 +59,18 @@
 
   .main{min-width:0;display:flex;flex-direction:column}
   .topbar{position:sticky;top:0;z-index:20;background:rgba(245,242,246,.85);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:.8rem 1.4rem;display:flex;align-items:center;gap:1rem}
+  .notif-panel{position:absolute;top:calc(100% + 6px);right:14px;width:344px;max-width:calc(100vw - 28px);max-height:72vh;overflow-y:auto;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 44px rgba(0,0,0,.20);z-index:60;padding:6px}
+  .notif-head{display:flex;align-items:center;justify-content:space-between;padding:8px 10px 6px;font-weight:800;font-size:.9rem}
+  .notif-head button{border:0;background:none;color:var(--muted);font-size:.76rem;cursor:pointer;padding:2px 4px}
+  .notif-head button:hover{color:var(--pink)}
+  .notif-item{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px;border:0;border-radius:10px;background:none;cursor:pointer;transition:background .12s;font-family:inherit}
+  .notif-item:hover{background:rgba(224,23,132,.06)}
+  .notif-ic{font-size:20px;flex:none;width:26px;text-align:center}
+  .notif-tx{flex:1;min-width:0;display:flex;flex-direction:column}
+  .notif-t{font-weight:700;font-size:.85rem;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .notif-s{font-size:.78rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .notif-time{font-size:.72rem;color:var(--muted);flex:none;align-self:flex-start;margin-top:3px}
+  .notif-empty{padding:1.6rem 1rem;text-align:center;color:var(--muted);font-size:.9rem}
   .topbar .tt{min-width:0}
   .topbar .tt h1{font-family:var(--disp);font-weight:700;font-size:1.34rem;line-height:1.05;letter-spacing:0}
   .topbar .tt p{margin:.1rem 0 0;font-size:.76rem;color:var(--muted)}
@@ -445,6 +457,7 @@
       <button class="btn btn-ghost" id="logoutBtn" title="Verrouiller l'accès admin sur cet appareil" style="white-space:nowrap;font-size:.8rem;padding:.42rem .7rem;display:none">🔒 Se déconnecter</button>
       <button class="icobtn" id="bell" title="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg><span class="nb zero" id="bellBadge">0</span></button>
       <span class="status ok" id="syncStatus"><span class="dot"></span> Synchronisé</span>
+      <div class="notif-panel" id="notifPanel" hidden></div>
     </header>
 
     <div class="content">
@@ -829,7 +842,7 @@
       var ns=d.newsletter||{};RSUB=Object.keys(ns).map(function(k){return ns[k];}).sort(function(a,b){return (b.ts||0)-(a.ts||0);});
       var ms=d.messages||{};RMSG=Object.keys(ms).map(function(k){return ms[k];}).sort(function(a,b){return (b.ts||0)-(a.ts||0);});
       fbPromos=d.promos||{};
-      renderDash();renderOrders();renderInbox();renderPromos();
+      renderDash();renderOrders();renderInbox();renderPromos();if(typeof updateBell==='function')updateBell();
     }).catch(function(){});
   }
   function ordersLive(){return orders.filter(function(o){return o.status!=='attente';});} /* commandes payées/réelles (hors attente de paiement) */
@@ -838,8 +851,26 @@
   function renderOrderKpis(){var nw=0,sh=0,ca=0;orders.forEach(function(o){if(o.status==='expediee')sh++;else if(o.status==='nouvelle')nw++;if(o.paid)ca+=oTotal(o);});
     if($('okpis'))$('okpis').innerHTML=otile('À expédier',nw,'','warn','nouvelle')+otile('Expédiées',sh,'','good','expediee')+otile('Commandes',nLive(),'','','all')+tile('Chiffre d\'affaires',money(ca).replace(' €',''),' €','accent','');
     var badge=$('navBadge');if(badge){badge.textContent=nw;badge.className='nbadge'+(nw===0?' zero':'');}
-    var bb=$('bellBadge');if(bb){bb.textContent=nw;bb.className='nb'+(nw===0?' zero':'');}
+    if(typeof updateBell==='function')updateBell();
   }
+  // ---- Notifications (cloche) : nouvelles commandes + messages contact ----
+  function notifSeen(){try{return JSON.parse(localStorage.getItem('mcNotifSeen'))||[];}catch(e){return [];}}
+  function notifMark(id){var s=notifSeen();if(s.indexOf(id)<0){s.push(id);try{localStorage.setItem('mcNotifSeen',JSON.stringify(s.slice(-800)));}catch(e){}}}
+  function buildNotifs(){var seen=notifSeen(),list=[];
+    orders.forEach(function(o){if(o.status==='nouvelle'){var id='ord:'+o.ref;if(seen.indexOf(id)<0)list.push({id:id,type:'order',ref:o.ref,ts:o.ts||0,icon:'🛒',title:'Nouvelle commande '+o.ref,sub:(o.cust.n||'Client')+' · '+money(oTotal(o))});}});
+    RMSG.forEach(function(m,i){var id='msg:'+(m.ts||i);if(seen.indexOf(id)<0)list.push({id:id,type:'msg',ts:m.ts||0,icon:'✉️',title:'Message de '+(m.name||m.email||'?'),sub:(m.message||'').replace(/\s+/g,' ').slice(0,70)});});
+    list.sort(function(a,b){return (b.ts||0)-(a.ts||0);});return list;}
+  function updateBell(){var bb=$('bellBadge');if(!bb)return;var n=buildNotifs().length;bb.textContent=n;bb.className='nb'+(n===0?' zero':'');}
+  function renderNotifPanel(){var el=$('notifPanel');if(!el)return;var list=buildNotifs();updateBell();
+    var head='<div class="notif-head"><span>Notifications</span>'+(list.length?'<button data-nclear="1">Tout marquer comme lu</button>':'')+'</div>';
+    if(!list.length){el.innerHTML=head+'<div class="notif-empty">Aucune notification 🎉</div>';return;}
+    el.innerHTML=head+list.map(function(n){return '<button class="notif-item" data-nid="'+esc(n.id)+'" data-ntype="'+n.type+'"'+(n.ref?' data-nref="'+esc(n.ref)+'"':'')+'>'+
+      '<span class="notif-ic">'+n.icon+'</span><span class="notif-tx"><span class="notif-t">'+esc(n.title)+'</span><span class="notif-s">'+esc(n.sub)+'</span></span>'+
+      '<span class="notif-time">'+fmtDT(n.ts)+'</span></button>';}).join('');}
+  function notifOpen(id,type,ref){notifMark(id);var el=$('notifPanel');if(el)el.hidden=true;
+    if(type==='order'){setView('orders');if(ref){openSet[ref]=true;renderOrders();setTimeout(function(){var c=$('orders').querySelector('[data-order="'+ref+'"]');if(c)c.scrollIntoView({behavior:'smooth',block:'center'});},60);}}
+    else if(type==='msg'){setView('inbox');}
+    updateBell();}
   function gateHtml(msg){return '<div style="background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.6rem;text-align:center"><div style="font-size:1.6rem">🔒</div><div style="font-weight:800;margin:.4rem 0">'+msg+'</div><div style="color:var(--muted);font-size:.85rem;margin-bottom:.9rem">Entre le mot de passe administrateur pour voir les vraies données de la boutique.</div><button class="btn btn-primary" data-opsunlock>Activer l\'accès</button></div>';}
   function renderOrders(){
     if(!ADMINKEY){ if($('okpis'))$('okpis').innerHTML=''; if($('orders'))$('orders').innerHTML=gateHtml('Commandes protégées'); return; }
@@ -1407,7 +1438,11 @@
   $('ofilters').addEventListener('click',function(e){var c=e.target.closest('[data-f]');if(!c)return;setOrderFilter(c.getAttribute('data-f'));});
   if($('okpis'))$('okpis').addEventListener('click',function(e){var t=e.target.closest('[data-ofilt]');if(!t)return;setOrderFilter(t.getAttribute('data-ofilt'));});
   $('search').addEventListener('input',function(){searchQ=this.value.trim().toLowerCase();if(curView==='products'){renderProducts();return;}renderStock();renderOrders();});
-  $('bell').addEventListener('click',function(){setView('orders');});
+  $('bell').addEventListener('click',function(e){e.stopPropagation();var el=$('notifPanel');if(!el)return;var willShow=el.hidden;if(willShow)renderNotifPanel();el.hidden=!willShow;});
+  if($('notifPanel'))$('notifPanel').addEventListener('click',function(e){e.stopPropagation();
+    var cl=e.target.closest('[data-nclear]');if(cl){buildNotifs().forEach(function(n){notifMark(n.id);});renderNotifPanel();return;}
+    var it=e.target.closest('[data-nid]');if(!it)return;notifOpen(it.getAttribute('data-nid'),it.getAttribute('data-ntype'),it.getAttribute('data-nref'));});
+  document.addEventListener('click',function(e){var el=$('notifPanel');if(el&&!el.hidden&&!el.contains(e.target)&&!e.target.closest('#bell'))el.hidden=true;});
   if($('inbox-root'))$('inbox-root').addEventListener('click',function(e){
     var rep=e.target.closest('[data-ireply]');
     if(rep){var i=rep.getAttribute('data-ireply');var f=$('inbox-root').querySelector('[data-iform="'+i+'"]');if(f){var show=f.style.display==='none';f.style.display=show?'block':'none';if(show){var t=f.querySelector('.ir-body');if(t)t.focus();}}return;}
