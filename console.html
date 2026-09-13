@@ -839,11 +839,24 @@
     if(!ADMINKEY){renderOrders();return;}
     fetch(MCAPI+'/admin/data',{headers:{'Authorization':'Bearer '+ADMINKEY}}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(d){
       var od=d.orders||{};orders=Object.keys(od).map(function(k){return mapOrder(od[k],k);}).sort(function(a,b){return b.ts-a.ts;});
+      orders=dropPaidTwins(orders);
       var ns=d.newsletter||{};RSUB=Object.keys(ns).map(function(k){return ns[k];}).sort(function(a,b){return (b.ts||0)-(a.ts||0);});
       var ms=d.messages||{};RMSG=Object.keys(ms).map(function(k){return ms[k];}).sort(function(a,b){return (b.ts||0)-(a.ts||0);});
       fbPromos=d.promos||{};
       renderDash();renderOrders();renderInbox();renderPromos();if(typeof updateBell==='function')updateBell();
     }).catch(function(){});
+  }
+  // Une commande "attente de paiement" est un jumeau ORPHELIN d'une commande payée
+  // (le checkout crée un enregistrement au clic "Payer" ET un autre si le client bascule
+  //  sur Apple/Google Pay → réfs différentes). Dès qu'un jumeau PAYÉ existe (même email +
+  //  même montant), on masque l'orphelin "attente" pour qu'il n'apparaisse plus 2 fois.
+  function dropPaidTwins(list){
+    var paid={};
+    list.forEach(function(o){if(o.paid&&o.cust&&o.cust.e){paid[o.cust.e.toLowerCase()+'|'+oTotal(o).toFixed(2)]=1;}});
+    return list.filter(function(o){
+      if(o.status==='attente'&&o.cust&&o.cust.e&&paid[o.cust.e.toLowerCase()+'|'+oTotal(o).toFixed(2)])return false;
+      return true;
+    });
   }
   function ordersLive(){return orders.filter(function(o){return o.status!=='attente';});} /* commandes payées/réelles (hors attente de paiement) */
   function nLive(){return ordersLive().length;}
