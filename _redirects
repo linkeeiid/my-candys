@@ -1,26 +1,41 @@
 # ============================================================================
 # 🚧 MODE MAINTENANCE ACTIF (site fermé aux visiteurs, console gardée en ligne)
 #    POUR LEVER LA MAINTENANCE : supprimer tout le bloc entre 🚧 DÉBUT et 🚧 FIN
-#    puis pousser. La console reste accessible sur mycandys.fr/console.
+#    puis pousser. /console + assets restent servis normalement (pas de catch-all
+#    /* : il créait une boucle 308 sur /console).
 # ---------------------------------------------------------------------------
 # 🚧 DÉBUT MAINTENANCE
-# Console d'administration + ses dépendances = servies normalement (200)
-/console               /console.html            200
-/console.html          /console.html            200
-/cart-store.js         /cart-store.js           200
-/products.js           /products.js             200
-/manifest.webmanifest  /manifest.webmanifest    200
-/assets/*              /assets/:splat           200
-/maintenance.html      /maintenance.html        200
-# Tout le reste des visiteurs → page de maintenance
-/*                     /maintenance.html        302
+/                     /maintenance   302
+/index.html          /maintenance   302
+/boutique            /maintenance   302
+/boutique/*          /maintenance   302
+/produit             /maintenance   302
+/produit/*           /maintenance   302
+/box                 /maintenance   302
+/box/*               /maintenance   302
+/marques             /maintenance   302
+/marques.html        /maintenance   302
+/infos               /maintenance   302
+/infos/*             /maintenance   302
+/panier              /maintenance   302
+/panier.html         /maintenance   302
+/checkout            /maintenance   302
+/checkout.html       /maintenance   302
+/compte              /maintenance   302
+/compte.html         /maintenance   302
+/favoris             /maintenance   302
+/favoris.html        /maintenance   302
+/mystery-box         /maintenance   302
+/mystery-box.html    /maintenance   302
+/suivi-commande      /maintenance   302
+/suivi-commande.html /maintenance   302
 # 🚧 FIN MAINTENANCE
 # ============================================================================
 
-# URLs propres (Cloudflare Pages) — réécritures internes (200 = l'URL reste jolie dans le navigateur)
-# IMPORTANT : cibler l'URL PROPRE (sans .html), sinon Cloudflare re-redirige le .html en 308.
-# Les sous-chemins spécifiques AVANT le générique (premier match gagne).
-# (Inactives tant que le bloc MAINTENANCE ci-dessus est présent — le /* les court-circuite.)
+# URLs propres (Cloudflare Pages) — réécritures internes (200 = l'URL reste jolie).
+# IMPORTANT : cibler l'URL PROPRE (sans .html), sinon Cloudflare re-redirige en 308.
+# Pendant la maintenance, les redirections ci-dessus priment (premier match gagne) ;
+# une fois le bloc retiré, ces réécritures reprennent normalement.
 /boutique/marque/*   /boutique   200
 /boutique/rayon/*    /boutique   200
 /boutique/*          /boutique   200
