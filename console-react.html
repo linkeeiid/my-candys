@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <!-- deploy: cloudflare -->
-<!-- Console My Candy's — REACT (CDN). Copie du démo 21st fourni (SidebarDemo) :
-     mêmes liens (Dashboard/Profile/Settings/Logout), même Logo/LogoIcon, même avatar bas,
-     même composant Dashboard (blocs squelette 4 + 2). Adapté : next/link->a, next/image->img,
-     lucide-react->SVG inline, framer-motion->shim CSS. Seule la COULEUR change : rose + logo boutique. -->
+<!-- Console My Candy's — REACT (CDN, sans build). Sidebar 21st (composant fourni) +
+     TOUS les onglets de la console (aperçu) avec un échantillon réel de produits.
+     Adapté : next/link->a, next/image->img, lucide->SVG, framer-motion->shim CSS. -->
 <html lang="fr">
 <head>
 <meta charset="utf-8">
@@ -11,158 +10,254 @@
 <title>My Candy's — Console (React)</title>
 <meta name="robots" content="noindex">
 <link rel="icon" href="assets/logo.png">
-
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
-  tailwind.config = { darkMode: 'class', theme: { extend: {
-    colors: {
-      candy: { DEFAULT:'#E01784', light:'#FF2E9A', 50:'#FFF6FB', 100:'#FFE3F1', 200:'#F3C6DE' },
-      side: { DEFAULT:'#241019', 2:'#160810' }
-    },
-    fontFamily: { sans:['Poppins','ui-sans-serif','system-ui','sans-serif'] }
-  } } };
+  tailwind.config = { darkMode:'class', theme:{ extend:{
+    colors:{ candy:{DEFAULT:'#E01784',light:'#FF2E9A',50:'#FFF6FB',100:'#FFE3F1',200:'#F3C6DE'}, ink:'#2A0A1C', side:{DEFAULT:'#241019',2:'#160810'} },
+    fontFamily:{ sans:['Poppins','ui-sans-serif','system-ui','sans-serif'] } } } };
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>body{background:#f3f4f6;font-family:Poppins,ui-sans-serif,system-ui,sans-serif;margin:0}::selection{background:#E01784;color:#fff}</style>
-
+<style>body{background:#f3f4f6;font-family:Poppins,ui-sans-serif,system-ui,sans-serif;margin:0}::selection{background:#E01784;color:#fff}.scroll::-webkit-scrollbar{width:8px;height:8px}.scroll::-webkit-scrollbar-thumb{background:#e7c9dc;border-radius:9px}</style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.4/babel.min.js"></script>
 </head>
 <body>
 <div id="root"></div>
-
 <script type="text/babel" data-presets="react">
 const { useState, createContext, useContext } = React;
-/* motion "shim" : reproduit animate={{...}} en style CSS + transition (pas de dépendance externe) */
-const motion = new Proxy({}, { get: (_t, Tag) => (function MotionTag({ animate, initial, exit, transition, style, className, children, ...rest }) {
-  const st = Object.assign({ transition: 'width .38s cubic-bezier(.4,0,.2,1), opacity .34s ease .05s, transform .3s ease' }, style || {}, animate || {});
-  return React.createElement(Tag, Object.assign({ className, style: st }, rest), children);
+const motion = new Proxy({}, { get:(_t,Tag)=>(function M({animate,initial,exit,transition,style,className,children,...rest}){
+  const st=Object.assign({transition:'width .3s cubic-bezier(.4,0,.2,1), opacity .3s ease .04s'}, style||{}, animate||{});
+  return React.createElement(Tag, Object.assign({className,style:st},rest), children);
 }) });
-const AnimatePresence = ({ children }) => <>{children}</>;
+const AnimatePresence = ({children}) => <>{children}</>;
 function cn(...a){ return a.flat(Infinity).filter(Boolean).join(' '); }
+const money = n => n==null ? '—' : Number(n).toFixed(2).replace('.',',')+' €';
 
-/* icônes lucide-react en SVG inline */
-const S = ({children,className}) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className||'h-5 w-5 flex-shrink-0'}>{children}</svg>;
-const LayoutDashboard = ({className}) => <S className={className}><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></S>;
-const UserCog = ({className}) => <S className={className}><circle cx="9" cy="7" r="3.2"/><path d="M3 21a6 6 0 0110-4.5"/><circle cx="18" cy="16" r="2.4"/><path d="M18 12.6v.9M18 19.5v.9M21 16h-.9M15.9 16H15M20.1 13.9l-.6.6M16.5 17.5l-.6.6M20.1 18.1l-.6-.6M16.5 14.5l-.6-.6"/></S>;
-const Settings = ({className}) => <S className={className}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.6 1.6 0 00-1.8-.3 1.6 1.6 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.6 1.6 0 00-1-1.5 1.6 1.6 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.6 1.6 0 00.3-1.8 1.6 1.6 0 00-1.5-1H3a2 2 0 110-4h.1a1.6 1.6 0 001.5-1 1.6 1.6 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.6 1.6 0 001.8.3H9a1.6 1.6 0 001-1.5V3a2 2 0 114 0v.1a1.6 1.6 0 001 1.5 1.6 1.6 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.6 1.6 0 00-.3 1.8V9a1.6 1.6 0 001.5 1H21a2 2 0 110 4h-.1a1.6 1.6 0 00-1.5 1z"/></S>;
-const LogOut = ({className}) => <S className={className}><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></S>;
-const Menu = ({className,onClick}) => <svg onClick={onClick} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={className}><path d="M3 6h18M3 12h18M3 18h18"/></svg>;
-const X = ({onClick}) => <svg onClick={onClick} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-6 w-6"><path d="M18 6L6 18M6 6l12 12"/></svg>;
+/* ---- données (échantillon réel) ---- */
+const CAT_COUNTS = {"Bonbons":306,"Sodas":241,"Chocolats":117,"Snacks":106,"Desserts":42,"Épicé":1};
+const PRODUCTS = [
+{n:"Red Bull Peach Edition",b:"Red Bull",p:2.49,o:null,c:"Sodas",t:"linear-gradient(135deg,#FFE3F1,#FF9ED8)"},
+{n:"Takis Fuego",b:"Takis",p:4.9,o:null,c:"Snacks",t:"linear-gradient(135deg,#FFD9C4,#FF9E7A)"},
+{n:"Takis Blue Heat",b:"Takis",p:4.99,o:null,c:"Snacks",t:"linear-gradient(135deg,#F3E6FF,#C9A0FF)"},
+{n:"Takis Nitro",b:"Takis",p:4.9,o:null,c:"Snacks",t:"linear-gradient(135deg,#FFE0DB,#FF9E93)"},
+{n:"Takis Guacamole",b:"Takis",p:5.2,o:6.5,c:"Snacks",t:"linear-gradient(135deg,#E6FFCF,#B6F07F)"},
+{n:"Monster Ultra Red",b:"Monster",p:3.49,o:null,c:"Sodas",t:"linear-gradient(135deg,#FFE0DB,#FF9E93)"},
+{n:"Monster Ultra Fantasy Ruby Red",b:"Monster",p:4.99,o:null,c:"Sodas",t:"linear-gradient(135deg,#FFE0DB,#FF9E93)"},
+{n:"Monster Ultra Blue Hawaiian",b:"Monster",p:4.99,o:null,c:"Sodas",t:"linear-gradient(135deg,#DEF7FA,#8FE6F0)"},
+{n:"Monster Ultra Punk Punch",b:"Monster",p:4.99,o:null,c:"Sodas",t:"linear-gradient(135deg,#F3E6FF,#C9A0FF)"},
+{n:"Monster Red White Blue Razz",b:"Monster",p:4.99,o:null,c:"Sodas",t:"linear-gradient(135deg,#CFF3FF,#7FD8F0)"},
+{n:"Fanta Raisin (Japon)",b:"Fanta",p:3.49,o:null,c:"Sodas",t:"linear-gradient(135deg,#F3E6FF,#C9A0FF)"},
+{n:"Fanta Pêche Blanche (Japon)",b:"Fanta",p:3.79,o:null,c:"Sodas",t:"linear-gradient(135deg,#FFE3F1,#FF9ED8)"},
+{n:"Fanta Litchi",b:"Fanta",p:2.29,o:null,c:"Sodas",t:"linear-gradient(135deg,#FFE3F1,#FF9ED8)"},
+{n:"Fanta Pastèque",b:"Fanta",p:2.29,o:null,c:"Sodas",t:"linear-gradient(135deg,#E6FFCF,#B6F07F)"},
+{n:"Fanta Berry",b:"Fanta",p:1.99,o:null,c:"Sodas",t:"linear-gradient(135deg,#FFE3F1,#FF9ED8)"},
+{n:"Coca-Cola Cherry",b:"Coca-Cola",p:1.69,o:null,c:"Sodas",t:"linear-gradient(135deg,#FFE0DB,#FF9E93)"},
+{n:"Coca-Cola Vanille",b:"Coca-Cola",p:1.49,o:null,c:"Sodas",t:"linear-gradient(135deg,#EAD9C6,#C9A47A)"},
+{n:"Coca-Cola Lemon",b:"Coca-Cola",p:1.69,o:null,c:"Sodas",t:"linear-gradient(135deg,#FFEFC2,#FFC94D)"},
+{n:"Red Bull Blue Edition (Myrtille)",b:"Red Bull",p:2.49,o:null,c:"Sodas",t:"linear-gradient(135deg,#CFF3FF,#7FD8F0)"},
+{n:"Red Bull Pink Edition",b:"Red Bull",p:2.49,o:null,c:"Sodas",t:"linear-gradient(135deg,#FFE3F1,#FF9ED8)"},
+{n:"Capri-Sun Monster Alarm",b:"Capri-Sun",p:2.29,o:null,c:"Sodas",t:"linear-gradient(135deg,#F3E6FF,#C9A0FF)"},
+{n:"Capri-Sun Cola",b:"Capri-Sun",p:0.89,o:null,c:"Sodas",t:"linear-gradient(135deg,#EAD9C6,#C9A47A)"},
+{n:"Oasis Cassis-Framboise",b:"Oasis",p:2.09,o:null,c:"Sodas",t:"linear-gradient(135deg,#F3E6FF,#C9A0FF)"},
+{n:"Nestea Poire-Miel",b:"Nestea",p:2.19,o:null,c:"Sodas",t:"linear-gradient(135deg,#FFEFC2,#FFC94D)"},
+{n:"Starbucks Cool Lime",b:"Starbucks",p:4.39,o:null,c:"Sodas",t:"linear-gradient(135deg,#E6FFCF,#B6F07F)"},
+{n:"Candy Pop Popcorn Twix",b:"Candy Pop",p:3.49,o:null,c:"Snacks",t:"linear-gradient(135deg,#EAD9C6,#C9A47A)"},
+{n:"Cookie Pop Popcorn Oreo",b:"Candy Pop",p:3.49,o:null,c:"Snacks",t:"linear-gradient(135deg,#CFF3FF,#7FD8F0)"},
+{n:"Candy Pop Popcorn M&M's",b:"Candy Pop",p:3.49,o:null,c:"Snacks",t:"linear-gradient(135deg,#FFE0DB,#FF9E93)"},
+{n:"Kinder Bueno White",b:"Kinder",p:1.99,o:null,c:"Chocolats",t:"linear-gradient(135deg,#FBEFD8,#F0D18A)"},
+{n:"Kinder Cards",b:"Kinder",p:1.79,o:null,c:"Chocolats",t:"linear-gradient(135deg,#FBEFD8,#F0D18A)"},
+{n:"Hershey's Cookies'n'Creme",b:"Hershey's",p:2.99,o:3.5,c:"Chocolats",t:"linear-gradient(135deg,#EAD9C6,#C9A47A)"},
+{n:"Reese's Peanut Butter Cups",b:"Reese's",p:2.49,o:null,c:"Chocolats",t:"linear-gradient(135deg,#FFD9C4,#FF9E7A)"},
+{n:"KitKat Matcha (Japon)",b:"KitKat",p:3.29,o:null,c:"Chocolats",t:"linear-gradient(135deg,#E6FFCF,#B6F07F)"},
+{n:"Skittles Squishy Cloudz",b:"Skittles",p:3.79,o:null,c:"Bonbons",t:"linear-gradient(135deg,#DEF7FA,#8FE6F0)"},
+{n:"Sour Patch Kids",b:"Sour Patch",p:2.99,o:null,c:"Bonbons",t:"linear-gradient(135deg,#E6FFCF,#B6F07F)"},
+{n:"Nerds Gummy Clusters",b:"Nerds",p:3.49,o:null,c:"Bonbons",t:"linear-gradient(135deg,#F3E6FF,#C9A0FF)"},
+{n:"Trolli Sour Brite Crawlers",b:"Trolli",p:3.29,o:null,c:"Bonbons",t:"linear-gradient(135deg,#FFEFC2,#FFC94D)"},
+{n:"Airheads Xtremes",b:"Airheads",p:2.79,o:null,c:"Bonbons",t:"linear-gradient(135deg,#FFE3F1,#FF9ED8)"},
+{n:"Warheads Extreme Sour",b:"Warheads",p:2.49,o:null,c:"Bonbons",t:"linear-gradient(135deg,#E6FFCF,#B6F07F)"},
+{n:"Candy Fruit",b:"",p:15.0,o:null,c:"Bonbons",t:"linear-gradient(135deg,#FFE3F1,#FF9ED8)"},
+{n:"Jelly Belly BeanBoozled",b:"Jelly Belly",p:6.9,o:null,c:"Bonbons",t:"linear-gradient(135deg,#F3E6FF,#C9A0FF)"},
+{n:"Magnum Almond Amande",b:"Magnum",p:3.5,o:null,c:"Desserts",t:"linear-gradient(135deg,#EAD9C6,#C9A47A)"},
+{n:"Mochi Glacé Mangue",b:"",p:4.5,o:null,c:"Desserts",t:"linear-gradient(135deg,#FFEFC2,#FFC94D)"},
+{n:"Pop-Tarts Frosted Strawberry",b:"Pop-Tarts",p:4.99,o:null,c:"Desserts",t:"linear-gradient(135deg,#FFE3F1,#FF9ED8)"},
+{n:"Squishy Pikachu",b:"",p:8.9,o:null,c:"Divers",t:"linear-gradient(135deg,#FFEFC2,#FFC94D)"},
+{n:"Butter Squishy",b:"",p:7.9,o:null,c:"Divers",t:"linear-gradient(135deg,#FBEFD8,#F0D18A)"},
+{n:"Samyang Buldak 2x Spicy",b:"Samyang",p:3.9,o:null,c:"Snacks",t:"linear-gradient(135deg,#FFE0DB,#FF9E93)"},
+{n:"Lay's Piment",b:"Lay's",p:2.2,o:null,c:"Snacks",t:"linear-gradient(135deg,#FFD9C4,#FF9E7A)"},
+];
+const ORDERS = [
+  {ref:'MC-444009',n:'Inès E.',items:'Candy Fruit ×1',total:19.9,st:'Nouvelle',cls:'bg-candy-100 text-candy'},
+  {ref:'MC-357821',n:'Vincent',items:'Takis Fuego ×2, Fanta Litchi ×3',total:34.8,st:'Expédiée',cls:'bg-emerald-100 text-emerald-700'},
+  {ref:'MC-198332',n:'Francis',items:'Monster Ultra Red ×1',total:12.5,st:'En cours',cls:'bg-amber-100 text-amber-700'},
+  {ref:'MC-771020',n:'Léa Martin',items:'Skittles Squishy ×2',total:9.6,st:'Nouvelle',cls:'bg-candy-100 text-candy'},
+];
 
-/* ============ sidebar.tsx (copie exacte, next/link -> <a>) ============ */
+/* ---- icônes ---- */
+const S = ({c,ch}) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={c||'h-5 w-5 flex-shrink-0'}>{ch}</svg>;
+const IC = {
+  dash:(c)=><S c={c} ch={<><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></>}/>,
+  stats:(c)=><S c={c} ch={<><path d="M3 21h18"/><rect x="5" y="11" width="3.4" height="7" rx="1"/><rect x="10.3" y="6" width="3.4" height="12" rx="1"/><rect x="15.6" y="13" width="3.4" height="5" rx="1"/></>}/>,
+  products:(c)=><S c={c} ch={<><path d="M20.6 13.4l-7.2 7.2a2 2 0 01-2.8 0l-7-7A1.9 1.9 0 013 12.2V4a2 2 0 012-2h8.2c.5 0 1 .2 1.4.6l6 6a2 2 0 010 2.8z"/><circle cx="7.5" cy="7.5" r="1.3"/></>}/>,
+  boxes:(c)=><S c={c} ch={<><path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></>}/>,
+  cats:(c)=><S c={c} ch={<path d="M3 7a2 2 0 012-2h3.5l2 2H19a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>}/>,
+  orders:(c)=><S c={c} ch={<><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/></>}/>,
+  promos:(c)=><S c={c} ch={<><path d="M3 9a2 2 0 012-2h14a2 2 0 012 2v1.5a1.7 1.7 0 000 3.4V15a2 2 0 01-2 2H5a2 2 0 01-2-2v-1.1a1.7 1.7 0 000-3.4z"/><path d="M9.5 9.5l5 5"/></>}/>,
+  inbox:(c)=><S c={c} ch={<><path d="M3 7l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></>}/>,
+  clients:(c)=><S c={c} ch={<><circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0112 0"/><path d="M16 5.5a3 3 0 010 5.8M21 20a6 6 0 00-4-5.6"/></>}/>,
+  loyalty:(c)=><S c={c} ch={<path d="M12 3.2l2.5 5.1 5.6.8-4 3.9 1 5.6L12 16l-5 2.6 1-5.6-4-3.9 5.6-.8z"/>}/>,
+  reviews:(c)=><S c={c} ch={<><path d="M21 11.5a8 8 0 01-11.5 7.2L3 20.5l1.8-4.9A8 8 0 1121 11.5z"/><path d="M8.5 11h7M8.5 8h4"/></>}/>,
+  logout:(c)=><S c={c} ch={<><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></>}/>,
+};
+const Search = () => <S c="h-4 w-4 text-neutral-400" ch={<><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></>}/>;
+const Menu = ({onClick}) => <svg onClick={onClick} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-6 w-6 text-neutral-200 cursor-pointer"><path d="M3 6h18M3 12h18M3 18h18"/></svg>;
+const X = ({onClick}) => <svg onClick={onClick} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-6 w-6 text-neutral-200 cursor-pointer"><path d="M18 6L6 18M6 6l12 12"/></svg>;
+
+/* ---- sidebar (composant fourni, next/link->a) ---- */
 const SidebarContext = createContext(undefined);
-const useSidebar = () => { const c = useContext(SidebarContext); if(!c) throw new Error('useSidebar must be used within a SidebarProvider'); return c; };
-const SidebarProvider = ({ children, open: openProp, setOpen: setOpenProp, animate = true }) => {
-  const [openState, setOpenState] = useState(false);
-  const open = openProp !== undefined ? openProp : openState;
-  const setOpen = setOpenProp !== undefined ? setOpenProp : setOpenState;
-  return <SidebarContext.Provider value={{ open, setOpen, animate }}>{children}</SidebarContext.Provider>;
+const useSidebar = () => { const c=useContext(SidebarContext); if(!c) throw new Error('useSidebar must be used within a SidebarProvider'); return c; };
+const SidebarProvider = ({children,open:op,setOpen:sp,animate=true}) => { const [s,ss]=useState(false); const open=op!==undefined?op:s; const setOpen=sp!==undefined?sp:ss; return <SidebarContext.Provider value={{open,setOpen,animate}}>{children}</SidebarContext.Provider>; };
+const Sidebar = ({children,open,setOpen,animate}) => <SidebarProvider open={open} setOpen={setOpen} animate={animate}>{children}</SidebarProvider>;
+const SidebarBody = (props) => (<><DesktopSidebar {...props}/><MobileSidebar {...props}/></>);
+const DesktopSidebar = ({className,children,...props}) => {
+  const {open,setOpen,animate}=useSidebar();
+  return <motion.div className={cn('h-full px-4 py-4 hidden md:flex md:flex-col bg-gradient-to-b from-side-2 to-side w-[300px] flex-shrink-0 overflow-hidden',className)}
+    animate={{width:animate?(open?'300px':'60px'):'300px'}} onMouseEnter={()=>setOpen(true)} onMouseLeave={()=>setOpen(false)} {...props}>{children}</motion.div>;
 };
-const Sidebar = ({ children, open, setOpen, animate }) => <SidebarProvider open={open} setOpen={setOpen} animate={animate}>{children}</SidebarProvider>;
-const SidebarBody = (props) => (<><DesktopSidebar {...props} /><MobileSidebar {...props} /></>);
-const DesktopSidebar = ({ className, children, ...props }) => {
-  const { open, setOpen, animate } = useSidebar();
-  return (
-    <motion.div
-      className={cn('h-full px-4 py-4 hidden md:flex md:flex-col bg-gradient-to-b from-side-2 to-side w-[300px] flex-shrink-0 overflow-hidden', className)}
-      animate={{ width: animate ? (open ? '300px' : '60px') : '300px' }}
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-      {...props}
-    >{children}</motion.div>
-  );
+const MobileSidebar = ({className,children,...props}) => {
+  const {open,setOpen}=useSidebar();
+  return <div className="h-12 px-4 py-4 flex flex-row md:hidden items-center justify-between bg-gradient-to-b from-side-2 to-side w-full" {...props}>
+    <div className="flex justify-end z-20 w-full"><Menu onClick={()=>setOpen(!open)}/></div>
+    <AnimatePresence>{open && <motion.div initial={{x:'-100%',opacity:0}} animate={{x:0,opacity:1}} exit={{x:'-100%',opacity:0}} className={cn('fixed h-full w-full inset-0 bg-gradient-to-b from-side-2 to-side p-8 z-[100] flex flex-col justify-between overflow-y-auto',className)}>
+      <div className="absolute right-8 top-8 z-50"><X onClick={()=>setOpen(!open)}/></div>{children}</motion.div>}</AnimatePresence>
+  </div>;
 };
-const MobileSidebar = ({ className, children, ...props }) => {
-  const { open, setOpen } = useSidebar();
-  return (
-    <div className="h-10 px-4 py-4 flex flex-row md:hidden items-center justify-between bg-gradient-to-b from-side-2 to-side w-full" {...props}>
-      <div className="flex justify-end z-20 w-full"><Menu className="text-neutral-200 cursor-pointer h-6 w-6" onClick={() => setOpen(!open)} /></div>
-      <AnimatePresence>
-        {open && (
-          <motion.div initial={{ x:'-100%', opacity:0 }} animate={{ x:0, opacity:1 }} exit={{ x:'-100%', opacity:0 }} transition={{ duration:0.3, ease:'easeInOut' }}
-            className={cn('fixed h-full w-full inset-0 bg-gradient-to-b from-side-2 to-side p-10 z-[100] flex flex-col justify-between text-neutral-200', className)}>
-            <div className="absolute right-10 top-10 z-50 text-neutral-200 cursor-pointer"><X onClick={() => setOpen(!open)} /></div>
-            {children}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
+const SidebarLink = ({link,active,onClick}) => {
+  const {open,animate}=useSidebar();
+  return <a href={link.href} onClick={onClick} className={cn('flex items-center justify-start gap-2 group/sidebar rounded-xl px-2 py-2 transition', active?'bg-white/10 shadow-[inset_2px_0_0_#FF2E9A]':'hover:bg-white/5')}>
+    <span className={active?'text-candy-light':'text-neutral-400 group-hover/sidebar:text-white'}>{link.icon}</span>
+    <motion.span animate={{opacity:animate?(open?1:0):1}} style={{pointerEvents:open?'auto':'none'}} className="text-neutral-200 text-sm font-medium group-hover/sidebar:translate-x-1 whitespace-pre inline-block !p-0 !m-0">{link.label}</motion.span>
+  </a>;
 };
-const SidebarLink = ({ link, className, ...props }) => {
-  const { open, animate } = useSidebar();
-  return (
-    <a href={link.href} className={cn('flex items-center justify-start gap-2 group/sidebar py-2', className)} {...props}>
-      {link.icon}
-      <motion.span
-        animate={{ opacity: animate ? (open ? 1 : 0) : 1 }}
-        className="text-neutral-200 text-sm group-hover/sidebar:translate-x-1 whitespace-pre inline-block !p-0 !m-0"
-        style={{ pointerEvents: open ? 'auto' : 'none' }}>
-        {link.label}
-      </motion.span>
-    </a>
-  );
-};
+const Logo = () => <a href="#" className="flex space-x-2 items-center text-sm text-white py-1"><img src="assets/logo.png" alt="My Candy's" className="h-8 w-8 flex-shrink-0 object-contain"/><motion.span animate={{opacity:1}} className="font-bold text-white whitespace-pre">My Candy&apos;s</motion.span></a>;
+const LogoIcon = () => <a href="#" className="flex items-center text-sm py-1"><img src="assets/logo.png" alt="My Candy's" className="h-8 w-8 flex-shrink-0 object-contain"/></a>;
 
-/* ============ demo.tsx (copie exacte) — Logo/LogoIcon/Dashboard/SidebarDemo ============ */
-function SidebarDemo() {
-  const links = [
-    { label: 'Dashboard', href: '#', icon: <LayoutDashboard className="text-neutral-200 h-5 w-5 flex-shrink-0" /> },
-    { label: 'Profile',   href: '#', icon: <UserCog className="text-neutral-200 h-5 w-5 flex-shrink-0" /> },
-    { label: 'Settings',  href: '#', icon: <Settings className="text-neutral-200 h-5 w-5 flex-shrink-0" /> },
-    { label: 'Logout',    href: '#', icon: <LogOut className="text-neutral-200 h-5 w-5 flex-shrink-0" /> },
-  ];
-  const [open, setOpen] = useState(false);
-  return (
-    <div className={cn('rounded-md flex flex-col md:flex-row bg-gray-100 w-full flex-1 max-w-7xl mx-auto border border-neutral-200 overflow-hidden', 'h-screen')}>
-      <Sidebar open={open} setOpen={setOpen}>
-        <SidebarBody className="justify-between gap-10">
-          <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
-            {open ? <Logo /> : <LogoIcon />}
-            <div className="mt-8 flex flex-col gap-2">
-              {links.map((link, idx) => (<SidebarLink key={idx} link={link} />))}
-            </div>
-          </div>
-          <div>
-            <SidebarLink link={{
-              label: 'Gérant', href: '#',
-              icon: <img src="assets/logo.png" className="h-7 w-7 flex-shrink-0 rounded-full object-contain bg-white/10 p-0.5" width="50" height="50" alt="Avatar" />,
-            }} />
-          </div>
-        </SidebarBody>
-      </Sidebar>
-      <Dashboard />
-    </div>
-  );
-}
-const Logo = () => (
-  <a href="#" className="font-normal flex space-x-2 items-center text-sm text-white py-1 relative z-20">
-    <img src="assets/logo.png" alt="My Candy's" className="h-6 w-6 flex-shrink-0 object-contain" />
-    <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="font-medium text-white whitespace-pre">My Candy&apos;s</motion.span>
-  </a>
-);
-const LogoIcon = () => (
-  <a href="#" className="font-normal flex space-x-2 items-center text-sm text-white py-1 relative z-20">
-    <img src="assets/logo.png" alt="My Candy's" className="h-6 w-6 flex-shrink-0 object-contain" />
-  </a>
-);
-/* Dashboard — identique au démo (blocs squelette), teinté rose (candy) */
-const Dashboard = () => (
-  <div className="flex flex-1">
-    <div className="p-2 md:p-10 rounded-tl-2xl border border-neutral-200 bg-white flex flex-col gap-2 flex-1 w-full h-full">
-      <div className="flex gap-2">
-        {[...new Array(4)].map((_, i) => (<div key={'first-array' + i} className="h-20 w-full rounded-lg bg-candy-100 animate-pulse"></div>))}
-      </div>
-      <div className="flex gap-2 flex-1">
-        {[...new Array(2)].map((_, i) => (<div key={'second-array' + i} className="h-full w-full rounded-lg bg-candy-100 animate-pulse"></div>))}
-      </div>
-    </div>
+/* ---- briques UI ---- */
+const Card = ({children,className}) => <div className={cn('rounded-2xl border border-neutral-200 bg-white',className)}>{children}</div>;
+const Kpi = ({label,value,sub,accent}) => <div className="flex-1 rounded-2xl border border-candy-200/60 bg-white p-4"><div className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">{label}</div><div className={cn('mt-1 text-2xl font-extrabold tabular-nums',accent||'text-ink')}>{value}</div>{sub&&<div className="mt-0.5 text-xs text-neutral-400">{sub}</div>}</div>;
+const Pill = ({children,cls}) => <span className={cn('rounded-full px-2.5 py-1 text-xs font-bold',cls)}>{children}</span>;
+const Swatch = ({t}) => <span className="h-9 w-9 flex-shrink-0 rounded-lg border border-neutral-100" style={{background:t||'#FFE3F1'}}/>;
+
+/* ================= VUES ================= */
+const VDash = () => (<div className="space-y-4">
+  <div className="flex flex-col gap-3 sm:flex-row">
+    <Kpi label="Chiffre d'affaires" value="195,77 €" accent="text-candy"/><Kpi label="Commandes" value="53" sub="dont 2 à expédier"/>
+    <Kpi label="À expédier" value="2" accent="text-amber-600"/><Kpi label="Panier moyen" value="18,40 €" accent="text-emerald-600"/>
   </div>
-);
+  <Card className="p-5"><div className="mb-3 flex items-center justify-between"><h3 className="font-bold text-ink">🏆 Top produits</h3></div>
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">{PRODUCTS.slice(0,4).map((p,i)=>(<div key={i} className="rounded-xl bg-candy-50 p-3"><div className="h-16 rounded-lg" style={{background:p.t}}/><div className="mt-2 truncate text-sm font-semibold text-ink">{p.n}</div><div className="text-xs text-neutral-400">{40-i*7} ventes</div></div>))}</div></Card>
+  <Card className="p-5"><h3 className="mb-3 font-bold text-ink">Commandes récentes</h3><OrdersTable rows={ORDERS.slice(0,3)}/></Card>
+</div>);
 
-ReactDOM.createRoot(document.getElementById('root')).render(<SidebarDemo />);
+const OrdersTable = ({rows}) => (<div className="overflow-x-auto scroll"><table className="w-full text-sm min-w-[520px]">
+  <thead className="bg-neutral-50 text-left text-xs uppercase tracking-wide text-neutral-400"><tr><th className="px-4 py-2.5">Commande</th><th className="px-4 py-2.5">Client</th><th className="px-4 py-2.5">Articles</th><th className="px-4 py-2.5">Total</th><th className="px-4 py-2.5">Statut</th></tr></thead>
+  <tbody className="divide-y divide-neutral-100">{rows.map(o=>(<tr key={o.ref} className="text-ink"><td className="px-4 py-3 font-semibold whitespace-nowrap">{o.ref}</td><td className="px-4 py-3 whitespace-nowrap">{o.n}</td><td className="px-4 py-3 text-neutral-500">{o.items}</td><td className="px-4 py-3 tabular-nums whitespace-nowrap">{money(o.total)}</td><td className="px-4 py-3"><Pill cls={o.cls}>{o.st}</Pill></td></tr>))}</tbody></table></div>);
+
+function VProducts(){
+  const cats=['Toutes',...Object.keys(CAT_COUNTS)];
+  const [cat,setCat]=useState('Toutes'); const [q,setQ]=useState('');
+  const rows=PRODUCTS.filter(p=>(cat==='Toutes'||p.c===cat)&&(!q||(p.n+' '+p.b).toLowerCase().includes(q.toLowerCase())));
+  return (<div className="space-y-4">
+    <div className="flex flex-wrap gap-2">{cats.map(c=>(<button key={c} onClick={()=>setCat(c)} className={cn('rounded-full border px-3 py-1.5 text-sm font-semibold',cat===c?'border-candy bg-candy text-white':'border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50')}>{c}{c!=='Toutes'&&<span className="opacity-70"> ({CAT_COUNTS[c]})</span>}</button>))}</div>
+    <div className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2 max-w-sm"><Search/><input value={q} onChange={e=>setQ(e.target.value)} placeholder="Rechercher un produit…" className="w-full bg-transparent text-sm outline-none"/></div>
+    <Card className="overflow-hidden"><div className="overflow-x-auto scroll"><table className="w-full text-sm min-w-[640px]">
+      <thead className="bg-neutral-50 text-left text-xs uppercase tracking-wide text-neutral-400"><tr><th className="px-4 py-2.5">Produit</th><th className="px-4 py-2.5">Marque</th><th className="px-4 py-2.5">Catégorie</th><th className="px-4 py-2.5 text-right">Prix</th><th className="px-4 py-2.5 text-right">Actions</th></tr></thead>
+      <tbody className="divide-y divide-neutral-100">{rows.map((p,i)=>(<tr key={i} className="text-ink">
+        <td className="px-4 py-2.5"><div className="flex items-center gap-3"><Swatch t={p.t}/><span className="font-semibold">{p.n}</span></div></td>
+        <td className="px-4 py-2.5 text-neutral-500 whitespace-nowrap">{p.b||'—'}</td>
+        <td className="px-4 py-2.5"><Pill cls="bg-candy-50 text-candy">{p.c}</Pill></td>
+        <td className="px-4 py-2.5 text-right tabular-nums whitespace-nowrap">{p.o&&<span className="mr-1 text-xs text-neutral-400 line-through">{money(p.o)}</span>}<span className={p.o?'font-bold text-candy':''}>{money(p.p)}</span></td>
+        <td className="px-4 py-2.5 text-right whitespace-nowrap"><button className="rounded-lg border border-neutral-200 px-2.5 py-1 text-xs font-semibold hover:bg-neutral-50">✎ Fiche</button></td>
+      </tr>))}</tbody></table></div>
+      <div className="px-4 py-3 text-xs text-neutral-400 border-t border-neutral-100">{rows.length} produits affichés · <b>813</b> au catalogue complet (aperçu : échantillon)</div>
+    </Card>
+  </div>);
+}
+
+const VOrders = () => (<div className="space-y-4">
+  <div className="flex flex-col gap-3 sm:flex-row"><Kpi label="À expédier" value="2" accent="text-amber-600"/><Kpi label="Expédiées" value="3" accent="text-emerald-600"/><Kpi label="Commandes" value="53"/><Kpi label="Chiffre d'affaires" value="195,77 €" accent="text-candy"/></div>
+  <div className="flex flex-wrap gap-2">{['Toutes','Nouvelles','En cours','Traitées','Expédiées'].map((c,i)=>(<button key={c} className={cn('rounded-full border px-3 py-1.5 text-sm font-semibold',i===0?'border-ink bg-ink text-white':'border-neutral-200 bg-white text-neutral-600')}>{c}</button>))}</div>
+  <Card className="p-5"><OrdersTable rows={ORDERS}/></Card>
+</div>);
+
+const VInbox = () => (<div className="grid gap-4 lg:grid-cols-2">
+  <Card className="p-5"><h3 className="font-bold text-ink mb-3">📩 Inscrits newsletter <span className="text-neutral-400 font-semibold">(128)</span></h3>
+    <div className="divide-y divide-neutral-100 text-sm">{['lea.martin@gmail.com','vincent83@icloud.com','nour.nourette@icloud.com','francis@estanquedeboulouris.fr'].map(e=>(<div key={e} className="flex justify-between py-2"><span>{e}</span><span className="text-neutral-400">15/09</span></div>))}</div></Card>
+  <Card className="p-5"><h3 className="font-bold text-ink mb-3">✉️ Messages contact <span className="text-neutral-400 font-semibold">(2)</span></h3>
+    {[['Francis','info@estanquedeboulouris.fr','Bonjour, livrez-vous en Corse ?'],['Vincent','cedbip3@laposte.net','Quand part ma commande MC-357821 ?']].map((m,i)=>(<div key={i} className="border-b border-neutral-100 py-3 last:border-0"><div className="text-[11px] text-neutral-400">15/09/2026</div><div className="font-semibold">{m[0]} <span className="font-normal text-neutral-400">&lt;{m[1]}&gt;</span></div><div className="text-sm text-neutral-600">{m[2]}</div><button className="mt-1.5 rounded-lg border border-neutral-200 px-2.5 py-1 text-xs font-semibold hover:bg-neutral-50">↩️ Répondre</button></div>))}</Card>
+</div>);
+
+const VClients = () => (<Card className="overflow-hidden"><div className="overflow-x-auto scroll"><table className="w-full text-sm min-w-[520px]">
+  <thead className="bg-neutral-50 text-left text-xs uppercase tracking-wide text-neutral-400"><tr><th className="px-4 py-2.5">Client</th><th className="px-4 py-2.5">Email</th><th className="px-4 py-2.5 text-right">Commandes</th><th className="px-4 py-2.5 text-right">Total</th></tr></thead>
+  <tbody className="divide-y divide-neutral-100">{[['Inès E.','i.elouard@icloud.com',3,59.7],['Vincent','cedbip3@laposte.net',5,142.3],['Léa Martin','lea.martin@gmail.com',2,38.4],['Francis','info@estanquedeboulouris.fr',1,12.5]].map((c,i)=>(<tr key={i} className="text-ink"><td className="px-4 py-3 font-semibold whitespace-nowrap">{c[0]}</td><td className="px-4 py-3 text-neutral-500">{c[1]}</td><td className="px-4 py-3 text-right tabular-nums">{c[2]}</td><td className="px-4 py-3 text-right tabular-nums whitespace-nowrap">{money(c[3])}</td></tr>))}</tbody></table></div></Card>);
+
+const VPromos = () => (<div className="grid gap-3 sm:grid-cols-3">{[['CANDYSUMMER26','-26 %','Offre d\'été'],['BIENVENUE10','-10 %','Newsletter'],['TAGADA10','-10 %','Relance client']].map(pm=>(<Card key={pm[0]} className="p-5 text-center"><div className="text-xs text-neutral-400">{pm[2]}</div><div className="my-1 text-2xl font-extrabold text-candy tracking-wide">{pm[0]}</div><Pill cls="bg-candy-50 text-candy">{pm[1]}</Pill></Card>))}</div>);
+
+const VCats = () => (<Card className="p-5"><h3 className="font-bold text-ink mb-3">Catégories</h3>
+  <div className="space-y-2">{Object.keys(CAT_COUNTS).map(c=>(<div key={c} className="flex items-center justify-between rounded-xl border border-neutral-100 px-4 py-2.5"><span className="font-semibold">{c}</span><span className="text-sm text-neutral-400">{CAT_COUNTS[c]} produits</span></div>))}</div>
+  <button className="mt-3 rounded-lg border border-candy-200 bg-candy-50 px-3 py-1.5 text-sm font-semibold text-candy">+ Ajouter une catégorie</button></Card>);
+
+const VBoxes = () => (<div className="grid gap-4 sm:grid-cols-3">{[['Mystery Box Découverte','12,90 €'],['Mystery Box Gourmande','24,90 €'],['Mystery Box Ultime','49,90 €']].map((b,i)=>(<Card key={i} className="p-5"><div className="h-24 rounded-xl bg-candy-100 mb-3"/><div className="font-bold text-ink">{b[0]}</div><div className="text-candy font-extrabold">{b[1]}</div></Card>))}</div>);
+
+const VLoyalty = () => (<div className="grid gap-4 sm:grid-cols-3">{[['Argent','100 pts','-5 %'],['Or','250 pts','-10 %'],['Platine','500 pts','-15 %']].map((t,i)=>(<Card key={i} className="p-6 text-center"><div className="text-3xl mb-1">{['🥈','🥇','💎'][i]}</div><div className="font-bold text-ink">{t[0]}</div><div className="text-sm text-neutral-400">{t[1]}</div><div className="mt-2 text-2xl font-extrabold text-candy">{t[2]}</div></Card>))}</div>);
+
+const VReviews = () => (<div className="grid gap-3 sm:grid-cols-2">{[['Inès','Livraison rapide et emballage soigné 🧡','★★★★★'],['Vincent','Des produits introuvables ailleurs !','★★★★★'],['Léa','Trop bon, je recommande.','★★★★☆']].map((r,i)=>(<Card key={i} className="p-5"><div className="text-candy">{r[2]}</div><div className="my-1 text-sm text-neutral-600">« {r[1]} »</div><div className="text-xs font-semibold text-neutral-400">{r[0]}</div></Card>))}</div>);
+
+const VStats = () => (<Card className="p-5"><h3 className="font-bold text-ink mb-4">Ventes par catégorie</h3>
+  <div className="space-y-3">{Object.entries(CAT_COUNTS).map(([c,n])=>{const w=Math.round(n/306*100);return(<div key={c}><div className="flex justify-between text-sm mb-1"><span className="font-semibold">{c}</span><span className="text-neutral-400">{n}</span></div><div className="h-2.5 rounded-full bg-neutral-100"><div className="h-2.5 rounded-full bg-gradient-to-r from-candy-light to-candy" style={{width:w+'%'}}/></div></div>);})}</div></Card>);
+
+const TABS = [
+  {k:'dash',label:'Tableau de bord',icon:IC.dash('h-5 w-5 flex-shrink-0'),title:'Tableau de bord',sub:"Vue d'ensemble de l'activité",view:<VDash/>},
+  {k:'stats',label:'Statistiques',icon:IC.stats('h-5 w-5 flex-shrink-0'),title:'Statistiques',sub:'Analyse des ventes',view:<VStats/>},
+  {k:'products',label:'Produits',icon:IC.products('h-5 w-5 flex-shrink-0'),title:'Produits',sub:'Catalogue de la boutique',view:<VProducts/>},
+  {k:'boxes',label:'Box mystères',icon:IC.boxes('h-5 w-5 flex-shrink-0'),title:'Box mystères',sub:'Coffrets surprise',view:<VBoxes/>},
+  {k:'cats',label:'Catégories',icon:IC.cats('h-5 w-5 flex-shrink-0'),title:'Catégories',sub:'Rayons de la boutique',view:<VCats/>},
+  {k:'orders',label:'Commandes',icon:IC.orders('h-5 w-5 flex-shrink-0'),title:'Commandes',sub:'Traiter et expédier',view:<VOrders/>},
+  {k:'promos',label:'Promotions',icon:IC.promos('h-5 w-5 flex-shrink-0'),title:'Promotions',sub:'Codes de réduction',view:<VPromos/>},
+  {k:'inbox',label:'Boîte de réception',icon:IC.inbox('h-5 w-5 flex-shrink-0'),title:'Boîte de réception',sub:'Messages & inscrits',view:<VInbox/>},
+  {k:'clients',label:'Clients',icon:IC.clients('h-5 w-5 flex-shrink-0'),title:'Clients',sub:'Votre clientèle',view:<VClients/>},
+  {k:'loyalty',label:'Fidélité',icon:IC.loyalty('h-5 w-5 flex-shrink-0'),title:'Fidélité',sub:'Programme de points',view:<VLoyalty/>},
+  {k:'reviews',label:'Avis',icon:IC.reviews('h-5 w-5 flex-shrink-0'),title:'Avis clients',sub:'Retours de la clientèle',view:<VReviews/>},
+];
+
+function App(){
+  const [open,setOpen]=useState(false);
+  const [view,setView]=useState('dash');
+  const cur=TABS.find(t=>t.k===view)||TABS[0];
+  return (<div className="flex flex-col md:flex-row w-full h-screen overflow-hidden bg-gray-100">
+    <Sidebar open={open} setOpen={setOpen}>
+      <SidebarBody className="justify-between gap-8">
+        <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden scroll">
+          {open ? <Logo/> : <LogoIcon/>}
+          <div className="mt-6 flex flex-col gap-1">{TABS.map(t=>(<SidebarLink key={t.k} link={{label:t.label,href:'#',icon:t.icon}} active={view===t.k} onClick={e=>{e.preventDefault();setView(t.k);setOpen(false);}}/>))}</div>
+        </div>
+        <div className="flex flex-col gap-1">
+          <SidebarLink link={{label:'Se déconnecter',href:'/console',icon:IC.logout('h-5 w-5 flex-shrink-0')}}/>
+          <SidebarLink link={{label:'Gérant',href:'#',icon:<img src="assets/logo.png" className="h-7 w-7 flex-shrink-0 rounded-full object-contain bg-white/10 p-0.5" alt="Avatar"/>}}/>
+        </div>
+      </SidebarBody>
+    </Sidebar>
+    <main className="flex-1 min-w-0 flex flex-col">
+      <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-neutral-200 bg-white/80 px-5 py-3 backdrop-blur">
+        <div className="min-w-0"><h1 className="text-xl font-bold leading-tight text-ink">{cur.title}</h1><p className="text-xs text-neutral-400">{cur.sub}</p></div>
+        <div className="ml-auto hidden sm:flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2 w-56"><Search/><input placeholder="Rechercher…" className="w-full bg-transparent text-sm outline-none"/></div>
+        <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-600"><span className="h-2 w-2 rounded-full bg-emerald-500"/> Synchronisé</span>
+      </header>
+      <div className="flex-1 overflow-y-auto scroll p-4 md:p-6">{cur.view}</div>
+    </main>
+  </div>);
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
 </body>
 </html>
