@@ -415,9 +415,66 @@
 
   /* encadré note à plat */
   .autonote{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--pink)}
+
+  /* ===== Rail repliable façon SaaS (desktop) : icônes seules → déploiement au survol ===== */
+  @media (min-width:901px){
+    .app{display:block}
+    .sidebar{position:fixed;left:0;top:0;height:100vh;width:76px;z-index:60;overflow:hidden;
+      transition:width .24s cubic-bezier(.4,0,.2,1),box-shadow .24s}
+    .sidebar:hover{width:260px;box-shadow:14px 0 50px rgba(0,0,0,.34)}
+    .main{margin-left:76px}
+    .brand{padding:1.2rem 1.15rem}
+    .brand .bt,.side-foot .userchip .ut,.navlink .lbl{opacity:0;white-space:nowrap;transition:opacity .15s}
+    .sidebar:hover .brand .bt,.sidebar:hover .side-foot .userchip .ut,.sidebar:hover .navlink .lbl{opacity:1}
+    .nav .grp{max-height:0;padding-top:0;padding-bottom:0;opacity:0;overflow:hidden;
+      transition:max-height .22s,opacity .15s,padding .22s}
+    .sidebar:hover .nav .grp{max-height:2.4rem;padding:.7rem .7rem .35rem;opacity:1}
+    .navlink{white-space:nowrap}
+    .navlink .nbadge{opacity:0;transition:opacity .15s}
+    .sidebar:hover .navlink .nbadge{opacity:1}
+    .sidebar::after{content:"›";position:absolute;top:1.45rem;right:14px;color:var(--side-muted);
+      font-size:17px;opacity:.55;transition:opacity .2s}
+    .sidebar:hover::after{opacity:0}
+  }
+
+  /* ===== Écran de connexion (mot de passe à l'entrée) ===== */
+  .login-gate{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;
+    background:radial-gradient(1100px 640px at 50% -12%,rgba(255,46,154,.55),transparent 60%),linear-gradient(180deg,#3A1526,#180712)}
+  .login-gate[hidden]{display:none!important}
+  .lg-card{width:100%;max-width:406px;background:#fff;border-radius:24px;padding:40px 32px 26px;text-align:center;
+    box-shadow:0 40px 90px rgba(0,0,0,.55);position:relative;overflow:hidden}
+  .lg-card::before{content:"";position:absolute;inset:0 0 auto 0;height:6px;background:linear-gradient(90deg,#FF2E9A,#E01784,#FFB3DC)}
+  .lg-logo{width:112px;height:auto;margin:6px auto 16px;display:block}
+  .lg-card h1{font-family:var(--disp);font-size:23px;font-weight:800;color:#2A0A1C;margin:0 0 6px}
+  .lg-card p{font-size:14px;color:#8A6076;margin:0 0 22px}
+  .lg-card input{width:100%;border:1.5px solid #F3C6DE;border-radius:13px;padding:13px 15px;font-size:15px;
+    font-family:inherit;outline:none;color:#2A0A1C;transition:border-color .15s,box-shadow .15s}
+  .lg-card input:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(255,46,154,.14)}
+  .lg-err{color:#E23A2E;font-size:12.5px;min-height:17px;margin:9px 0 4px;font-weight:600}
+  .lg-btn{width:100%;border:0;border-radius:13px;padding:13px;font-size:15px;font-weight:800;font-family:inherit;color:#fff;
+    cursor:pointer;background:linear-gradient(135deg,#FF2E9A,#E01784);box-shadow:0 12px 26px rgba(224,23,132,.38);
+    transition:filter .15s,transform .1s}
+  .lg-btn:hover{filter:brightness(1.05)} .lg-btn:active{transform:scale(.98)} .lg-btn:disabled{opacity:.6;cursor:default}
+  .lg-foot{margin-top:20px;font-size:11.5px;color:#B7A0AC}
+  .lg-foot b{color:#E01784}
 </style>
 <script src="cart-store.js"></script>
 <script src="products.js"></script>
+
+<!-- ============ ÉCRAN DE CONNEXION (mot de passe à l'entrée) ============ -->
+<div class="login-gate" id="loginGate" hidden>
+  <div class="lg-card">
+    <img class="lg-logo" src="assets/logo.png" alt="My Candy's">
+    <h1>Espace gérant</h1>
+    <p>Connecte-toi pour accéder au tableau de bord.</p>
+    <form id="lgForm" autocomplete="on">
+      <input id="lgPw" type="password" placeholder="Mot de passe administrateur" autocomplete="current-password" required>
+      <div class="lg-err" id="lgErr"></div>
+      <button type="submit" class="lg-btn">Entrer dans la console →</button>
+    </form>
+    <div class="lg-foot">Console propulsée par <b>LinkedIA</b></div>
+  </div>
+</div>
 
 <div class="app">
   <!-- ============ SIDEBAR ============ -->
@@ -957,7 +1014,7 @@
       }).catch(function(){btn.disabled=false;btn.textContent=old;toast('Erreur réseau','warn');});
   }
   function syncLogoutBtn(){var b=$('logoutBtn');if(b)b.style.display=ADMINKEY?'':'none';}
-  function adminLogout(){if(!ADMINKEY)return;if(!confirm('Se déconnecter ? Il faudra ressaisir le mot de passe pour accéder aux données sur cet appareil.'))return;ADMINKEY=null;try{localStorage.removeItem('mcAdminKey');sessionStorage.removeItem('mcAdminKey');}catch(e){}syncLogoutBtn();renderAll();toast('Déconnecté — accès verrouillé 🔒','good');}
+  function adminLogout(){if(!ADMINKEY)return;if(!confirm('Se déconnecter ? Il faudra ressaisir le mot de passe pour accéder aux données sur cet appareil.'))return;ADMINKEY=null;try{localStorage.removeItem('mcAdminKey');sessionStorage.removeItem('mcAdminKey');}catch(e){}syncLogoutBtn();renderAll();var g=$('loginGate');if(g){g.hidden=false;var p=$('lgPw');if(p){p.value='';setTimeout(function(){try{p.focus();}catch(e){}},60);}}toast('Déconnecté — accès verrouillé 🔒','good');}
   function find(id){id=+id;for(var i=0;i<orders.length;i++)if(orders[i].id===id)return orders[i];return null;}
   function advanceOrder(id){var o=find(id);if(!o||o.status!=='nouvelle')return;o.status='preparee';openSet[id]=true;refresh();toast('Commande #'+id+' marquée préparée');}
   function shipOrder(ref){var card=$('orders').querySelector('.ship[data-ref="'+ref+'"]');if(!card)return;var num=(card.querySelector('.ship-num').value||'').trim();var car=card.querySelector('.ship-car').value;if(!num){card.querySelector('.ship-num').focus();return;}if(!ADMINKEY)return;var btn=card.querySelector('[data-ship]');btn.disabled=true;btn.textContent='…';
@@ -1602,6 +1659,26 @@
   /* (graphique 7 jours retiré du tableau de bord) */
 
   document.addEventListener('click',function(e){if(e.target.closest('[data-opsunlock]'))pUnlockModal();});
+  // ===== Rail repliable : envelopper le libellé de chaque lien de nav dans un <span class="lbl"> =====
+  Array.prototype.forEach.call(document.querySelectorAll('#nav .navlink'),function(b){
+    var badge=b.querySelector('.nbadge'),lbl=document.createElement('span');lbl.className='lbl';
+    Array.prototype.slice.call(b.childNodes).forEach(function(n){if(n.nodeType===3&&n.textContent.trim()){lbl.appendChild(document.createTextNode(n.textContent.trim()));b.removeChild(n);}});
+    if(badge)b.insertBefore(lbl,badge);else b.appendChild(lbl);
+  });
+  // ===== Écran de connexion à l'entrée (mot de passe) =====
+  (function(){
+    var gate=$('loginGate');if(!gate)return;
+    var form=$('lgForm'),pw=$('lgPw'),err=$('lgErr');
+    if(!ADMINKEY){gate.hidden=false;setTimeout(function(){try{pw.focus();}catch(e){}},60);}
+    if(form)form.addEventListener('submit',function(e){e.preventDefault();
+      var key=(pw.value||'').trim();if(!key)return;
+      var btn=form.querySelector('.lg-btn'),old=btn.textContent;btn.disabled=true;btn.textContent='Connexion…';err.textContent='';
+      fetch(MCAPI+'/admin/data',{headers:{'Authorization':'Bearer '+key}}).then(function(r){if(r.status===401)throw 401;if(!r.ok)throw 0;return r.json();}).then(function(){
+        ADMINKEY=key;try{localStorage.setItem('mcAdminKey',key);}catch(e){}
+        syncLogoutBtn();gate.hidden=true;renderAll();loadReal();if(typeof updateBell==='function')updateBell();toast('Bienvenue 👋','good');
+      }).catch(function(x){btn.disabled=false;btn.textContent=old;err.textContent=(x===401)?'Mot de passe incorrect.':'Erreur de connexion, réessaie.';try{pw.select();}catch(e){}});
+    });
+  })();
   reset();pLoadOverrides();loadReal();var _v=(location.hash||'').replace(/^#/,'');setView(TITLES[_v]?_v:'dash');
 })();
 </script>
