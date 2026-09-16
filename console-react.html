@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <!-- deploy: cloudflare -->
-<!-- Console My Candy's — REACT (CDN, sans build). Reproduction fidèle du composant
-     Sidebar fourni (SidebarProvider/Sidebar/SidebarBody/DesktopSidebar/MobileSidebar/
-     SidebarLink + demo Logo/LogoIcon + avatar bas), adapté : next/link->a, next/image->img,
-     lucide-react->SVG inline, framer-motion via CDN. DA boutique (rose + logo). -->
+<!-- Console My Candy's — REACT (CDN). Copie du démo 21st fourni (SidebarDemo) :
+     mêmes liens (Dashboard/Profile/Settings/Logout), même Logo/LogoIcon, même avatar bas,
+     même composant Dashboard (blocs squelette 4 + 2). Adapté : next/link->a, next/image->img,
+     lucide-react->SVG inline, framer-motion->shim CSS. Seule la COULEUR change : rose + logo boutique. -->
 <html lang="fr">
 <head>
 <meta charset="utf-8">
@@ -14,20 +14,16 @@
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
-  tailwind.config = {
-    darkMode: 'class',
-    theme: { extend: {
-      colors: {
-        candy: { DEFAULT: '#E01784', light: '#FF2E9A', 50:'#FFF6FB', 100:'#FFE3F1', 200:'#F3C6DE' },
-        ink: '#2A0A1C',
-        side: { DEFAULT:'#241019', 2:'#160810' }
-      },
-      fontFamily: { sans:['Poppins','ui-sans-serif','system-ui','sans-serif'] }
-    } }
-  };
+  tailwind.config = { darkMode: 'class', theme: { extend: {
+    colors: {
+      candy: { DEFAULT:'#E01784', light:'#FF2E9A', 50:'#FFF6FB', 100:'#FFE3F1', 200:'#F3C6DE' },
+      side: { DEFAULT:'#241019', 2:'#160810' }
+    },
+    fontFamily: { sans:['Poppins','ui-sans-serif','system-ui','sans-serif'] }
+  } } };
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>body{background:#f5f2f6;font-family:Poppins,ui-sans-serif,system-ui,sans-serif}::selection{background:#E01784;color:#fff}</style>
+<style>body{background:#f3f4f6;font-family:Poppins,ui-sans-serif,system-ui,sans-serif;margin:0}::selection{background:#E01784;color:#fff}</style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
@@ -38,52 +34,40 @@
 
 <script type="text/babel" data-presets="react">
 const { useState, createContext, useContext } = React;
-/* motion "shim" : reproduit animate={{...}} en style CSS + transition (pas de dépendance framer-motion) */
+/* motion "shim" : reproduit animate={{...}} en style CSS + transition (pas de dépendance externe) */
 const motion = new Proxy({}, { get: (_t, Tag) => (function MotionTag({ animate, initial, exit, transition, style, className, children, ...rest }) {
   const st = Object.assign({ transition: 'all .24s ease' }, style || {}, animate || {});
   return React.createElement(Tag, Object.assign({ className, style: st }, rest), children);
 }) });
 const AnimatePresence = ({ children }) => <>{children}</>;
-
-/* ---------- cn (clsx-like) ---------- */
 function cn(...a){ return a.flat(Infinity).filter(Boolean).join(' '); }
 
-/* ---------- Icônes (SVG inline = lucide-react) ---------- */
-const I = ({ children, className }) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
-       strokeLinecap="round" strokeLinejoin="round" className={className || 'h-5 w-5 flex-shrink-0'}>{children}</svg>
-);
-const IDash = () => <I><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></I>;
-const IProducts = () => <I><path d="M20.6 13.4l-7.2 7.2a2 2 0 01-2.8 0l-7-7A1.9 1.9 0 013 12.2V4a2 2 0 012-2h8.2c.5 0 1 .2 1.4.6l6 6a2 2 0 010 2.8z"/><circle cx="7.5" cy="7.5" r="1.3"/></I>;
-const IOrders = () => <I><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/></I>;
-const IUsers = () => <I><circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0112 0"/><path d="M16 5.5a3 3 0 010 5.8M21 20a6 6 0 00-4-5.6"/></I>;
-const ISettings = () => <I><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.6 1.6 0 00-1.8-.3 1.6 1.6 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.6 1.6 0 00-1-1.5 1.6 1.6 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.6 1.6 0 00.3-1.8 1.6 1.6 0 00-1.5-1H3a2 2 0 110-4h.1a1.6 1.6 0 001.5-1 1.6 1.6 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.6 1.6 0 001.8.3 1.6 1.6 0 001-1.5V3a2 2 0 114 0v.1a1.6 1.6 0 001 1.5 1.6 1.6 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.6 1.6 0 00-.3 1.8 1.6 1.6 0 001.5 1H21a2 2 0 110 4h-.1a1.6 1.6 0 00-1.5 1z"/></I>;
-const ILogout = () => <I><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></I>;
-const IMenu = () => <I className="h-6 w-6 text-neutral-200 cursor-pointer"><path d="M3 6h18M3 12h18M3 18h18"/></I>;
-const IX = () => <I className="text-neutral-200 cursor-pointer"><path d="M18 6L6 18M6 6l12 12"/></I>;
+/* icônes lucide-react en SVG inline */
+const S = ({children,className}) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className||'h-5 w-5 flex-shrink-0'}>{children}</svg>;
+const LayoutDashboard = ({className}) => <S className={className}><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></S>;
+const UserCog = ({className}) => <S className={className}><circle cx="9" cy="7" r="3.2"/><path d="M3 21a6 6 0 0110-4.5"/><circle cx="18" cy="16" r="2.4"/><path d="M18 12.6v.9M18 19.5v.9M21 16h-.9M15.9 16H15M20.1 13.9l-.6.6M16.5 17.5l-.6.6M20.1 18.1l-.6-.6M16.5 14.5l-.6-.6"/></S>;
+const Settings = ({className}) => <S className={className}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.6 1.6 0 00-1.8-.3 1.6 1.6 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.6 1.6 0 00-1-1.5 1.6 1.6 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.6 1.6 0 00.3-1.8 1.6 1.6 0 00-1.5-1H3a2 2 0 110-4h.1a1.6 1.6 0 001.5-1 1.6 1.6 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.6 1.6 0 001.8.3H9a1.6 1.6 0 001-1.5V3a2 2 0 114 0v.1a1.6 1.6 0 001 1.5 1.6 1.6 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.6 1.6 0 00-.3 1.8V9a1.6 1.6 0 001.5 1H21a2 2 0 110 4h-.1a1.6 1.6 0 00-1.5 1z"/></S>;
+const LogOut = ({className}) => <S className={className}><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></S>;
+const Menu = ({className,onClick}) => <svg onClick={onClick} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={className}><path d="M3 6h18M3 12h18M3 18h18"/></svg>;
+const X = ({onClick}) => <svg onClick={onClick} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-6 w-6"><path d="M18 6L6 18M6 6l12 12"/></svg>;
 
-/* ================= COMPOSANT SIDEBAR (fidèle au fichier fourni) ================= */
+/* ============ sidebar.tsx (copie exacte, next/link -> <a>) ============ */
 const SidebarContext = createContext(undefined);
 const useSidebar = () => { const c = useContext(SidebarContext); if(!c) throw new Error('useSidebar must be used within a SidebarProvider'); return c; };
-
 const SidebarProvider = ({ children, open: openProp, setOpen: setOpenProp, animate = true }) => {
   const [openState, setOpenState] = useState(false);
   const open = openProp !== undefined ? openProp : openState;
   const setOpen = setOpenProp !== undefined ? setOpenProp : setOpenState;
   return <SidebarContext.Provider value={{ open, setOpen, animate }}>{children}</SidebarContext.Provider>;
 };
-const Sidebar = ({ children, open, setOpen, animate }) => (
-  <SidebarProvider open={open} setOpen={setOpen} animate={animate}>{children}</SidebarProvider>
-);
+const Sidebar = ({ children, open, setOpen, animate }) => <SidebarProvider open={open} setOpen={setOpen} animate={animate}>{children}</SidebarProvider>;
 const SidebarBody = (props) => (<><DesktopSidebar {...props} /><MobileSidebar {...props} /></>);
-
 const DesktopSidebar = ({ className, children, ...props }) => {
   const { open, setOpen, animate } = useSidebar();
   return (
     <motion.div
-      className={cn('h-screen sticky top-0 px-4 py-4 hidden md:flex md:flex-col w-[300px] flex-shrink-0 overflow-hidden bg-gradient-to-b from-side-2 to-side', className)}
-      animate={{ width: animate ? (open ? '300px' : '72px') : '300px' }}
-      transition={{ duration: 0.24, ease: 'easeInOut' }}
+      className={cn('h-full px-4 py-4 hidden md:flex md:flex-col bg-gradient-to-b from-side-2 to-side w-[300px] flex-shrink-0 overflow-hidden', className)}
+      animate={{ width: animate ? (open ? '300px' : '60px') : '300px' }}
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
       {...props}
@@ -93,16 +77,13 @@ const DesktopSidebar = ({ className, children, ...props }) => {
 const MobileSidebar = ({ className, children, ...props }) => {
   const { open, setOpen } = useSidebar();
   return (
-    <div className="h-12 px-4 py-4 flex flex-row md:hidden items-center justify-between bg-gradient-to-b from-side-2 to-side w-full" {...props}>
-      <div className="flex justify-end z-20 w-full" onClick={() => setOpen(!open)}><IMenu /></div>
+    <div className="h-10 px-4 py-4 flex flex-row md:hidden items-center justify-between bg-gradient-to-b from-side-2 to-side w-full" {...props}>
+      <div className="flex justify-end z-20 w-full"><Menu className="text-neutral-200 cursor-pointer h-6 w-6" onClick={() => setOpen(!open)} /></div>
       <AnimatePresence>
         {open && (
-          <motion.div
-            initial={{ x: '-100%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '-100%', opacity: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className={cn('fixed h-full w-full inset-0 bg-gradient-to-b from-side-2 to-side p-10 z-[100] flex flex-col justify-between', className)}
-          >
-            <div className="absolute right-10 top-10 z-50" onClick={() => setOpen(!open)}><IX /></div>
+          <motion.div initial={{ x:'-100%', opacity:0 }} animate={{ x:0, opacity:1 }} exit={{ x:'-100%', opacity:0 }} transition={{ duration:0.3, ease:'easeInOut' }}
+            className={cn('fixed h-full w-full inset-0 bg-gradient-to-b from-side-2 to-side p-10 z-[100] flex flex-col justify-between text-neutral-200', className)}>
+            <div className="absolute right-10 top-10 z-50 text-neutral-200 cursor-pointer"><X onClick={() => setOpen(!open)} /></div>
             {children}
           </motion.div>
         )}
@@ -110,130 +91,43 @@ const MobileSidebar = ({ className, children, ...props }) => {
     </div>
   );
 };
-const SidebarLink = ({ link, className, active, onClick }) => {
+const SidebarLink = ({ link, className, ...props }) => {
   const { open, animate } = useSidebar();
   return (
-    <a href={link.href} onClick={onClick}
-      className={cn('flex items-center justify-start gap-2 group/sidebar rounded-xl px-2 py-2 transition',
-        active ? 'bg-white/10 shadow-[inset_2px_0_0_#FF2E9A]' : 'hover:bg-white/5', className)}>
-      <span className={active ? 'text-candy-light' : 'text-neutral-400 group-hover/sidebar:text-white'}>{link.icon}</span>
+    <a href={link.href} className={cn('flex items-center justify-start gap-2 group/sidebar py-2', className)} {...props}>
+      {link.icon}
       <motion.span
         animate={{ display: animate ? (open ? 'inline-block' : 'none') : 'inline-block', opacity: animate ? (open ? 1 : 0) : 1 }}
-        className="text-neutral-200 text-sm font-semibold group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
-      >{link.label}</motion.span>
+        className="text-neutral-200 text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0">
+        {link.label}
+      </motion.span>
     </a>
   );
 };
 
-/* ================= DEMO (fidèle) : Logo / LogoIcon / avatar / Dashboard ================= */
-const Logo = () => (
-  <a href="#" className="font-normal flex space-x-2 items-center text-sm py-1 relative z-20">
-    <img src="assets/logo.png" alt="My Candy's" className="h-8 w-8 flex-shrink-0 object-contain" />
-    <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="font-bold text-white whitespace-pre">My Candy&apos;s</motion.span>
-  </a>
-);
-const LogoIcon = () => (
-  <a href="#" className="font-normal flex items-center text-sm py-1 relative z-20">
-    <img src="assets/logo.png" alt="My Candy's" className="h-8 w-8 flex-shrink-0 object-contain" />
-  </a>
-);
-
-function Kpi({ label, value, sub, accent }) {
-  return (
-    <div className="flex-1 rounded-2xl border border-candy-200/60 bg-white p-4">
-      <div className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">{label}</div>
-      <div className={cn('mt-1 text-2xl font-extrabold tabular-nums', accent || 'text-ink')}>{value}</div>
-      {sub && <div className="mt-0.5 text-xs text-neutral-400">{sub}</div>}
-    </div>
-  );
-}
-const RECENT = [
-  ['MC-444009','Inès E.','19,90 €','Nouvelle','bg-candy-100 text-candy'],
-  ['MC-357821','Vincent','34,80 €','Expédiée','bg-emerald-100 text-emerald-700'],
-  ['MC-198332','Francis','12,50 €','En cours','bg-amber-100 text-amber-700'],
-];
-
-const Dashboard = () => (
-  <div className="flex flex-1">
-    <div className="p-3 md:p-8 rounded-tl-2xl border border-neutral-200 bg-white flex flex-col gap-4 flex-1 w-full h-full overflow-y-auto">
-      <div>
-        <h1 className="text-xl font-bold text-ink">Tableau de bord</h1>
-        <p className="text-xs text-neutral-400">Vue d&apos;ensemble de l&apos;activité</p>
-      </div>
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <Kpi label="Chiffre d'affaires" value="195,77 €" accent="text-candy" />
-        <Kpi label="Commandes" value="53" sub="dont 2 à expédier" />
-        <Kpi label="À expédier" value="2" accent="text-amber-600" />
-        <Kpi label="Panier moyen" value="18,40 €" accent="text-emerald-600" />
-      </div>
-      <div className="rounded-2xl border border-neutral-200 p-5">
-        <div className="mb-3 flex items-center justify-between">
-          <h3 className="font-bold text-ink">🏆 Top produits</h3>
-          <button className="rounded-lg border border-neutral-200 px-3 py-1.5 text-sm font-semibold text-neutral-600 hover:bg-neutral-50">Voir les stats</button>
-        </div>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {['Takis Fuego','Candy Fruit','Prime Ice Pop','Mystery Box'].map((n,i)=>(
-            <div key={n} className="rounded-xl bg-candy-50 p-3">
-              <div className="h-16 rounded-lg bg-candy-100" />
-              <div className="mt-2 truncate text-sm font-semibold text-ink">{n}</div>
-              <div className="text-xs text-neutral-400">{40 - i*7} ventes</div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="rounded-2xl border border-neutral-200 p-5">
-        <h3 className="mb-3 font-bold text-ink">Commandes récentes</h3>
-        <div className="overflow-hidden rounded-xl border border-neutral-100">
-          <table className="w-full text-sm">
-            <thead className="bg-neutral-50 text-left text-xs uppercase tracking-wide text-neutral-400">
-              <tr><th className="px-4 py-2.5">Commande</th><th className="px-4 py-2.5">Client</th><th className="px-4 py-2.5">Total</th><th className="px-4 py-2.5">Statut</th></tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-100">
-              {RECENT.map((r)=>(
-                <tr key={r[0]} className="text-ink">
-                  <td className="px-4 py-3 font-semibold">{r[0]}</td>
-                  <td className="px-4 py-3">{r[1]}</td>
-                  <td className="px-4 py-3 tabular-nums">{r[2]}</td>
-                  <td className="px-4 py-3"><span className={cn('rounded-full px-2.5 py-1 text-xs font-bold', r[4])}>{r[3]}</span></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
-function App() {
+/* ============ demo.tsx (copie exacte) — Logo/LogoIcon/Dashboard/SidebarDemo ============ */
+function SidebarDemo() {
   const links = [
-    { label: 'Tableau de bord', href: '#', icon: <IDash /> },
-    { label: 'Produits', href: '#', icon: <IProducts /> },
-    { label: 'Commandes', href: '#', icon: <IOrders /> },
-    { label: 'Clients', href: '#', icon: <IUsers /> },
-    { label: 'Réglages', href: '#', icon: <ISettings /> },
+    { label: 'Dashboard', href: '#', icon: <LayoutDashboard className="text-neutral-200 h-5 w-5 flex-shrink-0" /> },
+    { label: 'Profile',   href: '#', icon: <UserCog className="text-neutral-200 h-5 w-5 flex-shrink-0" /> },
+    { label: 'Settings',  href: '#', icon: <Settings className="text-neutral-200 h-5 w-5 flex-shrink-0" /> },
+    { label: 'Logout',    href: '#', icon: <LogOut className="text-neutral-200 h-5 w-5 flex-shrink-0" /> },
   ];
   const [open, setOpen] = useState(false);
-  const [active, setActive] = useState(0);
   return (
-    <div className="flex flex-col md:flex-row w-full flex-1 h-screen overflow-hidden">
+    <div className={cn('rounded-md flex flex-col md:flex-row bg-gray-100 w-full flex-1 max-w-7xl mx-auto border border-neutral-200 overflow-hidden', 'h-screen')}>
       <Sidebar open={open} setOpen={setOpen}>
         <SidebarBody className="justify-between gap-10">
           <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
             {open ? <Logo /> : <LogoIcon />}
-            <div className="mt-8 flex flex-col gap-1">
-              {links.map((link, idx) => (
-                <SidebarLink key={idx} link={link} active={active === idx}
-                  onClick={(e) => { e.preventDefault(); setActive(idx); }} />
-              ))}
+            <div className="mt-8 flex flex-col gap-2">
+              {links.map((link, idx) => (<SidebarLink key={idx} link={link} />))}
             </div>
           </div>
-          <div className="flex flex-col gap-1">
-            <SidebarLink link={{ label: 'Se déconnecter', href: '/console', icon: <ILogout /> }} />
+          <div>
             <SidebarLink link={{
-              label: 'Gérant',
-              href: '#',
-              icon: <img src="assets/logo.png" className="h-7 w-7 flex-shrink-0 rounded-full object-contain bg-white/10 p-0.5" alt="Avatar" />,
+              label: 'Gérant', href: '#',
+              icon: <img src="assets/logo.png" className="h-7 w-7 flex-shrink-0 rounded-full object-contain bg-white/10 p-0.5" width="50" height="50" alt="Avatar" />,
             }} />
           </div>
         </SidebarBody>
@@ -242,8 +136,32 @@ function App() {
     </div>
   );
 }
+const Logo = () => (
+  <a href="#" className="font-normal flex space-x-2 items-center text-sm text-white py-1 relative z-20">
+    <img src="assets/logo.png" alt="My Candy's" className="h-6 w-6 flex-shrink-0 object-contain" />
+    <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="font-medium text-white whitespace-pre">My Candy&apos;s</motion.span>
+  </a>
+);
+const LogoIcon = () => (
+  <a href="#" className="font-normal flex space-x-2 items-center text-sm text-white py-1 relative z-20">
+    <img src="assets/logo.png" alt="My Candy's" className="h-6 w-6 flex-shrink-0 object-contain" />
+  </a>
+);
+/* Dashboard — identique au démo (blocs squelette), teinté rose (candy) */
+const Dashboard = () => (
+  <div className="flex flex-1">
+    <div className="p-2 md:p-10 rounded-tl-2xl border border-neutral-200 bg-white flex flex-col gap-2 flex-1 w-full h-full">
+      <div className="flex gap-2">
+        {[...new Array(4)].map((_, i) => (<div key={'first-array' + i} className="h-20 w-full rounded-lg bg-candy-100 animate-pulse"></div>))}
+      </div>
+      <div className="flex gap-2 flex-1">
+        {[...new Array(2)].map((_, i) => (<div key={'second-array' + i} className="h-full w-full rounded-lg bg-candy-100 animate-pulse"></div>))}
+      </div>
+    </div>
+  </div>
+);
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+ReactDOM.createRoot(document.getElementById('root')).render(<SidebarDemo />);
 </script>
 </body>
 </html>
