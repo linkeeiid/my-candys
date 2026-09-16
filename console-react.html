@@ -36,7 +36,7 @@
 const { useState, createContext, useContext } = React;
 /* motion "shim" : reproduit animate={{...}} en style CSS + transition (pas de dépendance externe) */
 const motion = new Proxy({}, { get: (_t, Tag) => (function MotionTag({ animate, initial, exit, transition, style, className, children, ...rest }) {
-  const st = Object.assign({ transition: 'all .24s ease' }, style || {}, animate || {});
+  const st = Object.assign({ transition: 'width .38s cubic-bezier(.4,0,.2,1), opacity .34s ease .05s, transform .3s ease' }, style || {}, animate || {});
   return React.createElement(Tag, Object.assign({ className, style: st }, rest), children);
 }) });
 const AnimatePresence = ({ children }) => <>{children}</>;
@@ -97,8 +97,9 @@ const SidebarLink = ({ link, className, ...props }) => {
     <a href={link.href} className={cn('flex items-center justify-start gap-2 group/sidebar py-2', className)} {...props}>
       {link.icon}
       <motion.span
-        animate={{ display: animate ? (open ? 'inline-block' : 'none') : 'inline-block', opacity: animate ? (open ? 1 : 0) : 1 }}
-        className="text-neutral-200 text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0">
+        animate={{ opacity: animate ? (open ? 1 : 0) : 1 }}
+        className="text-neutral-200 text-sm group-hover/sidebar:translate-x-1 whitespace-pre inline-block !p-0 !m-0"
+        style={{ pointerEvents: open ? 'auto' : 'none' }}>
         {link.label}
       </motion.span>
     </a>
