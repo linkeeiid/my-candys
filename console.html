@@ -1188,7 +1188,7 @@
     openModal('Fiche — '+p.name,
       '<form>'+(canEdit?'<div class="form-row"><label>Nom du produit</label><input name="pname" value="'+esc(p.name||'')+'" placeholder="Nom du produit…"></div>':'<div class="form-row"><label>Nom du produit</label><input value="'+esc(p.name||'')+'" disabled></div>')+
       '<div style="display:flex;gap:1.1rem;flex-wrap:wrap;align-items:flex-start"><div style="text-align:center">'+prev+(canEdit?'<div style="margin-top:.5rem"><button type="button" class="btn btn-ghost pFile" style="font-size:.74rem;padding:.35rem .6rem">📷 Choisir un fichier</button></div><input type="file" accept="image/*" class="pFileIn" style="display:none">':'')+'</div>'+
-      '<div style="flex:1;min-width:210px"><div class="form-row"><label>Description</label><textarea name="desc" rows="4"'+lock+' style="width:100%;resize:vertical;font-family:inherit;border:1px solid var(--line);border-radius:9px;padding:.55rem .7rem;font-size:.85rem" placeholder="Décris le produit en une ou deux phrases…">'+esc(p.desc||'')+'</textarea></div>'+
+      '<div style="flex:1;min-width:210px"><div class="form-row"><label>Description <span style="font-weight:400;color:var(--muted);font-size:.72rem">(générée automatiquement — modifie-la si tu veux)</span></label><textarea name="desc" rows="4"'+lock+' style="width:100%;resize:vertical;font-family:inherit;border:1px solid var(--line);border-radius:9px;padding:.55rem .7rem;font-size:.85rem" placeholder="Décris le produit en une ou deux phrases…">'+esc(p.desc||'')+'</textarea></div>'+
       '<div class="form-row"><label>URL de la photo</label><input name="img" value="'+esc(p.img||'')+'"'+lock+' placeholder="Coller une URL d\'image…"></div>'+
       '<div class="form-row"><label>Sous-catégorie (rayon boutique)</label><select class="pin pSubSel"'+lock+'>'+subOpts+'</select><div style="font-size:.72rem;color:var(--muted);margin-top:.25rem">Forcer un rayon précis (prime sur la détection automatique).</div></div></div></div>'+
       '<div style="border:1px solid var(--line);border-radius:11px;padding:.7rem .8rem;margin-top:.7rem;background:var(--bg)">'+
@@ -1331,6 +1331,35 @@
   function openModal(title,body,onSubmit){$('modalTitle').textContent=title;$('modalBody').innerHTML=body;$('modal').classList.add('show');
     var f=$('modalBody').querySelector('form');if(f){f.addEventListener('submit',function(e){e.preventDefault();onSubmit(f);});var fi=f.querySelector('input');if(fi)fi.focus();}}
   function closeModal(){$('modal').classList.remove('show');}
+  /* Génère automatiquement une description liée au produit (nom + marque + catégorie).
+     Variée par catégorie ; le gérant peut la modifier ensuite dans la fiche. */
+  function genDesc(name,brand,cat){
+    var n=(name||'ce produit').trim(), b=(brand||'').trim();
+    var pick=function(a){return a[Math.floor(Math.random()*a.length)];};
+    var byCat={
+      'Bonbons':['Des bonbons '+n+' à la texture folle et au goût qui envoie, comme vus sur les réseaux.',
+                 n+', ces bonbons viraux fondants et fruités dont tout le monde parle en ce moment.',
+                 'Craque pour '+n+' : des bonbons gourmands, colorés et complètement addictifs.'],
+      'Chocolats':['Du chocolat '+n+' fondant et gourmand, une pépite repérée à l’international.',
+                   n+' : un chocolat crémeux et régressif, parfait pour se faire plaisir.',
+                   'Laisse-toi tenter par '+n+', un chocolat riche et irrésistible.'],
+      'Sodas':['Une boisson '+n+' rare et ultra rafraîchissante, importée rien que pour toi.',
+               n+', un soda introuvable en France, à la saveur qui décoiffe.',
+               'Découvre '+n+' : une boisson pétillante et originale venue d’ailleurs.'],
+      'Snacks':['Un snack '+n+' croustillant et addictif, devenu viral sur TikTok.',
+                n+' : le snack qui croustille et qui envoie du goût, à partager (ou pas).',
+                'Craque pour '+n+', un snack gourmand impossible à lâcher.'],
+      'Desserts':['Un dessert '+n+' régressif et ultra gourmand, à dévorer sans culpabiliser.',
+                  n+' : la petite douceur réconfortante dont on ne se lasse jamais.'],
+      'Épicé':[n+' : bien épicé, pour les amateurs de sensations fortes. 🔥',
+               'Prépare tes papilles : '+n+' pique autant qu’il régale. 🔥'],
+      'Surgelé':[n+', une gourmandise glacée à savourer bien fraîche.'],
+      'Divers':[n+' : un petit plus fun à s’offrir ou à offrir.']
+    };
+    var base=pick(byCat[cat]||[n+' : une gourmandise à découvrir chez My Candy’s.']);
+    if(b && base.toLowerCase().indexOf(b.toLowerCase())<0) base='Signé '+b+' — '+base;
+    return base+' Importé et livré directement chez toi. 🍬';
+  }
   function openProductModal(){
     if(!ADMINKEY){pUnlockModal();return;}
     openModal('Ajouter un produit',
@@ -1345,11 +1374,12 @@
         if(!name){toast('Renseigne au moins un nom','warn');return;}
         var tints=[T.blue,T.orange,T.pink,T.green,T.yellow,T.purple,T.red,T.cyan,T.brown];var tint=tints[Math.floor(Math.random()*tints.length)];
         var id='new-'+Date.now().toString(36)+Math.floor(Math.random()*900+100);
-        var patch={name:name,cat:cat,tint:tint,'new':true};
+        var autoDesc=genDesc(name,brand,cat);
+        var patch={name:name,cat:cat,tint:tint,'new':true,desc:autoDesc};
         if(!isNaN(price))patch.price=price; if(brand)patch.brand=brand;
         pSave(id,patch,function(ok){if(!ok){toast('Erreur d\'enregistrement','warn');return;}
-          if(MC.byId&&!MC.byId(id))MC.PRODUCTS.push({id:id,name:name,cat:cat,tint:tint,price:(isNaN(price)?null:price),brand:brand||null,img:null,old:null,sub:null,reviews:0,nouveau:true,available:true});
-          renderProducts();renderStats();renderDash();toast('Produit créé ✓ — complète sa fiche','good');pFicheModal(id);});
+          if(MC.byId&&!MC.byId(id))MC.PRODUCTS.push({id:id,name:name,cat:cat,tint:tint,price:(isNaN(price)?null:price),brand:brand||null,img:null,old:null,sub:null,reviews:0,nouveau:true,available:true,desc:autoDesc});
+          renderProducts();renderStats();renderDash();toast('Produit créé ✓ — description générée, complète sa fiche','good');pFicheModal(id);});
       });
   }
   function pmSave(code,patch,cb){if(!ADMINKEY){pUnlockModal();return;}
