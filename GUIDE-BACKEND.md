@@ -77,3 +77,55 @@ Tant que `GOOGLE_CLIENT_ID` est vide, le bouton reste en **mode démo**. Ça ne 
 
 ---
 **Note** : `BREVO_API_KEY` ne doit jamais être partagée dans le chat — elle vit uniquement dans Cloudflare. La newsletter n'envoie aucun email en ton nom → aucun souci de délivrabilité (le sujet DMARC ne concernera que le formulaire contact + les emails de commande, qu'on réglera avec un vrai domaine).
+
+---
+
+## 10) Mondial Relay (points relais + étiquettes) — via Sendcloud
+
+Le compte d'expédition de la boutique est sur **Sendcloud**, qui revend Mondial Relay.
+Le site s'y branche à deux endroits :
+
+- **au checkout** : le client choisit son point relais sur une carte (sélecteur officiel Sendcloud) ;
+- **dans la console** : un bouton *« Créer l'étiquette & prévenir »* annonce le colis, sort le PDF de l'étiquette, enregistre le n° de suivi et envoie l'email au client.
+
+### A. Récupérer les deux clés API
+1. Va sur **app.sendcloud.com** (navigateur, mobile ou ordi) → ☰ → **Paramètres** → **Intégrations**.
+   Raccourci direct : **app.sendcloud.com/v2/settings/integrations/manage**
+2. Cherche **Sendcloud API** dans la liste → **Connecter** (ou ouvre l'intégration existante).
+3. Sendcloud affiche une **clé publique** et une **clé secrète**. Copie les deux.
+   - La clé **publique** sert à afficher la carte des points relais : elle est faite pour être visible.
+   - La clé **secrète** crée les étiquettes (donc facture les colis) : **jamais dans le site, jamais dans le chat** — uniquement dans Cloudflare.
+
+### B. Enregistrer l'adresse d'expédition
+Sendcloud → **Paramètres** → **Adresses d'expédition** → vérifie que l'adresse de la boutique est bien là.
+Note son **identifiant** si tu le vois (utile à l'étape suivante, sinon on met l'adresse à la main).
+
+### C. Coller les clés dans le Worker Cloudflare
+Worker `my-candys-api` → **Settings** → **Variables and Secrets** :
+
+| Nom | Type | Valeur |
+|---|---|---|
+| `SENDCLOUD_PUBLIC_KEY` | Text | *(clé publique de l'étape A)* |
+| `SENDCLOUD_SECRET_KEY` | **Secret** | *(clé secrète de l'étape A)* |
+| `SENDCLOUD_SENDER_ID` | Text *(optionnel)* | *(id de l'adresse d'expédition, étape B)* |
+| `SENDCLOUD_SHIPPING_CODE` | Text *(optionnel)* | *(laisse vide : le Worker trouve l'offre Mondial Relay tout seul)* |
+
+Sans `SENDCLOUD_SENDER_ID`, le Worker utilise l'adresse de la boutique écrite en dur
+(*52 rue Séverine, 69100 Villeurbanne*). Pour la changer sans toucher au code, ajoute
+`SHOP_ADDRESS`, `SHOP_ZIP`, `SHOP_CITY`, `SHOP_COMPANY`, `SHOP_PHONE`.
+
+Puis **Deploy** (avec le contenu à jour de `cloudflare-worker.js`).
+
+### D. Vérifier
+1. Ouvre `/checkout` avec un panier → mode **Point relais** → le bouton *« Choisir mon point relais »* doit ouvrir la carte Sendcloud. Choisis-en un : il s'affiche avec son adresse et ses horaires.
+2. Passe une commande de test → dans la console, la commande affiche le point relais choisi.
+3. Clique *« Créer l'étiquette & prévenir »*, ajuste le poids → le PDF s'ouvre, la commande passe en **expédiée**, le client reçoit son n° de suivi.
+
+⚠️ **Créer une étiquette = annoncer un colis chez Sendcloud, donc le facturer.** La console demande confirmation, et refuse de recommencer si une étiquette existe déjà.
+
+### En cas de souci
+- **« Sendcloud n'est pas encore configuré »** → les deux clés ne sont pas (bien) collées dans le Worker.
+- **Deux offres Mondial Relay existent** : `…service_point…` (étiquette PDF à imprimer, choisie par défaut) et `…service_point_qr…` (QR code, le point relais imprime). Pour basculer sur le QR, mets ce code dans `SENDCLOUD_SHIPPING_CODE`. Les codes disponibles se listent avec `POST /sendcloud/options`.
+- **« aucune offre Mondial Relay »** → le contrat Mondial Relay n'est pas activé dans Sendcloud (Paramètres → Transporteurs), ou le poids/pays n'est pas couvert.
+- **Le bouton « Choisir mon point relais » n'apparaît pas** → `SENDCLOUD_PUBLIC_KEY` manquante : le site masque le sélecteur et continue de fonctionner comme avant (aucune commande bloquée).
+- **La Suisse** n'est pas desservie par Mondial Relay : le mode point relais s'y désactive automatiquement au profit de la livraison à domicile.

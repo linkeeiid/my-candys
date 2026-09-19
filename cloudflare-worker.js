@@ -32,6 +32,21 @@
      STRIPE_SECRET_KEY      (secret)  clé secrète Stripe (sk_test_… puis sk_live_…)
      STRIPE_WEBHOOK_SECRET  (secret)  secret de signature du webhook (whsec_…)
      STRIPE_PUBLISHABLE_KEY (var)     clé publique Stripe (pk_test_… puis pk_live_…) — envoyée au site
+     >>> À AJOUTER pour Mondial Relay (via Sendcloud) :
+     SENDCLOUD_PUBLIC_KEY   (var)     clé publique Sendcloud — envoyée au site pour la carte des points relais
+     SENDCLOUD_SECRET_KEY   (secret)  clé secrète Sendcloud — sert à créer les étiquettes, ne sort jamais du Worker
+     SENDCLOUD_SENDER_ID    (var,opt) id de l'adresse expéditeur enregistrée dans Sendcloud (recommandé)
+     SENDCLOUD_SHIPPING_CODE(var,opt) force l'offre d'expédition (sinon découverte automatique)
+     SHOP_* (opt)                     adresse expéditeur si SENDCLOUD_SENDER_ID n'est pas fourni :
+                                      SHOP_NAME · SHOP_COMPANY · SHOP_ADDRESS · SHOP_ZIP · SHOP_CITY · SHOP_COUNTRY · SHOP_PHONE
+
+   ROUTES MONDIAL RELAY :
+     GET  /sendcloud-pk     → { ok, key } clé publique pour le sélecteur de points relais du checkout
+     POST /order/label      → { reference, weight?, force? } (admin) crée le colis Sendcloud,
+                              génère l'étiquette Mondial Relay, marque la commande expédiée,
+                              envoie l'email de suivi → { tracking, trackingUrl, labelUrl }
+     GET  /order/label.pdf?ref=… → (admin) relaie le PDF de l'étiquette
+     POST /sendcloud/options → (admin) diagnostic : offres Mondial Relay disponibles
    ============================================================================= */
 
 /* Prix de BASE (source de vérité serveur, tiré de products.js). Le prix facturé =
@@ -766,6 +781,36 @@ function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').repla
 function money(n) { return (Number(n) || 0).toFixed(2).replace('.', ',') + ' €'; }
 function str(s, max) { return String(s == null ? '' : s).trim().slice(0, max || 120); }
 function rand6() { return String(Math.floor(100000 + Math.random() * 900000)); }
+/* Point relais choisi par le client (sélecteur Sendcloud) — on ne garde que ce qui sert
+   à imprimer l'étiquette et à le réafficher. Renvoie null si l'objet n'est pas exploitable. */
+function sanitizeRelay(r) {
+  if (!r || typeof r !== 'object') return null;
+  const id = str(r.id, 24);
+  if (!id || !/^[A-Za-z0-9_-]+$/.test(id)) return null;
+  const out = {
+    id: id, code: str(r.code, 40), name: str(r.name, 120),
+    street: str(r.street, 160), house_number: str(r.house_number, 24),
+    postal_code: str(r.postal_code, 16), city: str(r.city, 80),
+    country: str(r.country, 4).toUpperCase(), carrier: str(r.carrier, 40) || 'mondial_relay',
+    postNumber: str(r.postNumber, 40)
+  };
+  if (r.hours && typeof r.hours === 'object') {
+    const h = {};
+    for (let d = 0; d < 7; d++) {
+      const slots = r.hours[String(d)];
+      if (Array.isArray(slots)) h[String(d)] = slots.slice(0, 4).map(function (s) { return str(s, 24); });
+    }
+    if (Object.keys(h).length) out.hours = h;
+  }
+  return out;
+}
+/* Adresse du point relais en une ligne (emails, console, suivi). */
+function relayLine(r) {
+  if (!r) return '';
+  const l1 = [r.house_number, r.street].filter(Boolean).join(' ').trim();
+  const l2 = [r.postal_code, r.city].filter(Boolean).join(' ').trim();
+  return [l1, l2].filter(Boolean).join(', ');
+}
 
 /* ---- Firebase Realtime Database (REST, authentifié par FIREBASE_SECRET) ---- */
 function fbUrl(env, path) {
@@ -928,6 +973,157 @@ async function brevoSendEmail(env, { toEmail, toName, subject, html, replyTo }) 
   });
 }
 
+/* ============================================================================
+   SENDCLOUD — Mondial Relay (points relais + étiquettes)
+   ----------------------------------------------------------------------------
+   Sendcloud est le compte d'expédition de la boutique ; il revend Mondial Relay.
+   - Le SITE utilise la clé PUBLIQUE (servie par /sendcloud-pk) pour afficher la
+     carte des points relais. Elle est prévue pour être publique.
+   - Le WORKER utilise la paire publique:secrète en Basic Auth pour créer les
+     étiquettes. La clé secrète ne sort JAMAIS d'ici.
+   ⚠️ L'API v2 (/api/v2/parcels) est fermée aux nouveaux comptes → on utilise la v3.
+   ============================================================================ */
+const SC_API = 'https://panel.sendcloud.sc/api/v3';
+
+function scAuth(env) {
+  const pk = env.SENDCLOUD_PUBLIC_KEY || '', sk = env.SENDCLOUD_SECRET_KEY || '';
+  if (!pk || !sk) return null;
+  return 'Basic ' + btoa(pk + ':' + sk);
+}
+async function scFetch(env, path, body) {
+  const auth = scAuth(env);
+  if (!auth) return { ok: false, error: 'sendcloud_non_configure' };
+  let r;
+  try {
+    r = await fetch(SC_API + path, {
+      method: 'POST',
+      headers: { 'Authorization': auth, 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(body)
+    });
+  } catch (e) { return { ok: false, error: 'sendcloud_injoignable', detail: String(e && e.message || e) }; }
+  const txt = await r.text();
+  let data = null; try { data = JSON.parse(txt); } catch (e) {}
+  if (!r.ok) {
+    // Sendcloud renvoie soit {error:{message}}, soit {errors:[{title,detail}]}
+    let detail = '';
+    if (data && data.error && data.error.message) detail = data.error.message;
+    else if (data && Array.isArray(data.errors) && data.errors.length) {
+      detail = data.errors.map(function (e) { return [e.title, e.detail].filter(Boolean).join(' : '); }).join(' | ');
+    } else detail = txt.slice(0, 400);
+    return { ok: false, error: 'sendcloud_http_' + r.status, detail: detail };
+  }
+  return { ok: true, data: (data && data.data !== undefined) ? data.data : data };
+}
+
+/* Adresse expéditeur : soit l'ID d'une adresse enregistrée dans Sendcloud (recommandé),
+   soit les champs SHOP_* ci-dessous. */
+function scFromAddress(env) {
+  const id = parseInt(env.SENDCLOUD_SENDER_ID, 10);
+  if (!isNaN(id) && id > 0) return { sender_address_id: id };
+  const street = splitHouse(env.SHOP_ADDRESS || '52 rue Séverine');
+  return {
+    name: env.SHOP_NAME || "My Candy's",
+    company_name: env.SHOP_COMPANY || 'MY CANDYS LYON',
+    address_line_1: street.street,
+    house_number: street.number,
+    postal_code: env.SHOP_ZIP || '69100',
+    city: env.SHOP_CITY || 'Villeurbanne',
+    country_code: env.SHOP_COUNTRY || 'FR',
+    phone_number: env.SHOP_PHONE || '',
+    email: env.SENDER_EMAIL || ''
+  };
+}
+/* « 52 bis rue Séverine » → { number:'52 bis', street:'rue Séverine' } */
+function splitHouse(addr) {
+  const s = String(addr || '').trim();
+  const m = s.match(/^(\d+\s*(?:bis|ter|quater|[a-zA-Z])?)\s+(.+)$/);
+  if (m) return { number: m[1].trim(), street: m[2].trim() };
+  return { number: '', street: s };
+}
+/* Poids estimé si le gérant n'en saisit pas un : emballage + articles. */
+function estimateWeightKg(order) {
+  const n = (order.items || []).reduce(function (t, l) { return t + (parseInt(l.qty, 10) || 1); }, 0);
+  return Math.min(20, Math.max(0.2, round2(0.25 + n * 0.15)));
+}
+/* Code de l'offre d'expédition Mondial Relay en point relais.
+   Fixé par SENDCLOUD_SHIPPING_CODE, sinon découvert automatiquement. */
+async function scShippingCode(env, order, weightKg) {
+  const forced = str(env.SENDCLOUD_SHIPPING_CODE, 80);
+  if (forced) return { ok: true, code: forced };
+  const toCountry = countryCode(order.customer && order.customer.country);
+  const res = await scFetch(env, '/shipping-options', {
+    from_address: scFromAddress(env),
+    to_address: { country_code: toCountry, postal_code: str((order.customer || {}).zip, 16) },
+    parcels: [{ weight: { value: String(weightKg), unit: 'kg' } }],
+    functionalities: { last_mile: order.shipping === 'domicile' ? 'home_delivery' : 'service_point' },
+    carrier_code: 'mondial_relay'
+  });
+  if (!res.ok) return res;
+  const list = Array.isArray(res.data) ? res.data : [];
+  if (!list.length) return { ok: false, error: 'aucune_offre_mondial_relay', detail: 'Sendcloud ne propose aucune offre Mondial Relay pour ce colis (poids, pays ou contrat).' };
+  // ⚠️ Sendcloud renvoie plusieurs offres DANS UN ORDRE INSTABLE (vérifié 19/09/2026) :
+  //    « service_point » = étiquette PDF à imprimer · « service_point_qr » = QR code imprimé
+  //    par le point relais. Prendre list[0] donnerait un mode au hasard à chaque colis.
+  //    → on privilégie l'étiquette imprimable ; SENDCLOUD_SHIPPING_CODE force le QR si voulu.
+  const codes = list.map(function (o) { return o.code; });
+  const printable = codes.filter(function (c) { return !/_qr\b|_qr,/.test(c); });
+  return { ok: true, code: (printable[0] || codes[0]), options: codes };
+}
+const SC_CC = { 'France': 'FR', 'Belgique': 'BE', 'Suisse': 'CH', 'Luxembourg': 'LU' };
+function countryCode(c) {
+  const v = str(c, 40);
+  if (/^[A-Za-z]{2}$/.test(v)) return v.toUpperCase();
+  return SC_CC[v] || 'FR';
+}
+/* Crée le colis chez Sendcloud + génère l'étiquette Mondial Relay. */
+async function scAnnounce(env, order, weightKg) {
+  const c = order.customer || {};
+  const sc = await scShippingCode(env, order, weightKg);
+  if (!sc.ok) return sc;
+  const street = splitHouse(c.addr);
+  const to = {
+    name: str(c.name, 80) || [c.first, c.last].filter(Boolean).join(' ') || 'Client',
+    address_line_1: street.street || str(c.addr, 160),
+    house_number: street.number,
+    postal_code: str(c.zip, 16),
+    city: str(c.city, 80),
+    country_code: countryCode(c.country),
+    email: str(c.email, 254),
+    phone_number: str(c.tel, 30)
+  };
+  if (c.addr2) to.address_line_2 = str(c.addr2, 160);
+  const payload = {
+    label_details: { mime_type: 'application/pdf', dpi: 72 },
+    to_address: to,
+    from_address: scFromAddress(env),
+    ship_with: { type: 'shipping_option_code', properties: { shipping_option_code: sc.code } },
+    order_number: str(order.reference, 40),
+    external_reference_id: str(order.reference, 40),
+    parcels: [{ weight: { value: String(weightKg), unit: 'kg' } }]
+  };
+  if (order.shipping !== 'domicile' && order.relay && order.relay.id) {
+    payload.to_service_point = { id: String(order.relay.id) };
+    if (order.relay.postNumber) payload.to_address.po_box = str(order.relay.postNumber, 40);
+  }
+  const res = await scFetch(env, '/shipments/announce', payload);
+  if (!res.ok) return res;
+  const d = res.data || {};
+  const p = (d.parcels && d.parcels[0]) || {};
+  if (Array.isArray(d.errors) && d.errors.length) {
+    return { ok: false, error: 'sendcloud_refus', detail: d.errors.map(function (e) { return e.detail || e.title || String(e); }).join(' | ') };
+  }
+  const doc = (p.documents || []).filter(function (x) { return (x.type || x.document_type) === 'label'; })[0] || (p.documents || [])[0] || {};
+  return {
+    ok: true,
+    shipmentId: d.id || null,
+    parcelId: p.id || null,
+    tracking: p.tracking_number || '',
+    trackingUrl: p.tracking_url || '',
+    labelLink: doc.link || '',
+    shippingCode: sc.code
+  };
+}
+
 /* ===== WEB PUSH — notifications « nouvelle commande » au gérant (comme Blade Society) =====
    Clé publique VAPID en clair (elle est publique). Clé privée = variable Cloudflare VAPID_PRIVATE_JWK. */
 const VAPID_PUBLIC = 'BAr4-ARxYqECbfUR34jmYYDy9d_vV02ERaI4AFyuAGhbljREhyLG1fhng6feKRSd-gNilsYUEIPI2CuAvAFSvao';
@@ -983,6 +1179,16 @@ function itemRowsHtml(o) {
     '</tr>';
   }).join('');
 }
+/* Encart « point relais choisi » — repris dans l'email de confirmation et celui d'expédition. */
+function relayBoxHtml(o) {
+  if (!o || o.shipping === 'domicile' || !o.relay || !o.relay.id) return '';
+  return '<table style="width:100%;border-collapse:collapse;margin:14px 0"><tr>' +
+    '<td style="background:#FFF1F8;border:1px solid #F3C6DE;border-radius:12px;padding:12px 14px">' +
+      '<div style="font-size:12px;color:#8A6076;font-weight:bold;text-transform:uppercase;letter-spacing:.4px">🏪 Ton point relais</div>' +
+      '<div style="font-size:15px;font-weight:bold;margin-top:4px">' + esc(o.relay.name || '') + '</div>' +
+      '<div style="font-size:13px;color:#7A5468;margin-top:2px">' + esc(relayLine(o.relay)) + '</div>' +
+    '</td></tr></table>';
+}
 function orderEmailHtml(o) {
   var ship = o.shippingCost ? money(o.shippingCost) : 'Offerte';
   return '<div style="font-family:Arial,sans-serif;color:#2A0A1C;max-width:520px;margin:auto">' + logoHdr() +
@@ -993,6 +1199,7 @@ function orderEmailHtml(o) {
     '<tr><td colspan="2" style="padding-top:10px;border-top:1px solid #eee;font-size:14px">Livraison</td><td style="padding-top:10px;border-top:1px solid #eee;text-align:right;font-size:14px">' + ship + '</td></tr>' +
     '<tr><td colspan="2" style="padding-top:8px;font-size:15px"><b>Total payé</b></td>' +
     '<td style="padding-top:8px;text-align:right;font-size:15px"><b>' + money(o.total) + '</b></td></tr></table>' +
+    relayBoxHtml(o) +
     '<p style="color:#8A6076;font-size:13px">Comme certains produits sont réapprovisionnés à la commande, ' +
     'compte quelques jours de préparation. Tu recevras ton <b>numéro de suivi</b> par email dès l\'expédition. 💌</p>' +
     '<p style="text-align:center;margin:22px 0 6px"><a href="https://mycandys.fr/suivi-commande" style="background:#E01784;color:#fff;text-decoration:none;font-weight:700;padding:12px 24px;border-radius:12px;display:inline-block">Suivre ma commande →</a></p>' +
@@ -1011,6 +1218,7 @@ function shippingEmailHtml(o, tracking, carrier) {
     '<table style="width:100%;border-collapse:collapse;font-size:14px;margin:10px 0">' +
     '<tr><td style="padding:6px 0;color:#8A6076">Transporteur</td><td style="padding:6px 0;text-align:right"><b>' + esc(cname) + '</b></td></tr>' +
     '<tr><td style="padding:6px 0;color:#8A6076">N° de suivi</td><td style="padding:6px 0;text-align:right"><b>' + esc(tracking || '') + '</b></td></tr></table>' +
+    relayBoxHtml(o) +
     '<p style="text-align:center;margin:18px 0 6px"><a href="' + link + '" style="background:#E01784;color:#fff;text-decoration:none;font-weight:700;padding:13px 26px;border-radius:12px;display:inline-block">Suivre mon colis →</a></p>' +
     (items ? '<p style="font-size:13px;color:#8A6076;margin:20px 0 6px">📦 Ton colis contient :</p><table style="width:100%;border-collapse:collapse">' + items + '</table>' : '') +
     '<p style="color:#8A6076;font-size:13px">Le suivi peut mettre 24-48 h à s\'activer, le temps que le transporteur scanne ton colis. Merci pour ta confiance et régale-toi ! 🍬</p></div>';
@@ -1112,6 +1320,37 @@ export default {
 
     // --- Webhook Stripe (body BRUT requis pour la signature → traité avant le parse JSON) ---
     // Clé publique Stripe (pour afficher les boutons Express Checkout Apple/Google Pay en haut du checkout)
+    // Clé PUBLIQUE Sendcloud → le site affiche la carte des points relais Mondial Relay.
+    // Prévue pour être publique (la clé secrète, elle, ne sort jamais du Worker).
+    if (path === '/sendcloud-pk' && request.method === 'GET') {
+      const k = env.SENDCLOUD_PUBLIC_KEY || '';
+      return json(k ? { ok: true, key: k } : { ok: false }, 200, allow);
+    }
+
+    // Étiquette Mondial Relay déjà générée → le Worker relaie le PDF (la console ne peut pas
+    // parler à Sendcloud directement : ça exposerait la clé secrète).
+    if (path === '/order/label.pdf' && request.method === 'GET') {
+      const auth = request.headers.get('Authorization') || '';
+      if (!env.ADMIN_KEY || auth !== ('Bearer ' + env.ADMIN_KEY)) return json({ ok: false, error: 'unauthorized' }, 401, allow);
+      const ref = str(url.searchParams.get('ref'), 90);
+      const order = ref ? await fbGet(env, 'orders/' + ref) : null;
+      const link = order && order.labelLink ? String(order.labelLink) : '';
+      if (!link || link.indexOf('https://panel.sendcloud.sc/') !== 0) return json({ ok: false, error: 'etiquette_introuvable' }, 404, allow);
+      const a = scAuth(env);
+      if (!a) return json({ ok: false, error: 'sendcloud_non_configure' }, 500, allow);
+      const r = await fetch(link, { headers: { 'Authorization': a, 'Accept': 'application/pdf' } });
+      if (!r.ok) return json({ ok: false, error: 'sendcloud_http_' + r.status }, 502, allow);
+      const buf = await r.arrayBuffer();
+      return new Response(buf, {
+        status: 200,
+        headers: Object.assign({}, corsHeaders(allow), {
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': 'inline; filename="etiquette-' + ref + '.pdf"',
+          'Cache-Control': 'no-store'
+        })
+      });
+    }
+
     if (path === '/stripe-pk' && request.method === 'GET') {
       return json({ ok: true, publishableKey: env.STRIPE_PUBLISHABLE_KEY || '' }, 200, allow);
     }
@@ -1218,6 +1457,10 @@ export default {
         if (!items.length) return json({ ok: false, error: 'panier_vide' }, 400, allow);
         if (!isEmail(c.email)) return json({ ok: false, error: 'email_invalide' }, 400, allow);
         if (!env.STRIPE_SECRET_KEY) return json({ ok: false, error: 'stripe_non_configure' }, 500, allow);
+        // Point relais : exigé seulement si Sendcloud est configuré (sinon la boutique
+        // fonctionne comme avant, sans sélecteur de relais).
+        const relay = (shipping === 'relais') ? sanitizeRelay(body.relay) : null;
+        if (shipping === 'relais' && env.SENDCLOUD_PUBLIC_KEY && !relay) return json({ ok: false, error: 'point_relais_manquant' }, 400, allow);
 
         // Prix qui font autorité = base products.js + overrides Firebase.
         const ov = (await fbGet(env, 'catalog')) || {};
@@ -1269,7 +1512,7 @@ export default {
           city: str(c.city, 80), country: str(c.country, 60)
         };
         const order = {
-          reference: reference, items: lines, customer: customer, shipping: shipping,
+          reference: reference, items: lines, customer: customer, shipping: shipping, relay: relay,
           subtotal: sub, discount: discount, promo: promoCode, shippingCost: ship, total: total,
           status: 'en_attente_paiement', paid: false, ts: Date.now()
         };
@@ -1296,6 +1539,10 @@ export default {
         if (!items.length) return json({ ok: false, error: 'panier_vide' }, 400, allow);
         if (!isEmail(c.email)) return json({ ok: false, error: 'email_invalide' }, 400, allow);
         if (!env.STRIPE_SECRET_KEY) return json({ ok: false, error: 'stripe_non_configure' }, 500, allow);
+        // Le wallet ne sait pas choisir de point relais : le site ne propose ce mode que si
+        // le client en a déjà sélectionné un, transmis ici.
+        const relay = (shipping === 'relais') ? sanitizeRelay(body.relay) : null;
+        if (shipping === 'relais' && env.SENDCLOUD_PUBLIC_KEY && !relay) return json({ ok: false, error: 'point_relais_manquant' }, 400, allow);
         // Prix = base products.js + overrides Firebase (source de vérité serveur), comme /create-checkout.
         const ov = (await fbGet(env, 'catalog')) || {};
         let sub = 0; const lines = [];
@@ -1323,7 +1570,7 @@ export default {
           city: str(c.city, 80), country: str(c.country, 60)
         };
         const order = {
-          reference: reference, items: lines, customer: customer, shipping: shipping,
+          reference: reference, items: lines, customer: customer, shipping: shipping, relay: relay,
           subtotal: sub, discount: 0, promo: '', shippingCost: ship, total: total,
           status: 'en_attente_paiement', paid: false, express: true, ts: Date.now()
         };
@@ -1381,6 +1628,70 @@ export default {
           });
         }
         return json({ ok: true, orderId: res && res.name }, 200, allow);
+      }
+
+      if (path === '/order/label') {
+        // Back-office : crée le colis chez Sendcloud, génère l'étiquette Mondial Relay,
+        // marque la commande expédiée et prévient le client. (protégé ADMIN_KEY)
+        const auth = request.headers.get('Authorization') || '';
+        if (!env.ADMIN_KEY || auth !== ('Bearer ' + env.ADMIN_KEY)) return json({ ok: false, error: 'unauthorized' }, 401, allow);
+        if (!scAuth(env)) return json({ ok: false, error: 'sendcloud_non_configure' }, 500, allow);
+        const reference = str(body.reference, 90);
+        if (!reference) return json({ ok: false, error: 'params_manquants' }, 400, allow);
+        const order = await fbGet(env, 'orders/' + reference);
+        if (!order) return json({ ok: false, error: 'order_not_found' }, 404, allow);
+        order.reference = order.reference || reference;
+        // Garde-fou : une étiquette déjà générée = un colis déjà facturé. On ne recommence
+        // que si le gérant le demande explicitement (force).
+        if (order.tracking && !body.force) return json({ ok: false, error: 'etiquette_deja_generee', tracking: order.tracking }, 409, allow);
+        if (order.shipping !== 'domicile' && !(order.relay && order.relay.id)) {
+          return json({ ok: false, error: 'point_relais_manquant', detail: "Cette commande n'a pas de point relais enregistré (passée avant l'activation du sélecteur). Crée l'étiquette depuis Sendcloud puis saisis le suivi à la main." }, 400, allow);
+        }
+        let weight = Number(body.weight);
+        if (!weight || isNaN(weight) || weight <= 0) weight = estimateWeightKg(order);
+        weight = Math.min(30, Math.max(0.05, round2(weight)));
+        const res = await scAnnounce(env, order, weight);
+        if (!res.ok) return json({ ok: false, error: res.error, detail: res.detail || '' }, 502, allow);
+        const patch = {
+          status: 'expediee', tracking: res.tracking || '', carrier: 'mondialrelay',
+          trackingUrl: res.trackingUrl || '', labelLink: res.labelLink || '',
+          parcelId: res.parcelId || null, shipmentId: res.shipmentId || null,
+          weightKg: weight, shippedTs: Date.now()
+        };
+        await fbPatch(env, 'orders/' + reference, patch);
+        Object.assign(order, patch);
+        let mailed = false;
+        if (res.tracking && isEmail(order.customer && order.customer.email)) {
+          try {
+            await brevoSendEmail(env, {
+              toEmail: order.customer.email, toName: firstName(order.customer.name),
+              subject: "Ton colis My Candy's est parti ! 🚚 — " + reference,
+              html: shippingEmailHtml(order, res.tracking, 'mondialrelay')
+            });
+            mailed = true;
+          } catch (e) {}
+        }
+        return json({
+          ok: true, reference: reference, tracking: res.tracking, trackingUrl: res.trackingUrl,
+          weight: weight, shippingCode: res.shippingCode, mailed: mailed,
+          labelUrl: url.origin + '/order/label.pdf?ref=' + encodeURIComponent(reference)
+        }, 200, allow);
+      }
+
+      if (path === '/sendcloud/options') {
+        // Diagnostic : quelles offres Mondial Relay le compte Sendcloud propose-t-il ?
+        // (sert à remplir SENDCLOUD_SHIPPING_CODE si la découverte automatique se trompe)
+        const auth = request.headers.get('Authorization') || '';
+        if (!env.ADMIN_KEY || auth !== ('Bearer ' + env.ADMIN_KEY)) return json({ ok: false, error: 'unauthorized' }, 401, allow);
+        if (!scAuth(env)) return json({ ok: false, error: 'sendcloud_non_configure' }, 500, allow);
+        const fake = {
+          shipping: (body.shipping === 'domicile') ? 'domicile' : 'relais',
+          customer: { zip: str(body.zip, 16) || '69100', country: str(body.country, 40) || 'FR' },
+          items: []
+        };
+        const w = Number(body.weight) > 0 ? round2(Number(body.weight)) : 1;
+        const res = await scShippingCode(env, fake, w);
+        return json(res.ok ? { ok: true, code: res.code, options: res.options || [res.code] } : { ok: false, error: res.error, detail: res.detail || '' }, res.ok ? 200 : 502, allow);
       }
 
       if (path === '/order/ship') {

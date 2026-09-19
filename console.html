@@ -873,7 +873,14 @@
     return {id:o.reference||key,ref:o.reference||key,time:fmtHM(o.ts),ts:o.ts||0,
       cust:{n:(cust.name||cust.email||'Client'),e:cust.email||'',t:cust.tel||'',s:cust.addr||'',z:((cust.zip||'')+' '+(cust.city||'')).trim(),c:ocolor(cust.email)},
       items:(o.items||[]).map(function(i){return {id:i.id,qty:i.qty||1,name:i.name||i.id,price:(i.price!=null?i.price:0)};}),
-      status:st,total:(o.total!=null?o.total:0),tracking:o.tracking||'',carrier:o.carrier||'',paid:!!o.paid};}
+      status:st,total:(o.total!=null?o.total:0),tracking:o.tracking||'',carrier:o.carrier||'',paid:!!o.paid,
+      ship:(o.shipping==='domicile'?'domicile':'relais'),relay:(o.relay&&o.relay.id?o.relay:null),
+      trackingUrl:o.trackingUrl||'',hasLabel:!!o.labelLink,weightKg:(o.weightKg||0),
+      nArt:(o.items||[]).reduce(function(t,i){return t+(parseInt(i.qty,10)||1);},0)};}
+  /* Adresse du point relais sur une ligne */
+  function relayLine(r){if(!r)return '';var l1=[r.house_number,r.street].filter(Boolean).join(' ').trim();var l2=[r.postal_code,r.city].filter(Boolean).join(' ').trim();return [l1,l2].filter(Boolean).join(', ');}
+  /* Poids proposé par défaut : même estimation que le Worker (emballage + articles) */
+  function guessWeight(o){return Math.min(20,Math.max(0.2,Math.round((0.25+(o.nArt||1)*0.15)*100)/100));}
   function loadReal(){
     if(!ADMINKEY){renderOrders();return;}
     fetch(MCAPI+'/admin/data',{headers:{'Authorization':'Bearer '+ADMINKEY}}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(d){
@@ -933,13 +940,27 @@
       var st=OST[o.status]||['st-prep',o.status],open=openSet[o.id];
       var items=o.items.map(function(i){return '<div class="oitem" style="display:flex;align-items:center;gap:.55rem;padding:.3rem 0">'+prodThumb(i.id)+'<span style="flex:1;font-size:.85rem">'+esc(i.name||(byId[i.id]&&byId[i.id].name)||i.id||'')+'</span><span class="iq">×'+i.qty+' · '+money((i.price||0)*i.qty)+'</span></div>';}).join('');
       var act;
-      if(o.status==='expediee'){act='<span class="track">✓ Expédiée · '+esc(CARRIER_LABELS[o.carrier]||o.carrier||'')+' · suivi '+esc(o.tracking||'')+'</span>';}
+      if(o.status==='expediee'){act='<div style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:center"><span class="track">✓ Expédiée · '+esc(CARRIER_LABELS[o.carrier]||o.carrier||'')+' · suivi '+esc(o.tracking||'')+'</span>'+
+        (o.hasLabel?'<button class="mini" data-label-dl="'+esc(o.ref)+'">🏷️ Revoir l\'étiquette</button>':'')+
+        (o.trackingUrl?'<a class="mini" href="'+esc(o.trackingUrl)+'" target="_blank" rel="noopener" style="text-decoration:none">🔎 Suivi transporteur</a>':'')+'</div>';}
       else if(o.status==='attente'){act='<span style="color:var(--muted)">En attente de paiement</span>';}
       else if(o.ref){
         var sb=function(s,label){var on=(o.status===s);return '<button class="mini" data-ostatus="'+s+'" data-ref="'+esc(o.ref)+'"'+(on?' style="background:#E01784;color:#fff;border-color:#E01784"':'')+'>'+label+'</button>';};
+        // Étiquette Mondial Relay en 1 clic (via Sendcloud) — indisponible si le relais manque
+        var canLabel=(o.ship==='domicile')||!!o.relay;
+        var mr=canLabel
+          ? '<div class="mrship" data-ref="'+esc(o.ref)+'" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;background:var(--pink-tint,#FFF1F8);border:1px solid var(--line);border-radius:12px;padding:.6rem .7rem">'+
+              '<span style="font-size:.78rem;font-weight:700">🏪 Mondial Relay</span>'+
+              '<label style="font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:.35rem">Poids <input class="pin mr-w" type="number" step="0.05" min="0.05" max="30" value="'+guessWeight(o)+'" style="width:78px"> kg</label>'+
+              '<button class="btn btn-primary" data-label="'+esc(o.ref)+'">🏷️ Créer l\'étiquette &amp; prévenir</button>'+
+              '<span style="font-size:.72rem;color:var(--muted);flex-basis:100%">Crée le colis chez Sendcloud, ouvre le PDF de l\'étiquette, enregistre le n° de suivi et envoie l\'email au client.</span>'+
+            '</div>'
+          : '<div style="font-size:.78rem;color:#C0392B">⚠️ Pas de point relais sur cette commande : crée l\'étiquette depuis Sendcloud, puis saisis le suivi ci-dessous.</div>';
         act='<div style="display:flex;flex-direction:column;gap:.6rem">'+
           '<div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center"><span style="font-size:.78rem;color:var(--muted)">Statut :</span>'+sb('nouvelle','🆕 Nouvelle')+sb('en_traitement','⏳ En cours de traitement')+sb('traitee','✅ Traitée')+'</div>'+
-          '<div class="ship" data-ref="'+esc(o.ref)+'" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center"><input class="pin ship-num" placeholder="N° de suivi" style="width:150px"><select class="pin ship-car"><option value="laposte">Colissimo/La Poste</option><option value="mondialrelay">Mondial Relay</option><option value="chronopost">Chronopost</option><option value="ups">UPS</option><option value="dhl">DHL</option><option value="autre">Autre</option></select><button class="btn btn-primary" data-ship="'+esc(o.ref)+'">📦 Expédié &amp; prévenir</button></div>'+
+          mr+
+          '<details><summary style="font-size:.78rem;color:var(--muted);cursor:pointer">Saisir un numéro de suivi à la main</summary>'+
+          '<div class="ship" data-ref="'+esc(o.ref)+'" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-top:.5rem"><input class="pin ship-num" placeholder="N° de suivi" style="width:150px"><select class="pin ship-car"><option value="mondialrelay">Mondial Relay</option><option value="laposte">Colissimo/La Poste</option><option value="chronopost">Chronopost</option><option value="ups">UPS</option><option value="dhl">DHL</option><option value="autre">Autre</option></select><button class="btn btn-primary" data-ship="'+esc(o.ref)+'">📦 Expédié &amp; prévenir</button></div></details>'+
         '</div>';}
       else {act='<span style="color:var(--muted)">—</span>';}
       var summary=o.items.map(function(i){return esc(i.name||(byId[i.id]&&byId[i.id].name)||i.id||'')+' ×'+i.qty;}).join(', ');
@@ -951,7 +972,13 @@
         '</div>'+
         '<div class="order-detail"><div class="odetail-grid">'+
           '<div class="obox"><h4>Articles commandés</h4><div class="oitems">'+items+'</div></div>'+
-          '<div class="obox"><h4>Livraison</h4><div class="addr"><div class="line"><span class="ic">📍</span><span><span class="nm">'+esc(o.cust.n)+'</span><br>'+esc(o.cust.s)+'<br>'+esc(o.cust.z)+'</span></div><div class="line" style="margin-top:.5rem"><span class="ic">✉️</span><span>'+esc(o.cust.e)+'</span></div>'+(o.cust.t?'<div class="line" style="margin-top:.5rem"><span class="ic">📞</span><span><a href="tel:'+esc(o.cust.t.replace(/[^0-9+]/g,''))+'" style="color:inherit">'+esc(o.cust.t)+'</a></span></div>':'')+'</div></div>'+
+          '<div class="obox"><h4>Livraison</h4><div class="addr"><div class="line"><span class="ic">📍</span><span><span class="nm">'+esc(o.cust.n)+'</span><br>'+esc(o.cust.s)+'<br>'+esc(o.cust.z)+'</span></div><div class="line" style="margin-top:.5rem"><span class="ic">✉️</span><span>'+esc(o.cust.e)+'</span></div>'+(o.cust.t?'<div class="line" style="margin-top:.5rem"><span class="ic">📞</span><span><a href="tel:'+esc(o.cust.t.replace(/[^0-9+]/g,''))+'" style="color:inherit">'+esc(o.cust.t)+'</a></span></div>':'')
++(o.relay
+  ?'<div class="line" style="margin-top:.6rem;padding-top:.6rem;border-top:1px dashed var(--line)"><span class="ic">🏪</span><span><span class="nm">'+esc(o.relay.name||'')+'</span><br><span style="color:var(--muted)">'+esc(relayLine(o.relay))+'</span><br><span style="font-size:.72rem;color:var(--muted)">Point relais Mondial Relay · id '+esc(String(o.relay.id))+'</span></span></div>'
+  :(o.ship==='relais'
+    ?'<div class="line" style="margin-top:.6rem;padding-top:.6rem;border-top:1px dashed var(--line)"><span class="ic">⚠️</span><span style="color:#C0392B">Point relais non renseigné</span></div>'
+    :'<div class="line" style="margin-top:.6rem;padding-top:.6rem;border-top:1px dashed var(--line)"><span class="ic">🚚</span><span>Livraison à domicile</span></div>'))
++'</div></div>'+
         '</div><div class="oactions">'+act+'</div></div>'+
       '</div>';
     }).join('');
@@ -1001,6 +1028,51 @@
   function advanceOrder(id){var o=find(id);if(!o||o.status!=='nouvelle')return;o.status='preparee';openSet[id]=true;refresh();toast('Commande #'+id+' marquée préparée');}
   function shipOrder(ref){var card=$('orders').querySelector('.ship[data-ref="'+ref+'"]');if(!card)return;var num=(card.querySelector('.ship-num').value||'').trim();var car=card.querySelector('.ship-car').value;if(!num){card.querySelector('.ship-num').focus();return;}if(!ADMINKEY)return;var btn=card.querySelector('[data-ship]');btn.disabled=true;btn.textContent='…';
     fetch(MCAPI+'/order/ship',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+ADMINKEY},body:JSON.stringify({reference:ref,tracking:num,carrier:car})}).then(function(r){return r.json();}).then(function(d){if(d&&d.ok){toast('📧 Client prévenu — '+ref+' expédiée','good');loadReal();}else{btn.disabled=false;btn.textContent='📦 Expédié & prévenir';toast('Erreur : '+((d&&d.error)||'?'),'warn');}}).catch(function(){btn.disabled=false;btn.textContent='📦 Expédié & prévenir';toast('Erreur réseau','warn');});}
+  /* ===== ÉTIQUETTE MONDIAL RELAY (via Sendcloud) =====
+     Le Worker crée le colis, récupère le n° de suivi et l'étiquette PDF, marque la commande
+     expédiée et prévient le client. Le PDF transite par le Worker (la clé secrète Sendcloud
+     ne doit jamais arriver dans le navigateur). */
+  var LABEL_ERR={sendcloud_non_configure:"Sendcloud n'est pas encore configuré (clés API manquantes dans le Worker).",
+    point_relais_manquant:"Aucun point relais sur cette commande.",
+    etiquette_deja_generee:"Une étiquette existe déjà pour cette commande.",
+    aucune_offre_mondial_relay:"Sendcloud ne propose aucune offre Mondial Relay pour ce colis (poids, pays ou contrat).",
+    order_not_found:"Commande introuvable.",unauthorized:"Accès refusé — reconnecte-toi."};
+  function openLabel(ref,btn){
+    if(!ADMINKEY)return;
+    var old=btn?btn.textContent:'';if(btn){btn.disabled=true;btn.textContent='…';}
+    fetch(MCAPI+'/order/label.pdf?ref='+encodeURIComponent(ref),{headers:{'Authorization':'Bearer '+ADMINKEY}})
+      .then(function(r){if(!r.ok)throw 0;return r.blob();})
+      .then(function(b){var u=URL.createObjectURL(b);
+        // Ouverture dans un onglet ; si le navigateur bloque la pop-up (appel asynchrone),
+        // on bascule sur un téléchargement, qui lui n'est pas bloqué.
+        var w=null;try{w=window.open(u,'_blank');}catch(e){}
+        if(!w){var a=document.createElement('a');a.href=u;a.download='etiquette-'+ref+'.pdf';document.body.appendChild(a);a.click();a.remove();}
+        setTimeout(function(){URL.revokeObjectURL(u);},60000);
+        if(btn){btn.disabled=false;btn.textContent=old;}})
+      .catch(function(){if(btn){btn.disabled=false;btn.textContent=old;}toast("Étiquette indisponible",'warn');});
+  }
+  function makeLabel(ref,btn){
+    if(!ADMINKEY){toast('Connecte-toi en admin','warn');return;}
+    var box=$('orders').querySelector('.mrship[data-ref="'+ref+'"]');
+    var w=box?parseFloat(box.querySelector('.mr-w').value):0;
+    if(!w||isNaN(w)||w<=0){if(box)box.querySelector('.mr-w').focus();toast('Indique le poids du colis','warn');return;}
+    if(!confirm('Créer l\'étiquette Mondial Relay pour '+ref+' ('+w+' kg) ?\n\nLe colis sera annoncé chez Sendcloud (donc facturé), la commande passera en « expédiée » et le client recevra son n° de suivi.'))return;
+    var old=btn.textContent;btn.disabled=true;btn.textContent='Création…';
+    fetch(MCAPI+'/order/label',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+ADMINKEY},
+      body:JSON.stringify({reference:ref,weight:w})})
+      .then(function(r){return r.json();}).then(function(d){
+        if(d&&d.ok){
+          toast('🏷️ Étiquette créée — suivi '+(d.tracking||'?')+(d.mailed?' · client prévenu 📧':''),'good');
+          openLabel(ref,null);          // ouvre le PDF prêt à imprimer
+          loadReal();
+        }else{
+          btn.disabled=false;btn.textContent=old;
+          var msg=LABEL_ERR[d&&d.error]||('Erreur : '+((d&&d.error)||'?'));
+          if(d&&d.detail)msg+=' — '+String(d.detail).slice(0,200);
+          toast(msg,'warn');
+        }
+      }).catch(function(){btn.disabled=false;btn.textContent=old;toast('Erreur réseau','warn');});
+  }
   function toggleOrder(id){if(openSet[id])delete openSet[id];else openSet[id]=true;var el=$('orders').querySelector('[data-order="'+id+'"]');if(el)el.classList.toggle('open');}
 
   /* ---------- PRODUITS ---------- */
@@ -1513,7 +1585,10 @@
   $('nav').addEventListener('click',function(e){var b=e.target.closest('[data-view]');if(b)setView(b.getAttribute('data-view'));});
   document.addEventListener('click',function(e){var g=e.target.closest('[data-goto]');if(g)setView(g.getAttribute('data-goto'));});
   $('tbody').addEventListener('click',function(e){var s=e.target.closest('[data-sell]');if(s){sellInStore(s.getAttribute('data-sell'));return;}var b=e.target.closest('[data-buy]');if(b)buyOnline(b.getAttribute('data-buy'));});
-  $('orders').addEventListener('click',function(e){var a=e.target.closest('[data-advance]');if(a){advanceOrder(a.getAttribute('data-advance'));return;}var s=e.target.closest('[data-ship]');if(s){shipOrder(s.getAttribute('data-ship'));return;}var h=e.target.closest('.order-head');if(h)toggleOrder(h.parentElement.getAttribute('data-order'));});
+  $('orders').addEventListener('click',function(e){var a=e.target.closest('[data-advance]');if(a){advanceOrder(a.getAttribute('data-advance'));return;}var s=e.target.closest('[data-ship]');if(s){shipOrder(s.getAttribute('data-ship'));return;}
+    var lb=e.target.closest('[data-label]');if(lb){makeLabel(lb.getAttribute('data-label'),lb);return;}
+    var ld=e.target.closest('[data-label-dl]');if(ld){openLabel(ld.getAttribute('data-label-dl'),ld);return;}
+    var h=e.target.closest('.order-head');if(h)toggleOrder(h.parentElement.getAttribute('data-order'));});
   $('orders').addEventListener('click',function(e){var b=e.target.closest('[data-ostatus]');if(!b)return;var ref=b.getAttribute('data-ref'),st=b.getAttribute('data-ostatus');if(!ADMINKEY){toast('Connecte-toi en admin pour changer le statut','warn');return;}b.disabled=true;
     fetch(MCAPI+'/order/status',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+ADMINKEY},body:JSON.stringify({reference:ref,status:st})}).then(function(r){return r.json();}).then(function(d){if(d&&d.ok){loadReal();toast('Statut : '+((OST[st]&&OST[st][1])||st),'good');}else{b.disabled=false;toast('Erreur','warn');}}).catch(function(){b.disabled=false;});});
   function setOrderFilter(f){filterVal=f;document.querySelectorAll('#ofilters .chip').forEach(function(x){x.classList.toggle('active',x.getAttribute('data-f')===f);});renderOrders();}

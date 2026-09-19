@@ -73,6 +73,39 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
 .co-mode-price{flex:none;font-weight:800;font-size:15px;color:#2A0A1C;white-space:nowrap}
 .co-mode-price.free{color:#1B8A57}
 
+/* ---------- Point relais (Mondial Relay via Sendcloud) ---------- */
+.co-relay{margin-top:12px}
+.co-relay-empty{display:flex;align-items:center;gap:12px;border:1.5px dashed #F3C6DE;border-radius:14px;padding:13px 14px;background:#FFF9FC}
+.co-relay-empty p{margin:0;flex:1;min-width:0;font-size:12.5px;color:#8A6076;line-height:1.4}
+.co-relay-ico{font-size:20px;line-height:1;flex:none}
+.co-relay-btn{flex:none;border:0;background:#E01784;color:#fff;font-family:inherit;font-weight:800;font-size:13.5px;border-radius:11px;padding:11px 16px;cursor:pointer;transition:background .15s,transform .1s}
+.co-relay-btn:hover{background:#FF2E9A}
+.co-relay-btn:active{transform:translateY(1px)}
+.co-relay-btn[disabled]{opacity:.55;cursor:default}
+.co-relay-card{border:1.5px solid #FF2E9A;background:#FFF1F8;border-radius:14px;padding:13px 14px;box-shadow:0 0 0 3px rgba(255,46,154,.1)}
+.co-relay-top{display:flex;align-items:flex-start;gap:10px}
+.co-relay-main{flex:1;min-width:0}
+.co-relay-name{font-weight:800;font-size:14px;color:#2A0A1C;word-break:break-word}
+.co-relay-addr{font-size:12.5px;color:#7A5468;margin-top:2px;line-height:1.45;word-break:break-word}
+.co-relay-tag{display:inline-block;margin-top:7px;font-size:10.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;color:#177A57;background:#EAF7F0;border:1px solid #CDE9DC;border-radius:6px;padding:3px 7px}
+.co-relay-edit{flex:none;background:none;border:0;font-family:inherit;font-size:12.5px;font-weight:800;color:#E01784;cursor:pointer;text-decoration:underline;padding:2px 0}
+.co-relay-hours{margin-top:10px;border-top:1px dashed #F3C6DE;padding-top:9px}
+.co-relay-hours summary{cursor:pointer;font-size:12px;font-weight:700;color:#8A6076;list-style:none}
+.co-relay-hours summary::-webkit-details-marker{display:none}
+.co-relay-hours summary::before{content:"▸ ";font-size:10px}
+.co-relay-hours[open] summary::before{content:"▾ "}
+.co-relay-days{margin:8px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:12px;color:#7A5468}
+.co-relay-days li{display:contents}
+.co-relay-days b{font-weight:700;color:#2A0A1C}
+.co-relay-err{margin:8px 2px 0;font-size:12.5px;color:#C62A22;font-weight:600}
+@media (max-width:480px){
+  /* Mobile : pictogramme + texte sur la même ligne, bouton pleine largeur en dessous */
+  .co-relay-empty{display:grid;grid-template-columns:auto 1fr;gap:9px 10px;align-items:start}
+  .co-relay-empty .co-relay-ico{grid-column:1;grid-row:1}
+  .co-relay-empty p{grid-column:2;grid-row:1}
+  .co-relay-btn{grid-column:1 / -1;grid-row:2;width:100%}
+}
+
 /* ---------- Paiement ---------- */
 .co-paytrust{display:flex;align-items:center;gap:13px;background:linear-gradient(135deg,#F1FBF6,#EAF6FF);border:1px solid #D9EEE7;border-radius:14px;padding:13px 15px;margin:14px 0 4px}
 .co-paytrust-lock{font-size:21px;flex:none;line-height:1}
@@ -292,6 +325,17 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
             <span class="co-mode-price" data-price="domicile">6,90 €</span>
           </label>
         </div>
+
+        <!-- Point relais choisi (Mondial Relay) — affiché uniquement en mode relais -->
+        <div class="co-relay" id="co-relay" hidden>
+          <div class="co-relay-empty" id="co-relay-empty">
+            <span class="co-relay-ico">📍</span>
+            <p>Choisis le point relais Mondial Relay où tu récupéreras ton colis.</p>
+            <button type="button" class="co-relay-btn" id="co-relay-pick">Choisir mon point relais</button>
+          </div>
+          <div class="co-relay-card" id="co-relay-chosen" hidden></div>
+          <p class="co-relay-err" id="co-relay-err" hidden></p>
+        </div>
       </section>
 
       <!-- Petits plus (upsell) -->
@@ -465,7 +509,153 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
       m.classList.toggle('on', m.getAttribute('data-mode') === mode);
     });
     render();
+    renderRelay();
   });
+
+  /* ---------- Point relais Mondial Relay (sélecteur officiel Sendcloud) ----------
+     La clé PUBLIQUE Sendcloud est servie par le Worker (/sendcloud-pk) : elle est prévue
+     pour être exposée côté navigateur, la clé SECRÈTE ne quitte jamais le Worker.
+     Tant qu'aucune clé n'est configurée, le bloc est masqué et le point relais n'est PAS
+     exigé → la boutique continue de fonctionner exactement comme avant (fail-open). */
+  var RELAY_LS = 'mcRelayV1';
+  var RELAY_COUNTRIES = ['FR', 'BE', 'LU'];  // pays couverts par le réseau Mondial Relay (la Suisse ne l'est pas)
+  var CC = { 'France': 'FR', 'Belgique': 'BE', 'Suisse': 'CH', 'Luxembourg': 'LU' };
+  var DAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+  var relay = null;      // point relais choisi
+  var relayPk = null;    // clé publique Sendcloud ('' = non configurée, null = pas encore su)
+  var relayPkReq = null;
+
+  try { relay = JSON.parse(localStorage.getItem(RELAY_LS) || 'null'); } catch (e) { relay = null; }
+  if (relay && !relay.id) relay = null;
+
+  function countryCode() { var c = $('#f-country'); return CC[(c && c.value) || 'France'] || 'FR'; }
+  function relayCountryOk() { return RELAY_COUNTRIES.indexOf(countryCode()) >= 0; }
+  function relayAddr(r) {
+    if (!r) return '';
+    var l1 = [r.house_number, r.street].filter(Boolean).join(' ').trim();
+    var l2 = [r.postal_code, r.city].filter(Boolean).join(' ').trim();
+    return [l1, l2].filter(Boolean).join(', ');
+  }
+  function relayErr(msg) {
+    var e = $('#co-relay-err'); if (!e) return;
+    if (!msg) { e.hidden = true; e.textContent = ''; return; }
+    e.hidden = false; e.textContent = '⚠️ ' + msg;
+  }
+  function renderRelay() {
+    var box = $('#co-relay'); if (!box) return;
+    box.hidden = (mode !== 'relais') || relayPk === '' || !relayCountryOk();
+    var empty = $('#co-relay-empty'), card = $('#co-relay-chosen'), pick = $('#co-relay-pick');
+    if (pick) pick.textContent = relay ? 'Changer de point relais' : 'Choisir mon point relais';
+    if (!relay) { empty.hidden = false; card.hidden = true; return; }
+    empty.hidden = true; card.hidden = false;
+    var hours = '', ft = relay.hours || null;
+    if (ft) {
+      var rows = '';
+      for (var d = 0; d < 7; d++) {
+        var slots = ft[String(d)] || [];
+        rows += '<li><b>' + DAYS[d] + '</b><span>' + (slots.length ? MC.esc(slots.join(' · ')) : 'Fermé') + '</span></li>';
+      }
+      hours = '<details class="co-relay-hours"><summary>Horaires d\'ouverture</summary><ul class="co-relay-days">' + rows + '</ul></details>';
+    }
+    card.innerHTML =
+      '<div class="co-relay-top">' +
+        '<span class="co-relay-ico">🏪</span>' +
+        '<div class="co-relay-main">' +
+          '<div class="co-relay-name">' + MC.esc(relay.name || '') + '</div>' +
+          '<div class="co-relay-addr">' + MC.esc(relayAddr(relay)) + '</div>' +
+          '<span class="co-relay-tag">✓ Point relais sélectionné</span>' +
+        '</div>' +
+        '<button type="button" class="co-relay-edit" id="co-relay-edit">Modifier</button>' +
+      '</div>' + hours;
+    var ed = $('#co-relay-edit'); if (ed) ed.addEventListener('click', openRelayPicker);
+  }
+  // Pays hors réseau Mondial Relay (Suisse) → mode « point relais » indisponible, bascule automatique à domicile
+  function syncRelayCountry() {
+    var lbl = document.querySelector('.co-mode[data-mode="relais"]');
+    var radio = document.querySelector('input[name="ship"][value="relais"]');
+    var ok = relayCountryOk();
+    if (radio) radio.disabled = !ok;
+    if (lbl) {
+      lbl.style.opacity = ok ? '' : '.5';
+      lbl.style.cursor = ok ? '' : 'not-allowed';
+      var d = lbl.querySelector('.co-mode-d');
+      if (d) d.textContent = ok ? 'Retrait en point relais · 2 à 4 jours ouvrés' : 'Non disponible pour ce pays';
+    }
+    if (!ok && mode === 'relais') {
+      var dom = document.querySelector('input[name="ship"][value="domicile"]');
+      if (dom) { dom.checked = true; mode = 'domicile'; }
+      document.querySelectorAll('.co-mode').forEach(function (m) { m.classList.toggle('on', m.getAttribute('data-mode') === mode); });
+      render();
+    }
+    if (relay && ok && relay.country && relay.country !== countryCode()) {
+      relay = null; try { localStorage.removeItem(RELAY_LS); } catch (e) {}
+    }
+    renderRelay();
+  }
+  function loadRelayPk() {
+    if (relayPkReq) return relayPkReq;
+    var api = (window.MC_API || '').replace(/\/$/, '');
+    if (!api) { relayPk = ''; return (relayPkReq = Promise.resolve('')); }
+    relayPkReq = fetch(api + '/sendcloud-pk')
+      .then(function (r) { return r.json(); })
+      .then(function (d) { relayPk = (d && d.ok && d.key) ? String(d.key) : ''; return relayPk; })
+      .catch(function () { relayPk = ''; return ''; });
+    return relayPkReq;
+  }
+  function loadSppJs(cb) {
+    if (window.sendcloud && window.sendcloud.servicePoints) { cb(true); return; }
+    if (!document.getElementById('spp-js')) {
+      var s = document.createElement('script'); s.id = 'spp-js';
+      s.src = 'https://embed.sendcloud.sc/spp/1.0.0/api.min.js';
+      document.head.appendChild(s);
+    }
+    var n = 0, t = setInterval(function () {
+      if (window.sendcloud && window.sendcloud.servicePoints) { clearInterval(t); cb(true); }
+      else if (++n > 80) { clearInterval(t); cb(false); }
+    }, 100);
+  }
+  function openRelayPicker() {
+    relayErr('');
+    var btn = $('#co-relay-pick'), prev = btn ? btn.textContent : '';
+    if (btn) { btn.disabled = true; btn.textContent = 'Chargement…'; }
+    var restore = function () { if (btn) { btn.disabled = false; btn.textContent = prev; } };
+    loadRelayPk().then(function (pk) {
+      if (!pk) { restore(); renderRelay(); return; }
+      loadSppJs(function (ok) {
+        restore();
+        if (!ok) { relayErr('La carte des points relais n\'a pas pu se charger. Vérifie ta connexion et réessaie.'); return; }
+        var cfg = {
+          apiKey: pk, country: countryCode(), language: 'fr-fr', carriers: 'mondial_relay',
+          postalCode: ($('#f-zip').value || '').trim(),
+          city: ($('#f-city').value || '').trim(),
+          address1: ($('#f-addr').value || '').trim()
+        };
+        if (relay && relay.id) { var sid = parseInt(relay.id, 10); if (!isNaN(sid)) cfg.servicePointId = sid; }
+        try {
+          window.sendcloud.servicePoints.open(cfg, function (sp, postNumber) {
+            if (!sp || !sp.id) return;
+            relay = {
+              id: sp.id, code: sp.code || '', name: sp.name || '',
+              street: sp.street || '', house_number: sp.house_number || '',
+              postal_code: sp.postal_code || '', city: sp.city || '',
+              country: sp.country || cfg.country, carrier: sp.carrier || 'mondial_relay',
+              postNumber: postNumber || '', hours: sp.formatted_opening_times || null
+            };
+            try { localStorage.setItem(RELAY_LS, JSON.stringify(relay)); } catch (e) {}
+            relayErr(''); renderRelay();
+          }, function (errs) {
+            relayErr('Impossible d\'afficher les points relais' + (errs && errs.length ? ' (' + String(errs.join(', ')).slice(0, 120) + ')' : '') + '. Réessaie ou choisis la livraison à domicile.');
+          });
+        } catch (x) { relayErr('La carte des points relais n\'a pas pu s\'ouvrir.'); }
+      });
+    });
+  }
+  // Point relais obligatoire dès que le mode relais est actif ET que Sendcloud est configuré
+  function relayReady() { return mode !== 'relais' || relayPk === '' || !relayCountryOk() || !!(relay && relay.id); }
+
+  var _pickBtn = $('#co-relay-pick'); if (_pickBtn) _pickBtn.addEventListener('click', openRelayPicker);
+  var _ctry = $('#f-country'); if (_ctry) _ctry.addEventListener('change', syncRelayCountry);
+  // Le code postal saisi recentre la recherche à la prochaine ouverture (rien à faire, lu au moment du clic)
 
   // Application du code promo fidélité
   function applyPromo() {
@@ -542,9 +732,12 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
   // Écran de confirmation
   function renderDone(ref, total, email, modeLabel) {
     $('#co-num').textContent = ref || 'MC';
+    var relayRow = (mode === 'relais' && relay && relay.id)
+      ? '<div class="co-recap-row"><span>Point relais</span><span>' + MC.esc(relay.name || '') + ' — ' + MC.esc(relayAddr(relay)) + '</span></div>'
+      : '';
     $('#co-done-recap').innerHTML = '' +
       '<div class="co-recap-row"><span>Email</span><span>' + MC.esc(email || '') + '</span></div>' +
-      '<div class="co-recap-row"><span>Livraison</span><span>' + MC.esc(modeLabel || '') + '</span></div>' +
+      '<div class="co-recap-row"><span>Livraison</span><span>' + MC.esc(modeLabel || '') + '</span></div>' + relayRow +
       '<div class="co-recap-row co-recap-tot"><span>Total payé</span><b>' + money(total) + '</b></div>';
     elForm.hidden = true; elEmpty.hidden = true; elDone.hidden = false;
     try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (err) { window.scrollTo(0, 0); }
@@ -592,6 +785,13 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
     e.preventDefault();
     if (!elForm.reportValidity()) return;
     if (stripeCk) return; // formulaire déjà affiché
+    // Point relais obligatoire en mode relais : sans l'ID du relais, Mondial Relay ne peut pas livrer
+    if (!relayReady()) {
+      relayErr('Choisis ton point relais pour continuer.');
+      try { $('#co-relay').scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (x) {}
+      openRelayPicker();
+      return;
+    }
     payErr('');
     var items = MCCart.items().map(function (l) { var _pp = (window.MC && MC.byId) ? MC.byId(l.id) : null; return { id: l.id, qty: l.qty, name: l.name, img: (_pp && _pp.img) || l.img || '' }; });
     if (!items.length) return;
@@ -603,7 +803,7 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
     var modeLabel = (MODES[mode] && MODES[mode].label) || '';
     fetch(api + '/create-checkout', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: items, shipping: mode, customer: cust, promo: (promo ? promo.code : '') })
+      body: JSON.stringify({ items: items, shipping: mode, customer: cust, promo: (promo ? promo.code : ''), relay: (mode === 'relais' ? relay : null) })
     }).then(function (r) { return r.json(); }).then(function (d) {
       if (!d || !d.ok || !d.clientSecret || !d.publishableKey) {
         var _em = d && d.error ? errMsg(d.error) : 'paiement indisponible';
@@ -686,6 +886,8 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
   render();
   prefillForm();
   render(); // rafraîchit les frais si le mode de livraison mémorisé diffère
+  syncRelayCountry();                                  // pays mémorisé → dispo du mode relais + nettoyage d'un relais d'un autre pays
+  loadRelayPk().then(function () { renderRelay(); });  // clé Sendcloud absente → bloc masqué, relais non exigé
 
   /* ---------- Express Checkout : Apple Pay / Google Pay en UN TAP, tout en haut (style Shopify) ----------
      Le wallet fournit email + adresse ; le montant (panier + livraison) est recalculé côté serveur.
@@ -712,13 +914,17 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
         window.addEventListener('mc-cart-change', function () { try { var s = MCCart.subtotal(); elements.update({ amount: Math.round(s * 100) + shipCents('relais', s) }); } catch (x) {} });
         ece.on('click', function (event) {
           var s = MCCart.subtotal();
+          // Le wallet ne sait pas choisir un point relais : on ne propose « Point relais »
+          // que si le client en a déjà sélectionné un plus bas (ou si Sendcloud n'est pas configuré).
+          var rates = [];
+          if (relayPk === '' || (relay && relay.id)) {
+            rates.push({ id: 'relais', amount: shipCents('relais', s), displayName: shipCents('relais', s) === 0 ? 'Point relais — OFFERTE' : 'Point relais · 2-4 j ouvrés' });
+          }
+          rates.push({ id: 'domicile', amount: shipCents('domicile', s), displayName: shipCents('domicile', s) === 0 ? 'À domicile — OFFERTE' : 'À domicile · 1-3 j ouvrés' });
           event.resolve({
             emailRequired: true, phoneNumberRequired: true, shippingAddressRequired: true,
             allowedShippingCountries: ['FR', 'BE', 'CH', 'LU'],
-            shippingRates: [
-              { id: 'relais', amount: shipCents('relais', s), displayName: shipCents('relais', s) === 0 ? 'Point relais — OFFERTE' : 'Point relais · 2-4 j ouvrés' },
-              { id: 'domicile', amount: shipCents('domicile', s), displayName: shipCents('domicile', s) === 0 ? 'À domicile — OFFERTE' : 'À domicile · 1-3 j ouvrés' }
-            ],
+            shippingRates: rates,
             lineItems: MCCart.items().map(function (l) { return { name: l.name, amount: Math.round(l.price * 100) * l.qty }; })
           });
         });
@@ -738,7 +944,7 @@ select.co-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg 
           };
           var shipMode = (event.shippingRate && event.shippingRate.id) === 'domicile' ? 'domicile' : 'relais';
           var modeLabel = shipMode === 'domicile' ? 'Livraison à domicile' : 'Point relais';
-          var payload = { items: MCCart.items().map(function (l) { return { id: l.id, qty: l.qty, name: l.name }; }), shipping: shipMode, customer: cust };
+          var payload = { items: MCCart.items().map(function (l) { return { id: l.id, qty: l.qty, name: l.name }; }), shipping: shipMode, customer: cust, relay: (shipMode === 'relais' ? relay : null) };
           fetch(api + '/express-intent', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
             .then(function (r) { return r.json(); })
             .then(function (d) {
