@@ -946,21 +946,34 @@
       else if(o.status==='attente'){act='<span style="color:var(--muted)">En attente de paiement</span>';}
       else if(o.ref){
         var sb=function(s,label){var on=(o.status===s);return '<button class="mini" data-ostatus="'+s+'" data-ref="'+esc(o.ref)+'"'+(on?' style="background:#E01784;color:#fff;border-color:#E01784"':'')+'>'+label+'</button>';};
-        // Étiquette Mondial Relay en 1 clic (via Sendcloud) — indisponible si le relais manque
-        var canLabel=(o.ship==='domicile')||!!o.relay;
-        var mr=canLabel
-          ? '<div class="mrship" data-ref="'+esc(o.ref)+'" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;background:var(--pink-tint,#FFF1F8);border:1px solid var(--line);border-radius:12px;padding:.6rem .7rem">'+
+        // Étiquette Mondial Relay en 1 clic (via Sendcloud) — UNIQUEMENT en point relais AVEC relais enregistré.
+        // Le contrat Sendcloud n'expose que l'offre "point relais" (pas de livraison à domicile) :
+        // un colis domicile s'expédie via Colissimo/La Poste à la main. Une commande relais passée avant
+        // l'activation du sélecteur n'a pas de relais → on ne propose pas l'étiquette auto (qui échouerait).
+        var canLabel=(o.ship==='relais')&&!!o.relay;
+        // Formulaire de suivi manuel (toujours disponible) — sert de repli et couvre domicile + anciennes commandes
+        var shipForm='<div class="ship" data-ref="'+esc(o.ref)+'" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-top:.5rem"><input class="pin ship-num" placeholder="N° de suivi" style="width:150px"><select class="pin ship-car"><option value="mondialrelay">Mondial Relay</option><option value="laposte">Colissimo/La Poste</option><option value="chronopost">Chronopost</option><option value="ups">UPS</option><option value="dhl">DHL</option><option value="autre">Autre</option></select><button class="btn btn-primary" data-ship="'+esc(o.ref)+'">📦 Expédié &amp; prévenir</button></div>';
+        var mr,manual;
+        if(canLabel){
+          mr='<div class="mrship" data-ref="'+esc(o.ref)+'" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;background:var(--pink-tint,#FFF1F8);border:1px solid var(--line);border-radius:12px;padding:.6rem .7rem">'+
               '<span style="font-size:.78rem;font-weight:700">🏪 Mondial Relay</span>'+
               '<label style="font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:.35rem">Poids <input class="pin mr-w" type="number" step="0.05" min="0.05" max="30" value="'+guessWeight(o)+'" style="width:78px"> kg</label>'+
               '<button class="btn btn-primary" data-label="'+esc(o.ref)+'">🏷️ Créer l\'étiquette &amp; prévenir</button>'+
               '<span style="font-size:.72rem;color:var(--muted);flex-basis:100%">Crée le colis chez Sendcloud, ouvre le PDF de l\'étiquette, enregistre le n° de suivi et envoie l\'email au client.</span>'+
-            '</div>'
-          : '<div style="font-size:.78rem;color:#C0392B">⚠️ Pas de point relais sur cette commande : crée l\'étiquette depuis Sendcloud, puis saisis le suivi ci-dessous.</div>';
+            '</div>';
+          // repli : saisie manuelle repliée sous le bouton étiquette
+          manual='<details><summary style="font-size:.78rem;color:var(--muted);cursor:pointer">Saisir un numéro de suivi à la main</summary>'+shipForm+'</details>';
+        }else{
+          // pas d'étiquette auto possible → message clair + formulaire de suivi manuel affiché directement
+          mr=(o.ship==='domicile')
+            ? '<div style="font-size:.78rem;color:var(--muted)">📮 Livraison à domicile — expédie via Colissimo / La Poste, puis saisis le n° de suivi ci-dessous.</div>'
+            : '<div style="font-size:.78rem;color:#C0392B">⚠️ Point relais non enregistré (commande passée avant le sélecteur) — crée l\'étiquette depuis Sendcloud, puis saisis le suivi ci-dessous.</div>';
+          manual=shipForm;
+        }
         act='<div style="display:flex;flex-direction:column;gap:.6rem">'+
           '<div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center"><span style="font-size:.78rem;color:var(--muted)">Statut :</span>'+sb('nouvelle','🆕 Nouvelle')+sb('en_traitement','⏳ En cours de traitement')+sb('traitee','✅ Traitée')+'</div>'+
           mr+
-          '<details><summary style="font-size:.78rem;color:var(--muted);cursor:pointer">Saisir un numéro de suivi à la main</summary>'+
-          '<div class="ship" data-ref="'+esc(o.ref)+'" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-top:.5rem"><input class="pin ship-num" placeholder="N° de suivi" style="width:150px"><select class="pin ship-car"><option value="mondialrelay">Mondial Relay</option><option value="laposte">Colissimo/La Poste</option><option value="chronopost">Chronopost</option><option value="ups">UPS</option><option value="dhl">DHL</option><option value="autre">Autre</option></select><button class="btn btn-primary" data-ship="'+esc(o.ref)+'">📦 Expédié &amp; prévenir</button></div></details>'+
+          manual+
         '</div>';}
       else {act='<span style="color:var(--muted)">—</span>';}
       var summary=o.items.map(function(i){return esc(i.name||(byId[i.id]&&byId[i.id].name)||i.id||'')+' ×'+i.qty;}).join(', ');
