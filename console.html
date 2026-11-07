@@ -1103,7 +1103,7 @@
   var pIsOut=function(p){return p.available===false||p.stock===0;};
 
   function pApplyOv(){if(!hasMC)return;MC.PRODUCTS.forEach(function(p){var o=pOverrides[p.id];if(!o)return;
-    if(o.cat)p.cat=o.cat;if(o.brand!==undefined)p.brand=(o.brand===null?null:o.brand);
+    if(o.name)p.name=o.name;if(o.cat)p.cat=o.cat;if(o.brand!==undefined)p.brand=(o.brand===null?null:o.brand);
     if(o.price!=null&&!isNaN(o.price))p.price=o.price;if(o.desc)p.desc=o.desc;
     if(o.old!==undefined)p.old=(o.old===null?null:o.old);
     if(o.sub!==undefined)p.sub=(o.sub===null?null:o.sub);
