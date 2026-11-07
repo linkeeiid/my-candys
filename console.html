@@ -1110,6 +1110,8 @@
     if(o.img!==undefined)p.img=(o.img===null?null:o.img);
     if(o.stock!==undefined)p.stock=o.stock;if(o.available!==undefined)p.available=o.available;});
     for(var i=MC.PRODUCTS.length-1;i>=0;i--){var od=pOverrides[MC.PRODUCTS[i].id];if(od&&od.deleted)MC.PRODUCTS.splice(i,1);}
+    // ----- produits créés depuis la console (existent SEULEMENT dans les overrides, pas dans products.js) -----
+    for(var np in pOverrides){var npo=pOverrides[np];if(npo&&npo['new']&&!npo.box&&!npo.deleted&&MC.byId&&!MC.byId(np)){MC.PRODUCTS.push({id:np,name:npo.name||np,cat:npo.cat||'Divers',tint:npo.tint||T.pink,price:(npo.price!=null&&!isNaN(npo.price)?npo.price:null),brand:(npo.brand||null),img:(npo.img||null),old:(npo.old!=null?npo.old:null),sub:(npo.sub||null),reviews:(npo.reviews||0),nouveau:true,available:npo.available!==false,desc:(npo.desc||'')});}}
     // ----- box mystères -----
     if(MC.BOXES){
       for(var nb in pOverrides){var nbo=pOverrides[nb];if(nbo&&nbo['new']&&nbo.box&&!nbo.deleted&&MC.byId&&!MC.byId(nb)){MC.BOXES.push({id:nb,name:nbo.name||nb,price:(nbo.price!=null?nbo.price:null),old:(nbo.old!=null?nbo.old:null),reviews:(nbo.reviews||0),tint:nbo.tint||T.pink,box:true,img:nbo.img||null,ribbon:(nbo.ribbon||''),pop:!!nbo.pop,desc:(nbo.desc||''),worth:(nbo.worth||'Valeur toujours supérieure au prix payé'),available:nbo.available!==false});}}
